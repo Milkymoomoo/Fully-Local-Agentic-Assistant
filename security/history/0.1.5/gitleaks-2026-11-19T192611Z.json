@@ -1,0 +1,24 @@
+{
+ "scan": "gitleaks",
+ "version": "0.1.5",
+ "commit": "7fdcc8ec6c27c3cb1f73c21377ef37807b504ea9",
+ "date": "2026-11-19T19:26:11Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44597668137",
+ "entries": [
+  {
+   "asset": "source code",
+   "sha256": "",
+   "status": "pass",
+   "stats": {
+    "findings": 0,
+    "rules": 0
+   },
+   "summary": "no secrets found",
+   "analysis_date": "2026-11-19T19:26:11Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44597668137",
+   "note": "",
+   "version": "0.1.5",
+   "commit": "7fdcc8ec6c27c3cb1f73c21377ef37807b504ea9"
+  }
+ ]
+}
