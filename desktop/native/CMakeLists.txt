@@ -18,7 +18,7 @@ set(OUT ${CMAKE_BINARY_DIR}/out/${BELLE_LLM_BACKEND})
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${OUT})
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${OUT})
 if(MSVC)
-    add_compile_options(/utf-8)
+    add_compile_options("$<$<COMPILE_LANGUAGE:C,CXX>:/utf-8>")   # not for nvcc, which would take /utf-8 as an input file
     set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded")   # static CRT: no Visual C++ redistributable needed
 endif()
 
