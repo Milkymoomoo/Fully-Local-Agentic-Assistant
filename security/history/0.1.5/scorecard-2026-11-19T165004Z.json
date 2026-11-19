@@ -1,0 +1,43 @@
+{
+ "scan": "scorecard",
+ "version": "0.1.5",
+ "commit": "ade6de8605f3d4739c7a4ef25307abf2f0e4da81",
+ "date": "2026-11-19T16:50:04Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44569523250",
+ "entries": [
+  {
+   "asset": "source code",
+   "sha256": "",
+   "status": "warn",
+   "stats": {
+    "score": 4.1,
+    "checks": {
+     "CI-Tests": -1,
+     "Dangerous-Workflow": 10,
+     "Security-Policy": 10,
+     "Code-Review": 0,
+     "Packaging": -1,
+     "Token-Permissions": 0,
+     "Maintained": 0,
+     "SAST": 10,
+     "Binary-Artifacts": 7,
+     "Pinned-Dependencies": 10,
+     "Signed-Releases": 0,
+     "CII-Best-Practices": 0,
+     "Dependency-Update-Tool": 0,
+     "License": 10,
+     "Branch-Protection": 0,
+     "Fuzzing": 0,
+     "Contributors": 0,
+     "Vulnerabilities": 10
+    }
+   },
+   "summary": "OpenSSF Scorecard 4.1/10",
+   "analysis_date": "2026-11-19T16:50:04Z",
+   "report_url": "https://scorecard.dev/viewer/?uri=github.com/Milkymoomoo/Fully-Local-Agentic-Assistant",
+   "note": "",
+   "version": "0.1.5",
+   "commit": "ade6de8605f3d4739c7a4ef25307abf2f0e4da81"
+  }
+ ]
+}
