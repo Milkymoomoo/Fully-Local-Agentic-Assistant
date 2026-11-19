@@ -1,0 +1,25 @@
+{
+ "scan": "osv",
+ "version": "0.1.5",
+ "commit": "9fe0681f22b5cd76db2c9dab68b2b5e6c7a4e63e",
+ "date": "2026-11-19T21:03:55Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44614274161",
+ "entries": [
+  {
+   "asset": "source code",
+   "sha256": "",
+   "status": "pass",
+   "stats": {
+    "vulnerabilities": 0,
+    "high_or_critical": 0,
+    "affected_packages": 0
+   },
+   "summary": "0 known vulnerabilities in 0 packages (0 high/critical)",
+   "analysis_date": "2026-11-19T21:03:55Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44614274161",
+   "note": "",
+   "version": "0.1.5",
+   "commit": "9fe0681f22b5cd76db2c9dab68b2b5e6c7a4e63e"
+  }
+ ]
+}
