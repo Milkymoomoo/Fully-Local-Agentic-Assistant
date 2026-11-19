@@ -15,7 +15,7 @@ import argparse, datetime as dt, json, os, re
 
 REPO = os.environ.get("GITHUB_REPOSITORY", "Milkymoomoo/Fully-Local-Agentic-Assistant")
 LABEL = {"virustotal": "VirusTotal", "codeql": "CodeQL", "gitleaks": "gitleaks", "osv": "OSV-Scanner", "scorecard": "Scorecard"}
-COLOR = {"pass": "brightgreen", "warn": "yellow", "fail": "red"}
+COLOR = {"pass": "brightgreen", "warn": "yellow", "fail": "red", "toolarge": "lightgrey"}
 
 def load(p, d):
     try: return json.load(open(p, encoding="utf-8"))
@@ -58,7 +58,7 @@ def main():
                     "analysis_date": e.get("analysis_date", date), "report_url": e.get("report_url", ""), "run_url": a.run_url,
                     "note": e.get("note", ""), "file": f"history/{sv}/{name}"})
             v = idx["versions"].setdefault(ver, {"commit": commit, "first_seen": date,
-                    "release_url": f"https://github.com/{REPO}/releases/tag/v{ver}"})
+                    "release_url": f"https://github.com/{REPO}/releases/tag/{ver if ver.startswith('models-') else 'v' + ver}"})
             v["last_scan"] = date
     idx["entries"].sort(key=lambda e: e["date"], reverse=True)
     idx["pending"] = [{k: q.get(k) for k in ("scan", "asset", "sha256", "version", "commit", "reason", "since")} | {"scan": "virustotal"}
@@ -69,9 +69,10 @@ def main():
     for scan in {e["scan"] for e in idx["entries"]}:
         es = [e for e in idx["entries"] if e["scan"] == scan]
         if scan == "virustotal":
-            ver = es[0]["version"]; latest = {}
+            app = [e for e in es if not e["version"].startswith("models-")]   # the badge is about the app release
+            es = app or es; ver = es[0]["version"]; latest = {}
             for e in reversed([e for e in es if e["version"] == ver]): latest[e["asset"]] = e
-            worst = max(latest.values(), key=lambda e: ["pass", "warn", "fail"].index(e["status"]))
+            worst = max(latest.values(), key=lambda e: ["toolarge", "pass", "warn", "fail"].index(e["status"]))
             flagged = sum(e["stats"].get("malicious", 0) for e in latest.values())
             msg = f"{'clean' if worst['status'] == 'pass' else str(flagged) + ' flags'} · v{ver}"
             st = worst["status"]

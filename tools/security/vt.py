@@ -4,6 +4,11 @@
   vt.py scan    --site SITE --version V --commit C --out R.json FILE... [--url-base URL]
   vt.py queue   --site SITE --out R.json          finish queued uploads / analyses
   vt.py recheck --site SITE --out R.json          re-read the newest release's reports (re-analyse if > 7 days old)
+  vt.py list    --site SITE --version V --commit C --out R.json --url-base URL ASSETS.json
+                every asset of a release from `gh release view --json assets` (name, size, digest): nothing is
+                downloaded up front; each file is looked up by SHA-256 and only fetched if it must be uploaded.
+Files over VirusTotal's 650 MB upload limit are still looked up by hash; if VirusTotal doesn't know them they are
+recorded as status "toolarge" (with their SHA-256) instead of silently missing.
 
 SITE is a checkout of the gh-pages branch. State kept there:
   security/queue.json   scans that hit the quota or were still running (finished later by the scheduled job)
@@ -21,6 +26,7 @@ DAILY = int(os.environ.get("VT_DAILY_BUDGET", "480"))            # 500/day minus
 POLL_MIN = float(os.environ.get("VT_POLL_MINUTES", "25"))        # how long one run waits for an analysis
 POLL_EVERY = float(os.environ.get("VT_POLL_EVERY_SEC", "60"))     # one poll per minute (each poll is one call)
 REANALYSE_DAYS = 7
+MAX_UPLOAD = 650 * 1024 * 1024                                  # VirusTotal's upload limit (upload_url)
 
 class Quota(Exception): pass
 
@@ -95,6 +101,12 @@ def from_attrs(item, a, note):
     if not a or not a.get("last_analysis_date"): return None
     return entry(item, a.get("last_analysis_stats", {}), iso(dt.datetime.fromtimestamp(a["last_analysis_date"], dt.timezone.utc)), note)
 
+def too_large(item, size):
+    return {"asset": item["asset"], "sha256": item["sha256"], "version": item["version"], "commit": item.get("commit", ""),
+            "status": "toolarge", "stats": {}, "analysis_date": iso(now()), "report_url": "",
+            "summary": f"too large for VirusTotal (650 MB limit): {size / 1e6:,.0f} MB, not scanned; unknown to VirusTotal by SHA-256",
+            "note": "check it yourself against its SHA-256"}
+
 def wait_for(vt, item, aid):
     """Poll an analysis until it completes or this run's polling time runs out (then it is queued)."""
     end = time.monotonic() + POLL_MIN * 60
@@ -121,6 +133,9 @@ def process(vt, item, path=None):
         if r: return r, None
         if a:   # known but its first analysis is not finished yet
             return None, dict(item, reason="first analysis still running")
+        size = item.get("size") or (os.path.getsize(path) if path else 0)
+        if size > MAX_UPLOAD:
+            return too_large(item, size), None
         tmp = None
         if path is None:   # queued upload: fetch the release asset again, delete it right after
             fd, tmp = tempfile.mkstemp(suffix="-" + item["asset"]); os.close(fd)
@@ -149,7 +164,7 @@ def run(vt, items, paths, site):
     return results, queue
 
 def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("mode", choices=["scan", "queue", "recheck"])
+    ap = argparse.ArgumentParser(); ap.add_argument("mode", choices=["scan", "queue", "recheck", "list"])
     ap.add_argument("--site", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--version"); ap.add_argument("--commit", default=""); ap.add_argument("--url-base", default="")
     ap.add_argument("files", nargs="*"); a = ap.parse_args()
@@ -164,6 +179,15 @@ def main():
             seen.add(h); paths[h] = f
             items.append({"asset": os.path.basename(f), "sha256": h, "version": a.version, "commit": a.commit,
                           "download_url": (a.url_base.rstrip("/") + "/" + os.path.basename(f)) if a.url_base else ""})
+    elif a.mode == "list":
+        seen = set()
+        for f in a.files:
+            for x in load(f, []):
+                h = (x.get("digest") or "").removeprefix("sha256:")
+                if not h or h in seen: continue
+                seen.add(h)
+                items.append({"asset": x["name"], "sha256": h, "size": x.get("size", 0), "version": a.version, "commit": a.commit,
+                              "download_url": a.url_base.rstrip("/") + "/" + x["name"]})
     elif a.mode == "queue":
         items = load(os.path.join(a.site, "security", "queue.json"), [])
     else:

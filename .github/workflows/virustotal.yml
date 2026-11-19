@@ -3,6 +3,8 @@
 # it; calls are spaced 15 s apart and counted per UTC day in security/quota.json on gh-pages. If the quota is hit,
 # or an analysis takes longer than this run waits, the file goes into security/queue.json and the hourly run finishes it.
 # Results are appended to security/history/ on gh-pages (never overwritten). Needs the VT_API_KEY repository secret.
+# A models-* tag (run it from Actions › VirusTotal › Run workflow, tag models-3d-v2) checks every asset by SHA-256 and
+# uploads those up to 650 MB; bigger ones are recorded as "too large for VirusTotal" with their SHA-256.
 name: VirusTotal
 on:
   release:
@@ -38,11 +40,19 @@ jobs:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name || inputs.tag }}
         run: |
+          commit=$(git rev-list -n1 "refs/tags/$TAG" 2>/dev/null || gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"; echo "COMMIT=$commit" >> "$GITHUB_ENV"
+          if [[ "$TAG" == models-* ]]; then
+            # model sets (GBs): every asset by hash first; a file is downloaded only when it has to be uploaded, and files
+            # over 650 MB are recorded as "too large for VirusTotal". Short polls: unfinished analyses go to the hourly queue.
+            gh release view "$TAG" --json assets --jq '[.assets[] | {name, size, digest}]' > "$RUNNER_TEMP/assets.json"
+            VT_POLL_MINUTES=1 python3 tools/security/vt.py list --site site --version "$TAG" --commit "$commit" --out "$RUNNER_TEMP/vt.json" \
+              --url-base "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" "$RUNNER_TEMP/assets.json"
+            exit 0
+          fi
           mkdir -p "$RUNNER_TEMP/assets"
           for p in $ASSET_PATTERNS; do gh release download "$TAG" --pattern "$p" --dir "$RUNNER_TEMP/assets" || true; done
           ls -la "$RUNNER_TEMP/assets"
-          commit=$(git rev-list -n1 "refs/tags/$TAG" 2>/dev/null || gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
-          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"; echo "COMMIT=$commit" >> "$GITHUB_ENV"
           python3 tools/security/vt.py scan --site site --version "${TAG#v}" --commit "$commit" --out "$RUNNER_TEMP/vt.json" \
             --url-base "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" "$RUNNER_TEMP"/assets/*
           rm -rf "$RUNNER_TEMP/assets"      # keep disk use low
@@ -50,6 +60,7 @@ jobs:
         if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tag == '')
         env:
           VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          VT_POLL_MINUTES: "5"
         run: |
           if [ "$(python3 -c 'import json,sys; print(len(json.load(open("site/security/queue.json"))))' 2>/dev/null || echo 0)" = 0 ]; then
             echo "queue empty"; exit 0; fi
@@ -64,7 +75,8 @@ jobs:
           python3 tools/security/record.py --site site --version "${VERSION:-queue}" --commit "${COMMIT:-$GITHUB_SHA}" --run-url "$RUN_URL" "$RUNNER_TEMP/vt.json"
           tools/security/pages.sh push site "VirusTotal results ($GITHUB_EVENT_NAME)"
       - name: Link the release notes to their security entry
-        if: github.event_name == 'release' || inputs.tag != ''
+        # app releases only: model-set release notes are left as published
+        if: (github.event_name == 'release' || inputs.tag != '') && !startsWith(github.event.release.tag_name || inputs.tag, 'models-')
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ github.event.release.tag_name || inputs.tag }}
