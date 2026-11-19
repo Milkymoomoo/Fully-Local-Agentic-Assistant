@@ -3,6 +3,156 @@
  "repo": "Milkymoomoo/Fully-Local-Agentic-Assistant",
  "entries": [
   {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "trellis2_struct_dec.onnx.data",
+   "sha256": "df1ab8c032795149547f9ed9f170e86ff2a18438033100002a79d98d8579906a",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 61,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 1,
+    "type-unsupported": 12
+   },
+   "summary": "0 of 61 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T17:23:37Z",
+   "report_url": "https://www.virustotal.com/gui/file/df1ab8c032795149547f9ed9f170e86ff2a18438033100002a79d98d8579906a",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "pixal3d_shape512_flow.onnx",
+   "sha256": "79b1f0aa9494e8dd8e2602dba67e90d3f5ea52191b6d5e23694e3574a3d59122",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 59,
+    "harmless": 0,
+    "timeout": 1,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "summary": "0 of 59 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T17:04:44Z",
+   "report_url": "https://www.virustotal.com/gui/file/79b1f0aa9494e8dd8e2602dba67e90d3f5ea52191b6d5e23694e3574a3d59122",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "moge2_l_3600_nb8.onnx",
+   "sha256": "8c327a4600444413cde37f44be167a4049d6930d744c22be9941929faa298659",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 61,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 1,
+    "type-unsupported": 12
+   },
+   "summary": "0 of 61 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T16:58:59Z",
+   "report_url": "https://www.virustotal.com/gui/file/8c327a4600444413cde37f44be167a4049d6930d744c22be9941929faa298659",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "manifest.json",
+   "sha256": "6451fc419bae44cb910de79d59c9a768cd78706444553da6773ea5d7f0ca713c",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 57,
+    "harmless": 0,
+    "timeout": 3,
+    "confirmed-timeout": 0,
+    "failure": 1,
+    "type-unsupported": 13
+   },
+   "summary": "0 of 57 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T16:57:08Z",
+   "report_url": "https://www.virustotal.com/gui/file/6451fc419bae44cb910de79d59c9a768cd78706444553da6773ea5d7f0ca713c",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "dinov3_l_nb8.onnx.data",
+   "sha256": "0d0d13831c083cb12ae37fb7e4a3c4a96a16cba57b15ad0b9710aebc37728f63",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 61,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 1,
+    "type-unsupported": 12
+   },
+   "summary": "0 of 61 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T16:53:08Z",
+   "report_url": "https://www.virustotal.com/gui/file/0d0d13831c083cb12ae37fb7e4a3c4a96a16cba57b15ad0b9710aebc37728f63",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "scan": "virustotal",
+   "asset": "dinov3_l_nb8.onnx",
+   "sha256": "b519f34e5e657402a5de05e4957ba9eb720cc5282444087559e96624ae7068f4",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 58,
+    "harmless": 0,
+    "timeout": 2,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "summary": "0 of 58 engines flag it",
+   "date": "2026-11-19T17:29:28Z",
+   "analysis_date": "2026-11-19T16:50:34Z",
+   "report_url": "https://www.virustotal.com/gui/file/b519f34e5e657402a5de05e4957ba9eb720cc5282444087559e96624ae7068f4",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44577199855",
+   "note": "uploaded",
+   "file": "history/models-3d-v2/virustotal-2026-11-19T172928Z.json"
+  },
+  {
    "version": "0.1.5",
    "commit": "63092ed8d80dbec4a572c41b70f1bffbec8d64e3",
    "scan": "scorecard",
@@ -606,64 +756,9 @@
    "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
    "first_seen": "2026-11-19T17:25:17Z",
    "release_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/tag/models-3d-v2",
-   "last_scan": "2026-11-19T17:25:17Z"
+   "last_scan": "2026-11-19T17:29:28Z"
   }
  },
- "pending": [
-  {
-   "scan": "virustotal",
-   "asset": "dinov3_l_nb8.onnx",
-   "sha256": "b519f34e5e657402a5de05e4957ba9eb720cc5282444087559e96624ae7068f4",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T16:52:18Z"
-  },
-  {
-   "scan": "virustotal",
-   "asset": "dinov3_l_nb8.onnx.data",
-   "sha256": "0d0d13831c083cb12ae37fb7e4a3c4a96a16cba57b15ad0b9710aebc37728f63",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T16:54:50Z"
-  },
-  {
-   "scan": "virustotal",
-   "asset": "manifest.json",
-   "sha256": "6451fc419bae44cb910de79d59c9a768cd78706444553da6773ea5d7f0ca713c",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T16:58:08Z"
-  },
-  {
-   "scan": "virustotal",
-   "asset": "moge2_l_3600_nb8.onnx",
-   "sha256": "8c327a4600444413cde37f44be167a4049d6930d744c22be9941929faa298659",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T17:00:39Z"
-  },
-  {
-   "scan": "virustotal",
-   "asset": "pixal3d_shape512_flow.onnx",
-   "sha256": "79b1f0aa9494e8dd8e2602dba67e90d3f5ea52191b6d5e23694e3574a3d59122",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T17:05:44Z"
-  },
-  {
-   "scan": "virustotal",
-   "asset": "trellis2_struct_dec.onnx.data",
-   "sha256": "df1ab8c032795149547f9ed9f170e86ff2a18438033100002a79d98d8579906a",
-   "version": "models-3d-v2",
-   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
-   "reason": "analysis still running",
-   "since": "2026-11-19T17:25:17Z"
-  }
- ],
- "updated": "2026-11-19T17:25:35Z"
+ "pending": [],
+ "updated": "2026-11-19T17:29:28Z"
 }
