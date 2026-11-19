@@ -44,7 +44,7 @@ Everything runs on your phone. No account, no cloud, no API keys, no analytics, 
   <a href="https://milkymoomoo.github.io/Fully-Local-Agentic-Assistant/security.html"><img alt="gitleaks" src="https://img.shields.io/endpoint?url=https://milkymoomoo.github.io/Fully-Local-Agentic-Assistant/security/badges/gitleaks.json"></a>
   <a href="https://milkymoomoo.github.io/Fully-Local-Agentic-Assistant/security.html"><img alt="OSV-Scanner" src="https://img.shields.io/endpoint?url=https://milkymoomoo.github.io/Fully-Local-Agentic-Assistant/security/badges/osv.json"></a>
   <a href="https://scorecard.dev/viewer/?uri=github.com/Milkymoomoo/Fully-Local-Agentic-Assistant"><img alt="OpenSSF Scorecard" src="https://api.scorecard.dev/projects/github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/badge"></a>
-  <a href="https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/latest"><img alt="Latest release" src="https://img.shields.io/github/v/release/Milkymoomoo/Fully-Local-Agentic-Assistant?sort=semver&include_prereleases"></a>
+  <a href="https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases"><img alt="Latest release" src="https://img.shields.io/github/v/release/Milkymoomoo/Fully-Local-Agentic-Assistant?sort=semver&include_prereleases"></a>
   <a href="LICENSE"><img alt="Licence: Apache-2.0 (APK: GPL-3.0)" src="https://img.shields.io/badge/licence-Apache--2.0%20%C2%B7%20APK%20GPL--3.0-blue"></a>
 </p>
 

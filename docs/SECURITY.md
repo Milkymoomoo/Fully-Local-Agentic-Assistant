@@ -32,7 +32,7 @@ Check it with `apksigner verify --print-certs MilkyMoosAssistant-arm64-v8a.apk` 
 
 | Scan | What it looks for | When |
 |---|---|---|
-| **VirusTotal** | Each release file checked by about 70 antivirus engines | On every release, re-checked weekly. Files are looked up by fingerprint first and only uploaded if VirusTotal has never seen them |
+| **VirusTotal** | Each release file checked by about 70 antivirus engines | On every release, re-checked weekly. Files are looked up by fingerprint first and only uploaded if VirusTotal has never seen them. The 3D model set (`models-3d-v2`) is checked the same way; its three files over VirusTotal's **650 MB** upload limit (`pixal3d_ss_flow.onnx.data`, `pixal3d_shape512_flow.onnx.data`, `trellis2_shape_dec_seg1.onnx.data`) can't be uploaded and are listed as *too large for VirusTotal* with their SHA-256, so you can check them yourself |
 | **CodeQL** | Security bugs in the Kotlin/Java and C/C++ code | Every push and weekly |
 | **gitleaks** | Passwords, keys or tokens committed by mistake | Every push and weekly |
 | **OSV-Scanner** | Libraries with known vulnerabilities | Every push and weekly |

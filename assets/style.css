@@ -41,7 +41,7 @@ main{min-width:0}
 .card h3{margin:0;font-size:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
 .pill{font-size:12px;font-weight:800;letter-spacing:.04em;padding:3px 10px;border-radius:999px;text-transform:uppercase;white-space:nowrap}
 .pill.pass{background:color-mix(in srgb,var(--ok) 18%,transparent);color:var(--ok)}.pill.warn{background:color-mix(in srgb,var(--warn) 18%,transparent);color:var(--warn)}
-.pill.fail{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}.pill.pending,.pill.none{background:color-mix(in srgb,var(--pend) 18%,transparent);color:var(--pend)}
+.pill.fail{background:color-mix(in srgb,var(--bad) 18%,transparent);color:var(--bad)}.pill.pending,.pill.none,.pill.toolarge{background:color-mix(in srgb,var(--pend) 18%,transparent);color:var(--pend)}
 .big{font-size:26px;font-weight:800}.sha{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;word-break:break-all;color:var(--muted)}
 .card .acts{display:flex;gap:8px;flex-wrap:wrap;margin-top:6px}
 .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:600;font-size:13px;background:var(--bg2);color:var(--fg);cursor:pointer}
@@ -52,3 +52,5 @@ select{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--li
 .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .verify pre{margin:6px 0}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}aside{position:static;max-height:none}header nav{display:none}}
+
+.md blockquote.alert{color:var(--fg)}.md blockquote.alert-warning,.md blockquote.alert-caution{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--bg2))}.md blockquote.alert-note,.md blockquote.alert-tip{border-left-color:var(--accent)}.md .alert-title{color:var(--warn)}

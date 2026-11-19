@@ -44,12 +44,14 @@
   const E = idx.entries || [], P = idx.pending || [];
   $("updated").textContent = idx.updated ? "· updated " + day(idx.updated) : "";
   const vtE = E.filter(e => e.scan === "virustotal");
-  const newestVer = (vtE[0] || E[0] || {}).version;
+  const isModels = v => String(v || "").startsWith("models-");
+  const vLabel = v => isModels(v) ? String(v) : "v" + v;
+  const newestVer = (vtE.find(e => !isModels(e.version)) || vtE[0] || E[0] || {}).version;
 
   function card(e, pending, title) {
     const st = pending ? "pending" : e ? e.status : "none";
-    const label = pending ? (e ? "pending" : "queued") : { pass: "pass", warn: "warning", fail: "fail", none: "no result" }[st];
-    const big = !e ? "–" : e.scan === "virustotal" ? `${e.stats.malicious ?? 0} / ${["malicious", "suspicious", "undetected", "harmless"].reduce((a, k) => a + (e.stats[k] || 0), 0)}`
+    const label = pending ? (e ? "pending" : "queued") : { pass: "pass", warn: "warning", fail: "fail", toolarge: "too large", none: "no result" }[st];
+    const big = !e ? "–" : e.status === "toolarge" ? "&gt; 650 MB" : e.scan === "virustotal" ? `${e.stats.malicious ?? 0} / ${["malicious", "suspicious", "undetected", "harmless"].reduce((a, k) => a + (e.stats[k] || 0), 0)}`
       : e.scan === "scorecard" ? `${e.stats.score}/10` : e.scan === "gitleaks" ? `${e.stats.findings}` : e.scan === "osv" ? `${e.stats.vulnerabilities}` : `${e.stats.error ?? 0}·${e.stats.warning ?? 0}`;
     const unit = !e ? "" : { virustotal: "engines flag it", scorecard: "score", gitleaks: "possible secrets", osv: "known vulnerabilities", codeql: "errors · warnings" }[e.scan];
     const pend = pending ? `<div class="small"><b>Pending</b> (${esc(pending.reason || "queued")}), ${e ? "last result from " + day(e.analysis_date || e.date) : "no earlier result for this file yet"}.</div>` : "";
@@ -77,14 +79,25 @@
   for (const s of ORDER.slice(1)) { const e = E.find(x => x.scan === s); if (e) cards.push(card(e, null, NAMES[s])); }
   $("cards").innerHTML = cards.join("") || "";
   const worst = [...assets.values()].filter(Boolean).map(e => e.status);
-  $("state").innerHTML = assets.size ? `<b>v${esc(newestVer)}:</b> ${worst.includes("fail") ? "at least one engine flags a release file: open its report" : worst.includes("warn") ? "no engine calls it malicious; some mark it suspicious" : "no antivirus engine flags the release files"}${P.length ? ` · ${P.length} scan(s) pending` : ""}.`
+  $("state").innerHTML = assets.size ? `<b>${esc(vLabel(newestVer))}:</b> ${worst.includes("fail") ? "at least one engine flags a release file: open its report" : worst.includes("warn") ? "no engine calls it malicious; some mark it suspicious" : "no antivirus engine flags the release files"}${P.length ? ` · ${P.length} scan(s) pending` : ""}.`
     : "No release files recorded yet; source scans are below.";
+  // the 3D model set (models-* releases): one summary line, details in the version history below
+  const mv = vtE.find(e => isModels(e.version))?.version || P.find(p => isModels(p.version))?.version;
+  if (mv) {
+    const m = new Map(); for (const e of vtE.filter(e => e.version === mv)) if (!m.has(e.asset)) m.set(e.asset, e);
+    const mp = P.filter(p => p.version === mv && ![...m.values()].some(e => e.sha256 === p.sha256 && e.status !== "toolarge"));
+    const ok = [...m.values()].filter(e => e.status === "pass").length, fl = [...m.values()].filter(e => e.status === "warn" || e.status === "fail").length;
+    const big = [...m.values()].filter(e => e.status === "toolarge");
+    $("state").innerHTML += `<br><b>3D model set (${esc(mv)}):</b> ${ok} file(s) clean${fl ? `, ${fl} flagged (open the report)` : ""}${mp.length ? `, ${mp.length} scan(s) pending` : ""}` +
+      (big.length ? `, ${big.length} too large for VirusTotal (650 MB limit): ${big.map(e => esc(e.asset)).join(", ")}` : "") +
+      ` · <a href="#v${esc(mv)}" onclick="setTimeout(()=>location.reload())">details and SHA-256s</a>.`;
+  }
   const firstVt = [...assets.values()].find(Boolean);
   if (firstVt) $("vt-hero").href = vtUrl(firstVt.sha256);
 
   // version history
   const versions = Object.keys(idx.versions || {}).sort((a, b) => (idx.versions[b].first_seen || "").localeCompare(idx.versions[a].first_seen || ""));
-  $("ver").innerHTML = versions.map(v => `<option value="${esc(v)}">v${esc(v)}</option>`).join("");
+  $("ver").innerHTML = versions.map(v => `<option value="${esc(v)}">${esc(vLabel(v))}</option>`).join("");
   function pick(v) {
     $("ver").value = v; const info = idx.versions[v] || {};
     $("rel").href = info.release_url || `https://github.com/${REPO}/releases`;
@@ -92,7 +105,7 @@
     $("vtable").innerHTML = rows.length ? `<table><tr><th>Date</th><th>Scan</th><th>File</th><th>Result</th><th>Details</th><th>Report</th></tr>` +
       rows.map(e => `<tr><td>${day(e.date)}</td><td>${NAMES[e.scan] || esc(e.scan)}</td><td>${esc(e.asset)}${e.sha256 ? `<div class="sha">${esc(e.sha256)}</div>` : ""}</td>
         <td><span class="pill ${e.status}">${esc(e.status)}</span></td><td class="small">${esc(e.summary)}${e.note ? " · " + esc(e.note) : ""}</td>
-        <td><a href="${esc(e.report_url)}" target="_blank" rel="noopener">report</a> · <a href="security/${esc(e.file)}">json</a></td></tr>`).join("") + "</table>"
+        <td>${e.report_url ? `<a href="${esc(e.report_url)}" target="_blank" rel="noopener">report</a> · ` : ""}<a href="security/${esc(e.file)}">json</a></td></tr>`).join("") + "</table>"
       : '<p class="muted">No scans recorded for this version.</p>';
   }
   $("ver").onchange = () => { history.replaceState(null, "", "#v" + $("ver").value); pick($("ver").value); };
