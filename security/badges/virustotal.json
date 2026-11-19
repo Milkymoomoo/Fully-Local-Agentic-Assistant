@@ -1,6 +1,6 @@
 {
  "schemaVersion": 1,
  "label": "VirusTotal",
- "message": "clean \u00b7 v0.1.5",
+ "message": "clean \u00b7 v0.1.5 (rescan pending)",
  "color": "brightgreen"
 }

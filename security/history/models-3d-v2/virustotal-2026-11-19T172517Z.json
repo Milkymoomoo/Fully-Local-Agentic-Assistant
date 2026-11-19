@@ -1,0 +1,276 @@
+{
+ "scan": "virustotal",
+ "version": "models-3d-v2",
+ "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+ "date": "2026-11-19T17:25:17Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570544265",
+ "entries": [
+  {
+   "asset": "LICENSES.zip",
+   "sha256": "4691a23dc5de2fe09cf86be1e01d2b2c7e968a1f363eb68f0ff9a8439220c213",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 64,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 10
+   },
+   "analysis_date": "2026-11-19T16:55:21Z",
+   "report_url": "https://www.virustotal.com/gui/file/4691a23dc5de2fe09cf86be1e01d2b2c7e968a1f363eb68f0ff9a8439220c213",
+   "summary": "0 of 64 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "naf_q_r1.onnx",
+   "sha256": "91568c0cae7c28925889689f1bf7fe15a36be5e1bfc1f63c1f088372f19368fb",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:01:10Z",
+   "report_url": "https://www.virustotal.com/gui/file/91568c0cae7c28925889689f1bf7fe15a36be5e1bfc1f63c1f088372f19368fb",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "naf_q_r1.onnx.data",
+   "sha256": "4d0a746ca0e42365c5c3c0b33a154486d783d43863b227033b08f74f9207d6c7",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:02:58Z",
+   "report_url": "https://www.virustotal.com/gui/file/4d0a746ca0e42365c5c3c0b33a154486d783d43863b227033b08f74f9207d6c7",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "pixal3d_shape512_flow.onnx.data",
+   "sha256": "c4ac82ddfa4adccc9b63a2fb8343f6aa3225ce1cecf64bfc0c98d4573851608f",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "toolarge",
+   "stats": {},
+   "analysis_date": "2026-11-19T17:05:59Z",
+   "report_url": "",
+   "summary": "too large for VirusTotal (650 MB limit): 1,464 MB, not scanned; unknown to VirusTotal by SHA-256",
+   "note": "check it yourself against its SHA-256"
+  },
+  {
+   "asset": "pixal3d_ss_flow.onnx",
+   "sha256": "b57ae453dd9a9c240a0b5d0d132b3d9224f9a19fddc3ef6a2361fdee5f4df610",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:06:31Z",
+   "report_url": "https://www.virustotal.com/gui/file/b57ae453dd9a9c240a0b5d0d132b3d9224f9a19fddc3ef6a2361fdee5f4df610",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "pixal3d_ss_flow.onnx.data",
+   "sha256": "9e85bb8d6efc24e48209bc84da30de4872ea800ec16053611d1e9fa7ebd9478d",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "toolarge",
+   "stats": {},
+   "analysis_date": "2026-11-19T17:08:02Z",
+   "report_url": "",
+   "summary": "too large for VirusTotal (650 MB limit): 1,668 MB, not scanned; unknown to VirusTotal by SHA-256",
+   "note": "check it yourself against its SHA-256"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg0.onnx",
+   "sha256": "07f87fe8fbc4c131705122837ed9f269674288bf69ab73d3518ec4cc4552925f",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:08:33Z",
+   "report_url": "https://www.virustotal.com/gui/file/07f87fe8fbc4c131705122837ed9f269674288bf69ab73d3518ec4cc4552925f",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg0.onnx.data",
+   "sha256": "1e12927503c66c7004ad2848fd83807d0262776aa9deaf766b97a2342c03a901",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 61,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 1,
+    "type-unsupported": 12
+   },
+   "analysis_date": "2026-11-19T17:10:39Z",
+   "report_url": "https://www.virustotal.com/gui/file/1e12927503c66c7004ad2848fd83807d0262776aa9deaf766b97a2342c03a901",
+   "summary": "0 of 61 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg1.onnx",
+   "sha256": "958193c28d53c552245773df48c402bd5b56b7b23c48c4a41fd3f77ac37ee14b",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:13:07Z",
+   "report_url": "https://www.virustotal.com/gui/file/958193c28d53c552245773df48c402bd5b56b7b23c48c4a41fd3f77ac37ee14b",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg1.onnx.data",
+   "sha256": "c7eb681802a00e86107b751092a3be959917a55934374d9726992561656851fc",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "toolarge",
+   "stats": {},
+   "analysis_date": "2026-11-19T17:14:38Z",
+   "report_url": "",
+   "summary": "too large for VirusTotal (650 MB limit): 729 MB, not scanned; unknown to VirusTotal by SHA-256",
+   "note": "check it yourself against its SHA-256"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg2.onnx",
+   "sha256": "ffa59395f5b79d48ec7ad2dcf97cbb50d0007af6640ab335fc31aae081d9b755",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:15:27Z",
+   "report_url": "https://www.virustotal.com/gui/file/ffa59395f5b79d48ec7ad2dcf97cbb50d0007af6640ab335fc31aae081d9b755",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg3.onnx",
+   "sha256": "25557baada8b890bd28e5d0c068c1c3ddc97be8560dafb953df9f93f9b5a0271",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:18:01Z",
+   "report_url": "https://www.virustotal.com/gui/file/25557baada8b890bd28e5d0c068c1c3ddc97be8560dafb953df9f93f9b5a0271",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_shape_dec_seg4.onnx",
+   "sha256": "9258e4e2c9da6f3113b430a4bcc982dd2fca7213df3a811b49e5e81ab873b2a3",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:19:43Z",
+   "report_url": "https://www.virustotal.com/gui/file/9258e4e2c9da6f3113b430a4bcc982dd2fca7213df3a811b49e5e81ab873b2a3",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "trellis2_struct_dec.onnx",
+   "sha256": "d858c88ff0ba42f886af771959c0b9f56c6aaca2df65f2ab147e98968d4f2d5a",
+   "version": "models-3d-v2",
+   "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 60,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 14
+   },
+   "analysis_date": "2026-11-19T17:21:30Z",
+   "report_url": "https://www.virustotal.com/gui/file/d858c88ff0ba42f886af771959c0b9f56c6aaca2df65f2ab147e98968d4f2d5a",
+   "summary": "0 of 60 engines flag it",
+   "note": "uploaded"
+  }
+ ]
+}
