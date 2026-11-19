@@ -1,0 +1,72 @@
+{
+ "scan": "virustotal",
+ "version": "0.1.5",
+ "commit": "1953107955c776317e4ca6f4210e5e8ba282fa3c",
+ "date": "2026-11-19T16:49:52Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44568834690",
+ "entries": [
+  {
+   "asset": "MilkyMoosAssistant-0.1.5-3b2686c-arm64-v8a.apk",
+   "sha256": "68bea93bd1d813066dba7978d24b837d295d506758325013e5bf43b052e8b80b",
+   "version": "0.1.5",
+   "commit": "1953107955c776317e4ca6f4210e5e8ba282fa3c",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 67,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 7
+   },
+   "analysis_date": "2026-11-19T16:42:19Z",
+   "report_url": "https://www.virustotal.com/gui/file/68bea93bd1d813066dba7978d24b837d295d506758325013e5bf43b052e8b80b",
+   "summary": "0 of 67 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "MilkyMoosAssistant-0.1.5-3b2686c-universal.apk",
+   "sha256": "b9663901a5dc2eec6378feadf1d7f7165e17838d072265c49a60fc01ea76d936",
+   "version": "0.1.5",
+   "commit": "1953107955c776317e4ca6f4210e5e8ba282fa3c",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 66,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 8
+   },
+   "analysis_date": "2026-11-19T16:45:06Z",
+   "report_url": "https://www.virustotal.com/gui/file/b9663901a5dc2eec6378feadf1d7f7165e17838d072265c49a60fc01ea76d936",
+   "summary": "0 of 66 engines flag it",
+   "note": "uploaded"
+  },
+  {
+   "asset": "MilkyMoosAssistant-0.1.5-3b2686c-x86_64.apk",
+   "sha256": "a16c0059f7278c49c1299cba80dcd9c028064960fec8af85d785792540f8bcc4",
+   "version": "0.1.5",
+   "commit": "1953107955c776317e4ca6f4210e5e8ba282fa3c",
+   "status": "pass",
+   "stats": {
+    "malicious": 0,
+    "suspicious": 0,
+    "undetected": 67,
+    "harmless": 0,
+    "timeout": 0,
+    "confirmed-timeout": 0,
+    "failure": 0,
+    "type-unsupported": 7
+   },
+   "analysis_date": "2026-11-19T16:47:53Z",
+   "report_url": "https://www.virustotal.com/gui/file/a16c0059f7278c49c1299cba80dcd9c028064960fec8af85d785792540f8bcc4",
+   "summary": "0 of 67 engines flag it",
+   "note": "uploaded"
+  }
+ ]
+}
