@@ -18,12 +18,18 @@ import kotlin.math.roundToInt
  * Overrides win, kept only inside hard safety ranges (steps 1–60, cfg 0–15, crop 512–1024, triangles 20k–300k).
  */
 object Run3DPlan {
-    data class Device(val ramGb: Double, val secPerCallStructure: Double, val secPerCallShape: Double, val measured: Boolean, val budgetMin: Double = 30.0) {
+    /** [accel]: what runs the models ("cpu" on the phone; the Windows program's backend, e.g. "cuda"), shown in the notes. */
+    data class Device(val ramGb: Double, val secPerCallStructure: Double, val secPerCallShape: Double, val measured: Boolean, val budgetMin: Double = 30.0,
+                      val accel: String = "cpu", val accelLabel: String = "the CPU") {
         companion object {
             /** Desktop CPU measurement (4 threads, tools/pixal3d_port/proof/e2e_phone_set_final.json): ss flow 278.6 s / 14 calls,
              *  shape flow 138.3 s / 21 calls at N≈1515. Used until this phone has done a run of its own. */
             const val DESKTOP_SS = 19.9; const val DESKTOP_SHAPE = 6.6
             fun estimate(ramGb: Double) = Device(ramGb, DESKTOP_SS, DESKTOP_SHAPE, measured = false)
+            /** A GPU backend before its first run: the CPU times divided by a deliberately low [speedup], so the time
+             *  left is never promised too short and the steps are not cut more than the CPU would need. */
+            fun estimate(ramGb: Double, accel: String, accelLabel: String, speedup: Double) =
+                Device(ramGb, DESKTOP_SS / speedup.coerceAtLeast(1.0), DESKTOP_SHAPE / speedup.coerceAtLeast(1.0), measured = false, accel = accel, accelLabel = accelLabel)
         }
     }
 
@@ -76,7 +82,9 @@ object Run3DPlan {
             }
         }
         val timeWhy = "fits a ~${dev.budgetMin.roundToInt()} min sampling budget (${"%.0f".format(before)} min with the workflow's steps; " +
-            (if (dev.measured) "timed from this phone's last run)" else "estimated from a desktop run until this phone has done one)")
+            (if (dev.measured) "timed from this ${app.belle.assistant.core.Platform.device}'s last run" + (if (dev.accel != "cpu") " on ${dev.accelLabel})" else ")")
+             else if (dev.accel != "cpu") "a cautious estimate for ${dev.accelLabel} until this ${app.belle.assistant.core.Platform.device} has done a run on it)"
+             else "estimated from a desktop run until this ${app.belle.assistant.core.Platform.device} has done one)")
         fun stepNote(wfv: Int, used: Int, o: Boolean) = when { o -> "your value"; used != wfv && wfv > MAX_STEPS && used == MAX_STEPS -> "capped at $MAX_STEPS steps"; used != wfv -> timeWhy; else -> null }
         for ((r, wfv, o) in listOf(Triple(st, wfSt, ovSt), Triple(sh, wfSh, ovSh))) {
             val w0 = wf.stage(r.name)
@@ -85,7 +93,7 @@ object Run3DPlan {
             items += Item(r.name, "seed", "${r.name}: seed", if (w0?.randomSeed == true) "random" else (w0?.seed ?: r.seed).toString(),
                 if (r.randomSeed) "random each run" else r.seed.toString(), if (ovd(r.name, "seed") || ovd(r.name, "random")) "your value" else null, ovd(r.name, "seed") || ovd(r.name, "random"), false)
             items += Item(r.name, "scheduler", "${r.name}: sampler / scheduler", "${w0?.sampler ?: r.sampler} / ${w0?.scheduler ?: r.scheduler}", "${r.sampler} / ${r.scheduler}",
-                if (ovd(r.name, "scheduler")) "your value" else if (w0 != null && (w0.sampler != r.sampler || w0.scheduler != r.scheduler)) "not available on the phone" else null,
+                if (ovd(r.name, "scheduler")) "your value" else if (w0 != null && (w0.sampler != r.sampler || w0.scheduler != r.scheduler)) "not available on the ${app.belle.assistant.core.Platform.device}" else null,
                 ovd(r.name, "scheduler"), w0 != null && (w0.sampler != r.sampler || w0.scheduler != r.scheduler) && !ovd(r.name, "scheduler"))
             items += Item(r.name, "patches", "${r.name}: shift · rescale · cfg 1 from", "", "${r.shift} · ${r.rescale} · ${(r.overrideStart * 100).roundToInt()} %", null, false, false, overridable = false)
         }
@@ -94,29 +102,30 @@ object Run3DPlan {
         val capCrop = if (dev.ramGb < 8.0) 768 else 1024
         val crop = if (ovd(null, "cropSize")) eff.cropSize.coerceIn(512, 1024) else eff.cropSize.coerceIn(512, capCrop)
         items += Item(null, "cropSize", "Picture size (crop)", "${wf.cropSize} px", "$crop px",
-            when { ovd(null, "cropSize") -> "your value"; crop < wf.cropSize && capCrop < 1024 -> "phones under 8 GB use 768 px to save memory"
-                crop < wf.cropSize -> "the phone pipeline's largest input is 1024 px; bigger only costs memory"; crop > wf.cropSize -> "at least 512 px"; else -> null },
+            when { ovd(null, "cropSize") -> "your value"; crop < wf.cropSize && capCrop < 1024 -> "${if (app.belle.assistant.core.Platform.desktop) "PCs" else "phones"} under 8 GB use 768 px to save memory"
+                crop < wf.cropSize -> "the pipeline's largest input is 1024 px; bigger only costs memory"; crop > wf.cropSize -> "at least 512 px"; else -> null },
             ovd(null, "cropSize"), !ovd(null, "cropSize") && crop != wf.cropSize)
         // triangles
         val capTri = if (dev.ramGb >= 12.0) 250_000 else 150_000
         val tri = if (ovd(null, "decimateTarget")) eff.decimateTarget.coerceIn(20_000, 300_000) else eff.decimateTarget.coerceIn(20_000, capTri)
         items += Item(null, "decimateTarget", "Triangles (decimate)", "%,d".format(wf.decimateTarget), "%,d".format(tri),
-            when { ovd(null, "decimateTarget") -> "your value"; tri < wf.decimateTarget -> "the phone draws up to %,d comfortably (%.0f GB RAM)".format(capTri, dev.ramGb); else -> null },
+            when { ovd(null, "decimateTarget") -> "your value"; tri < wf.decimateTarget -> "the ${app.belle.assistant.core.Platform.device} draws up to %,d comfortably (%.0f GB RAM)".format(capTri, dev.ramGb); else -> null },
             ovd(null, "decimateTarget"), !ovd(null, "decimateTarget") && tri != wf.decimateTarget)
         items += Item(null, "removeBackground", "Background", if (wf.removeBackground) "remove (BiRefNet)" else "picture's own transparency",
             if (eff.removeBackground) "remove (BiRefNet)" else "picture's own transparency (falls back to removal if it has none)",
             if (ovd(null, "removeBackground")) "your value" else null, ovd(null, "removeBackground"), false)
         // workflow values the phone pipeline has no stage for (shown, not editable)
-        val skip = "not run on the phone (no model for it in the phone set)"
+        val skip = "not run here (no model for it in the 3D set)"
         items += Item(null, "upsampleRes", "Shape detail (refine)", "${wf.stage("Shape detail")?.steps ?: 0} steps at ${wf.upsampleRes}", "skipped", skip, false, false, false)
         items += Item(null, "textureSize", "Texture stage / size", "${wf.textureSize} px", "colours painted from the photo onto the vertices", skip, false, false, false)
         items += Item(null, "remesh", "Remesh · UV unwrap · normal / AO maps", "${wf.remeshRes} · ${wf.unwrapRes} · ${wf.normalMapSize} / ${wf.aoSize}", "skipped", skip, false, false, false)
         return Plan(st, sh, eff.removeBackground, crop, wf.cropPadding.coerceIn(1.0, 1.5), tri, est(st, sh), items, notes.distinct())
     }
 
-    /** Per-call seconds measured by this phone's last run (last_run.json), or null. */
-    fun measured(lastRunJson: String?): Pair<Double, Double>? = runCatching {
+    /** Per-call seconds measured by this device's last run (last_run.json) on the same [accel] backend, or null. */
+    fun measured(lastRunJson: String?, accel: String = "cpu"): Pair<Double, Double>? = runCatching {
         val o = org.json.JSONObject(lastRunJson ?: return null)
+        if (o.optString("accel", "cpu") != accel) return null   // a CPU run says nothing about the GPU's speed, and back
         val a = o.getDouble("ss_ms") / 1000 / o.getInt("ss_calls"); val b = o.getDouble("shape_ms") / 1000 / o.getInt("shape_calls")
         if (a > 0 && b > 0) a to b else null
     }.getOrNull()

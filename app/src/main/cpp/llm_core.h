@@ -27,6 +27,8 @@ public:
                          float temp, double gen_cap, const std::function<bool(const std::string &)> &on_text);
     bool last_hit_limit = false;   // generation stopped at max_tokens (not at end-of-turn)
     std::string last_error() const { return err_; }
+    /** Layers on the GPU after load (0 = CPU; only the Windows program's CUDA / Vulkan builds offload). */
+    int gpu_layers() const { return gpu_layers_; }
     // Stops the running complete() (any thread, lock-free): prompt evaluation is interrupted inside ggml through
     // llama's abort callback, generation at the next token. complete() then returns what it has ("" mid-prompt).
     void cancel() { abort_.store(true); }
@@ -43,6 +45,8 @@ private:
     llama_context *ctx_ = nullptr;
     std::vector<int> cached_;   // tokens currently in the KV cache (seq 0)
     std::string err_;
+    int gpu_layers_ = 0;
+    bool make_context(int n_ctx);
     int n_threads_ = 4;
     std::atomic<bool> abort_{false};
     double deadline_ms_ = 0;

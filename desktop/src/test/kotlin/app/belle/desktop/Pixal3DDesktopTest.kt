@@ -13,7 +13,7 @@ import kotlin.test.assertTrue
 
 /**
  * Photo → 3D on the desktop CPU, the way the program runs it: the phone's Pixal3DJob (job record, sealed checkpoints,
- * build log) on the desktop natives, with the models-3d-v2 set. The run is stopped once the detailed-shape stage starts,
+ * build log) on the desktop natives, with the models-3d-v2 set. The run is killed during the detailed-shape stage,
  * then resumed from its checkpoints, and must finish with a model on the assistant.
  * Opt-in: BELLE_NATIVES + -Ddesk.p3d=<folder with the models-3d-v2 files>. Slow (tens of minutes on a CPU).
  */
@@ -39,10 +39,14 @@ class Pixal3DDesktopTest {
             "-Dbelle.home=" + System.getProperty("belle.home"), "-Dbelle.natives=" + System.getProperty("belle.natives"),
             "-Djava.library.path=" + System.getProperty("java.library.path"), "app.belle.desktop.Pixal3DChild", id, photoFile.absolutePath)
             .inheritIO().start()
+        var seen = 0L
         while (child.isAlive) {
             Thread.sleep(2000)
             val st = Pixal3DJob.pendingJob(ctx)?.optJSONObject("open_try")?.optString("stage").orEmpty()
-            if (st.startsWith("shape512")) { println("killing the build at '$st' after ${(System.currentTimeMillis() - t0) / 1000} s"); child.destroyForcibly().waitFor(); break }
+            // the job record names the stage ("Detailed shape (N voxels)"); give it a minute and a half into it so
+            // some sampling steps are checkpointed, then kill it mid-step
+            if (st.startsWith("Detailed shape") && seen == 0L) seen = System.currentTimeMillis()
+            if (seen > 0 && System.currentTimeMillis() - seen > 90_000) { println("killing the build in '$st' after ${(System.currentTimeMillis() - t0) / 1000} s"); child.destroyForcibly().waitFor(); break }
         }
         assertTrue(!child.isAlive)
         assertNotNull(Pixal3DJob.pendingJob(ctx), "no job record left to resume (exit ${child.exitValue()})")

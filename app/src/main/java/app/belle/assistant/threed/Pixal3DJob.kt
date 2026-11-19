@@ -81,9 +81,17 @@ object Pixal3DJob {
         ctx.getSystemService(android.app.ActivityManager::class.java).getMemoryInfo(mi); return mi.totalMem / 1073741824.0 }
     /** This phone: its RAM and, after a first run, its own per-call sampling times. */
     fun device(ctx: Context): Run3DPlan.Device {
-        val ram = ramGb(ctx); val m = Run3DPlan.measured(runCatching { lastRun(ctx).readText() }.getOrNull())
-        return if (m != null) Run3DPlan.Device(ram, m.first, m.second, measured = true) else Run3DPlan.Device.estimate(ram)
+        val a = accel(); val ram = ramGb(ctx); val m = Run3DPlan.measured(runCatching { lastRun(ctx).readText() }.getOrNull(), a.id)
+        return when {
+            m != null -> Run3DPlan.Device(ram, m.first, m.second, measured = true, accel = a.id, accelLabel = a.label)
+            a.id == "cpu" -> Run3DPlan.Device.estimate(ram)
+            else -> Run3DPlan.Device.estimate(ram, a.id, a.label, a.speedup)
+        }
     }
+    /** What runs the models: always the CPU on the phone; the Windows program sets its backend at startup, with a
+     *  cautious first-run speed-up over the CPU (replaced by real timings after one run on it). */
+    class Accel(val id: String, val label: String, val speedup: Double)
+    @Volatile var accel: () -> Accel = { Accel("cpu", "the CPU", 1.0) }
     /** What the next run will use: the imported workflow (or the phone defaults) fitted to this phone, plus your overrides. */
     fun plan(ctx: Context): Run3DPlan.Plan = Run3DPlan.plan(Avatar3DFiles.baseSettings(ctx), Avatar3DFiles.overridesMap(ctx), device(ctx))
 
@@ -281,15 +289,15 @@ object Pixal3DJob {
                 // what ran, and per-call sampling times the next plan's time fit uses
                 .put("ss_steps", g.ssParams.steps).put("ss_cfg", g.ssParams.cfg).put("ss_scheduler", g.ssParams.scheduler).put("ss_seed", g.seedSs)
                 .put("shape_steps", g.shapeParams.steps).put("shape_cfg", g.shapeParams.cfg).put("shape_scheduler", g.shapeParams.scheduler).put("shape_seed", g.seedShape)
-                .put("ss_calls", FlowSampler.modelCalls(g.ssParams)).put("ss_ms", g.stats.firstOrNull { it.stage.startsWith("ss flow") }?.ms ?: 0)
+                .put("accel", accel().id).put("ss_calls", FlowSampler.modelCalls(g.ssParams)).put("ss_ms", g.stats.firstOrNull { it.stage.startsWith("ss flow") }?.ms ?: 0)
                 .put("shape_calls", FlowSampler.modelCalls(g.shapeParams)).put("shape_ms", g.stats.firstOrNull { it.stage.startsWith("shape512 flow") }?.ms ?: 0)
                 .put("crop", plan.cropSize).put("cluster_grid", g.clusterGrid)
             File(dir(ctx), "last_run.json").writeText(j.toString(1))
             discardJob(ctx)   // only after the assistant has the whole new model (Avatar3DFiles.import commits atomically)
-            lastResult = "Made a 3D model on this phone in ${(g.ms + st.ms) / 1000} s (peak ${all.maxOf { it.peakMb }} MB): ${"%,d".format(g.triangles)} triangles. $imp"
+            lastResult = "Made a 3D model on this ${app.belle.assistant.core.Platform.device} in ${(g.ms + st.ms) / 1000} s (peak ${all.maxOf { it.peakMb }} MB): ${"%,d".format(g.triangles)} triangles. $imp"
             hist.finish(buildId, app.belle.assistant.core.BuildRecord.DONE, System.currentTimeMillis(), peakMb = maxOf(peak, all.maxOf { it.peakMb }.toInt()))
             log(ctx, "p3d: done for $name: ${"%,d".format(g.triangles)} triangles"); Pixal3DService.notifyResult(ctx, true, profileId, name, null)
-            return "Made a 3D model on this phone in ${(g.ms + st.ms) / 1000} s (peak ${all.maxOf { it.peakMb }} MB): ${"%,d".format(g.triangles)} triangles. $imp"
+            return "Made a 3D model on this ${app.belle.assistant.core.Platform.device} in ${(g.ms + st.ms) / 1000} s (peak ${all.maxOf { it.peakMb }} MB): ${"%,d".format(g.triangles)} triangles. $imp"
         } catch (e: Pixal3D.Cancelled) {
             discardJob(ctx)      // stopped on purpose: nothing to resume
             hist.finish(buildId, app.belle.assistant.core.BuildRecord.CANCELLED, System.currentTimeMillis(), peakMb = peak); log(ctx, "p3d: stopped by you ($name)")

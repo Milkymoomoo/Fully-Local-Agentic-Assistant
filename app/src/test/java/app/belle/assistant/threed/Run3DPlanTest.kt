@@ -117,4 +117,16 @@ class Run3DPlanTest {
         // a resumed run reads the same seeds back
         assertEquals(fixed.shape, Run3DPlan.fromJson(Run3DPlan.toJson(fixed)).shape)
     }
+
+    @Test fun gpuKeepsMoreStepsAndCpuTimesDontCount() {
+        val cpu = Run3DPlan.plan(official, emptyMap(), Run3DPlan.Device(16.0, 80.0, 25.0, measured = false))
+        val gpu = Run3DPlan.plan(official, emptyMap(), Run3DPlan.Device(16.0, 80.0 / 8, 25.0 / 8, measured = false, accel = "cuda", accelLabel = "NVIDIA CUDA"))
+        assertTrue("gpu ${gpu.shape.steps} vs cpu ${cpu.shape.steps}", gpu.shape.steps > cpu.shape.steps)
+        assertTrue(Run3DPlan.Device.estimate(16.0, "cuda", "NVIDIA CUDA", 8.0).secPerCallShape < Run3DPlan.Device.estimate(16.0).secPerCallShape)
+        assertTrue(gpu.estMinutes < cpu.estMinutes)
+        val last = """{"ss_ms":278600,"ss_calls":14,"shape_ms":138300,"shape_calls":21}"""
+        assertTrue(Run3DPlan.measured(last, "cpu") != null)
+        assertTrue(Run3DPlan.measured(last, "cuda") == null)   // a CPU run's times aren't used for the GPU
+        assertTrue(Run3DPlan.measured(last.replace("{", "{\"accel\":\"cuda\","), "cuda") != null)
+    }
 }

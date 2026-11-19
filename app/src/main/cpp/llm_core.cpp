@@ -1,6 +1,7 @@
 #include "llm_core.h"
 #include "llama.h"
 #include <chrono>
+#include <cstdlib>
 #include <cstring>
 #include <mutex>
 
@@ -26,9 +27,28 @@ bool LlmCore::load(const std::string &path, int n_threads, int n_ctx) {
     cached_.clear();
     n_threads_ = n_threads > 0 ? n_threads : 4;
     llama_model_params mp = llama_model_default_params();
-    mp.n_gpu_layers = 0;  // CPU only: works on every phone, no vendor drivers
-    model_ = llama_model_load_from_file(path.c_str(), mp);
-    if (!model_) { err_ = "failed to load model: " + path; return false; }
+#ifdef BELLE_LLM_GPU
+    // the Windows program's CUDA / Vulkan builds: every layer on the GPU (BELLE_LLM_GPU_LAYERS limits it); if the
+    // model or its context doesn't fit in video memory, the same file is loaded again on the CPU
+    int want = 999;
+    if (const char *e = getenv("BELLE_LLM_GPU_LAYERS")) want = atoi(e);
+#else
+    int want = 0;  // CPU only: works on every phone, no vendor drivers
+#endif
+    gpu_layers_ = 0;
+    for (int layers : {want, 0}) {
+        if (layers < 0) continue;
+        mp.n_gpu_layers = layers;
+        model_ = llama_model_load_from_file(path.c_str(), mp);
+        if (!model_) { if (layers == 0) { err_ = "failed to load model: " + path; return false; } continue; }
+        if (make_context(n_ctx)) { gpu_layers_ = layers; return true; }
+        llama_model_free(model_); model_ = nullptr;
+        if (layers == 0) return false;
+    }
+    return false;
+}
+
+bool LlmCore::make_context(int n_ctx) {
     llama_context_params cp = llama_context_default_params();
     cp.n_ctx = n_ctx > 0 ? n_ctx : 2048;
     cp.n_batch = 512;

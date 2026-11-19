@@ -59,7 +59,10 @@ optimisation, calls, texts, the flashlight and the camera. Ask for one and the a
 | **Auto** | CUDA if an NVIDIA GPU and its runtime are there, otherwise the CPU | the same | Never picks an untested path on its own |
 
 The **NVIDIA CUDA 13 runtime + cuDNN 9** download (about 1.9 GB, straight from NVIDIA) is shared by Photo → 3D and
-chat. If a GPU backend fails to start, the program falls back to the CPU and says why in the build log. Speech (the
+chat. On CUDA or Vulkan, chat puts every layer of the model on the GPU. If the model doesn't fit in video memory,
+it is loaded on the CPU instead (`BELLE_LLM_GPU_LAYERS=<n>` limits the layers). Photo → 3D plans its steps and the
+time left for the backend in use. Until a first run on the GPU has been timed, it uses a cautious estimate. If a GPU
+backend fails to start, the program falls back to the CPU and says why in the build log. Speech (the
 wake word, recognition and voices) always runs on the CPU. A backend change takes effect after a restart; the page
 has a **Restart now** button, and a 3D build carries on from its last checkpoint.
 
@@ -95,6 +98,11 @@ keeps these folders. Delete them yourself if you want everything gone.
 `MilkyMoosAssistant.exe --selftest report.txt` loads every native part (ONNX Runtime and the 3D runner, llama.cpp,
 the sherpa-onnx speech engine, Skia drawing), checks HTTPS and the data folders, writes `PASS` / `FAIL` lines to the
 report and exits. No window opens and nothing is downloaded. CI runs it on every build.
+
+`MilkyMoosAssistant.exe --selftest report.txt --gpu` does the same with the backends chosen under **This PC**, after
+their downloads. It checks that the GPU ONNX Runtime has its provider and opens the smallest installed 3D model on it
+without falling back to the CPU. It also loads your thinking model with the CUDA or Vulkan chat build and reports how
+many layers went to the GPU and how long one short answer took.
 
 ## Build from source
 

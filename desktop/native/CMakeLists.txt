@@ -51,6 +51,9 @@ add_subdirectory(${ROOT}/third_party/llama.cpp build-llama)
 add_library(belle_llm SHARED ${APP_CPP}/llm_core.cpp ${APP_CPP}/llm_jni.cpp)
 target_include_directories(belle_llm PRIVATE ${JNI_INCLUDE_DIRS} ${ROOT}/third_party/llama.cpp/include ${ROOT}/third_party/llama.cpp/ggml/include)
 target_link_libraries(belle_llm PRIVATE llama)
+if(NOT BELLE_LLM_BACKEND STREQUAL "cpu")
+    target_compile_definitions(belle_llm PRIVATE BELLE_LLM_GPU=1)   # offload layers (llm_core.cpp)
+endif()
 
 # ---- ONNX Runtime runner (binds at run time to the onnxruntime the program loaded) ----
 if(BELLE_LLM_BACKEND STREQUAL "cpu")

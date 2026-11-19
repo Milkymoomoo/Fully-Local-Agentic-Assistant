@@ -109,3 +109,9 @@ Java_app_belle_assistant_llm_LlamaEngine_nativeHitLimit(JNIEnv *, jobject, jlong
     auto *core = reinterpret_cast<LlmCore *>(h);
     return core && core->last_hit_limit ? JNI_TRUE : JNI_FALSE;
 }
+
+extern "C" JNIEXPORT jint JNICALL
+Java_app_belle_assistant_llm_LlamaEngine_nativeGpuLayers(JNIEnv *, jobject, jlong h) {
+    auto *core = reinterpret_cast<LlmCore *>(h);
+    return core ? core->gpu_layers() : 0;
+}

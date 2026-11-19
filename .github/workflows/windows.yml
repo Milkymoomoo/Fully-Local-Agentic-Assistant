@@ -35,12 +35,19 @@ jobs:
         with:
           distribution: temurin
           java-version: "21"
+      # the CUDA build alone takes over an hour, so a build is reused while its sources and toolkits are unchanged
+      - name: Reuse natives built from the same sources
+        id: natcache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: natives-${{ matrix.backend }}
+          key: natives-v1-${{ matrix.backend }}-cuda${{ env.CUDA_VERSION }}-vk${{ env.VULKAN_SDK_VERSION }}-${{ hashFiles('desktop/native/**', 'app/src/main/cpp/**', 'third_party/llama.cpp/CMakeLists.txt', 'third_party/llama.cpp/cmake/**', 'third_party/llama.cpp/ggml/**', 'third_party/llama.cpp/src/**', 'third_party/llama.cpp/include/**', 'third_party/llama.cpp/vendor/**') }}
       - name: CUDA toolkit (NVIDIA redistributables, checksummed)
-        if: matrix.backend == 'cuda'
+        if: matrix.backend == 'cuda' && steps.natcache.outputs.cache-hit != 'true'
         shell: pwsh
         run: desktop/native/ci/fetch-cuda.ps1 -Version $env:CUDA_VERSION -Out C:\cuda
       - name: Vulkan SDK
-        if: matrix.backend == 'vulkan'
+        if: matrix.backend == 'vulkan' && steps.natcache.outputs.cache-hit != 'true'
         shell: pwsh
         run: |
           $ProgressPreference = "SilentlyContinue"
@@ -52,6 +59,7 @@ jobs:
           "C:\VulkanSDK\Bin" >> $env:GITHUB_PATH
           Remove-Item $exe
       - name: Build
+        if: steps.natcache.outputs.cache-hit != 'true'
         shell: pwsh
         run: desktop/native/ci/build-natives.ps1 -Backend ${{ matrix.backend }} -Out natives-${{ matrix.backend }} -CudaRoot C:\cuda
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2

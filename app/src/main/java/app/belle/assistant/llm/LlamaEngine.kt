@@ -95,6 +95,9 @@ class LlamaEngine : LlmBackend {
     private external fun nativeComplete(h: Long, system: ByteArray, user: ByteArray, grammar: ByteArray, maxTokens: Int): ByteArray
     private external fun nativeStream(h: Long, system: ByteArray, user: ByteArray, maxTokens: Int, temp: Float, genCapMs: Double, sink: Any): ByteArray
     private external fun nativeHitLimit(h: Long): Boolean
+    private external fun nativeGpuLayers(h: Long): Int
+    /** Model layers on the GPU (0 on the phone, and on the PC when chat runs on the CPU or the GPU had no room). */
+    fun gpuLayers(): Int = synchronized(freeLock) { handle.takeIf { it != 0L }?.let(::nativeGpuLayers) ?: 0 }
     private external fun nativeCancel(h: Long)
     private external fun nativeReset(h: Long)
     private external fun nativeFree(h: Long)
