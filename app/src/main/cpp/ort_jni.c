@@ -2,16 +2,30 @@
 // Uses the libonnxruntime.so that sherpa-onnx already ships (ORT 1.28.2), looked up with dlopen/dlsym,
 // so the app carries one runtime only (a second, newer libonnxruntime.so can't coexist: same soname,
 // different symbol versions).
+// The same file builds the Windows / Linux desktop library (desktop/native): there the runtime is whichever
+// onnxruntime the program loaded first for the chosen acceleration backend, and setProvider() picks the
+// execution provider (CUDA, DirectML, OpenVINO) used for new sessions.
 #include <jni.h>
-#include <dlfcn.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <malloc.h>
 #include <string.h>
-#include <android/log.h>
+#ifdef _WIN32
+#include <windows.h>
+#else
+#include <dlfcn.h>
+#endif
 #include "onnxruntime_c_api.h"
 
 #define TAG "BelleOrt"
+#ifdef __ANDROID__
+#include <android/log.h>
+#define LOGW(...) __android_log_print(ANDROID_LOG_WARN, TAG, __VA_ARGS__)
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, TAG, __VA_ARGS__)
+#else
+#define LOGW(...) (fprintf(stderr, "W/" TAG ": " __VA_ARGS__), fputc('\n', stderr))
+#define LOGI(...) (fprintf(stderr, "I/" TAG ": " __VA_ARGS__), fputc('\n', stderr))
+#endif
 static const OrtApi *api = NULL;
 static OrtEnv *env = NULL;
 static char last_err[512];
@@ -21,24 +35,89 @@ typedef struct { OrtSession *s; OrtSessionOptions *o; } Sess;
 static int ok(OrtStatus *st) {
     if (!st) return 1;
     snprintf(last_err, sizeof last_err, "%s", api->GetErrorMessage(st));
-    __android_log_print(ANDROID_LOG_WARN, TAG, "%s", last_err);
+    LOGW("%s", last_err);
     api->ReleaseStatus(st); return 0;
 }
 
+static int api_ver = ORT_API_VERSION;
 static int init(void) {
     if (api) return 1;
+#ifdef _WIN32
+    /* The Windows program can point us at a GPU build of ONNX Runtime (BELLE_ORT_DLL = full path). Loading it by full
+       path keeps it apart from the CPU onnxruntime.dll that speech (sherpa-onnx) uses, so the 3D backend can't break voice. */
+    HMODULE h = NULL;
+    wchar_t pick[1024];
+    DWORD n = GetEnvironmentVariableW(L"BELLE_ORT_DLL", pick, 1024);
+    if (n > 0 && n < 1024) {
+        h = LoadLibraryExW(pick, NULL, LOAD_WITH_ALTERED_SEARCH_PATH);
+        if (!h) LOGW("BELLE_ORT_DLL could not be loaded (error %lu); using the CPU runtime", GetLastError());
+    }
+    if (!h) h = GetModuleHandleA("onnxruntime.dll");
+    if (!h) h = LoadLibraryA("onnxruntime.dll");
+    if (!h) { snprintf(last_err, sizeof last_err, "onnxruntime.dll not found (error %lu)", GetLastError()); return 0; }
+    const OrtApiBase *(*get)(void) = (const OrtApiBase *(*)(void)) GetProcAddress(h, "OrtGetApiBase");
+#else
     void *h = dlopen("libonnxruntime.so", RTLD_NOW | RTLD_GLOBAL);
+    if (!h) h = dlopen("libonnxruntime.so.1", RTLD_NOW | RTLD_GLOBAL);
     if (!h) { snprintf(last_err, sizeof last_err, "dlopen: %s", dlerror()); return 0; }
     const OrtApiBase *(*get)(void) = (const OrtApiBase *(*)(void)) dlsym(h, "OrtGetApiBase");
+#endif
     if (!get) { snprintf(last_err, sizeof last_err, "no OrtGetApiBase"); return 0; }
-    api = get()->GetApi(ORT_API_VERSION);
-    if (!api) { snprintf(last_err, sizeof last_err, "ORT API %d not supported by %s", ORT_API_VERSION, get()->GetVersionString()); return 0; }
+    /* Newest API first; older runtimes (the DirectML and OpenVINO builds trail the CPU one) still work down to API 18,
+       which has every function this file calls. */
+    for (int v = ORT_API_VERSION; v >= 18 && !api; v--) { api = get()->GetApi(v); api_ver = v; }
+    if (!api) { snprintf(last_err, sizeof last_err, "ORT API 18..%d not supported by %s", ORT_API_VERSION, get()->GetVersionString()); return 0; }
     if (!ok(api->CreateEnv(ORT_LOGGING_LEVEL_WARNING, "belle3d", &env))) { api = NULL; return 0; }
-    __android_log_print(ANDROID_LOG_INFO, TAG, "onnxruntime %s", get()->GetVersionString());
+    LOGI("onnxruntime %s", get()->GetVersionString());
     return 1;
 }
 
 JNIEXPORT jstring JNICALL Java_app_belle_assistant_threed_Ort_lastError(JNIEnv *e, jclass c) { return (*e)->NewStringUTF(e, last_err); }
+
+/* Execution provider for new sessions: "cpu" (default), "cuda", "dml" (DirectML), "openvino". */
+static char provider[16] = "cpu";
+static int device_id = 0;
+JNIEXPORT void JNICALL Java_app_belle_assistant_threed_Ort_setProvider(JNIEnv *e, jclass c, jstring name, jint device) {
+    const char *n = (*e)->GetStringUTFChars(e, name, NULL);
+    snprintf(provider, sizeof provider, "%s", n); device_id = device;
+    (*e)->ReleaseStringUTFChars(e, name, n);
+}
+/** The execution providers this onnxruntime build has (e.g. CUDAExecutionProvider, DmlExecutionProvider, CPUExecutionProvider). */
+JNIEXPORT jobjectArray JNICALL Java_app_belle_assistant_threed_Ort_providers(JNIEnv *e, jclass c) {
+    jclass str = (*e)->FindClass(e, "java/lang/String");
+    if (!init()) return (*e)->NewObjectArray(e, 0, str, NULL);
+    char **list = NULL; int n = 0;
+    if (!ok(api->GetAvailableProviders(&list, &n))) return (*e)->NewObjectArray(e, 0, str, NULL);
+    jobjectArray arr = (*e)->NewObjectArray(e, n, str, NULL);
+    for (int i = 0; i < n; i++) (*e)->SetObjectArrayElement(e, arr, i, (*e)->NewStringUTF(e, list[i]));
+    api->ReleaseAvailableProviders(list, n);
+    return arr;
+}
+/* DirectML's provider API (dml_provider_factory.h): only its first entry is used. */
+typedef struct { OrtStatus *(*append)(OrtSessionOptions *, int device_id); } DmlApiHead;
+
+static int add_provider(OrtSessionOptions *o) {
+    if (!strcmp(provider, "cpu")) return 1;
+    if (!strcmp(provider, "cuda")) {
+        OrtCUDAProviderOptionsV2 *co = NULL; char dev[16]; snprintf(dev, sizeof dev, "%d", device_id);
+        const char *k[] = {"device_id", "arena_extend_strategy", "cudnn_conv_algo_search"};
+        const char *v[] = {dev, "kSameAsRequested", "HEURISTIC"};
+        int good = ok(api->CreateCUDAProviderOptions(&co)) && ok(api->UpdateCUDAProviderOptions(co, k, v, 3))
+            && ok(api->SessionOptionsAppendExecutionProvider_CUDA_V2(o, co));
+        if (co) api->ReleaseCUDAProviderOptions(co);
+        return good;
+    }
+    if (!strcmp(provider, "dml")) {
+        const DmlApiHead *dml = NULL;
+        if (!ok(api->GetExecutionProviderApi("DML", api_ver, (const void **) &dml)) || !dml) return 0;
+        return ok(api->DisableMemPattern(o)) && ok(api->SetSessionExecutionMode(o, ORT_SEQUENTIAL)) && ok(dml->append(o, device_id));
+    }
+    if (!strcmp(provider, "openvino")) {
+        const char *k[] = {"device_type"}; const char *v[] = {"GPU"};
+        return ok(api->SessionOptionsAppendExecutionProvider_OpenVINO_V2(o, k, v, 1));
+    }
+    snprintf(last_err, sizeof last_err, "unknown execution provider '%s'", provider); return 0;
+}
 
 JNIEXPORT jlong JNICALL Java_app_belle_assistant_threed_Ort_open(JNIEnv *e, jclass c, jstring path, jint threads, jboolean arena) {
     if (!init()) return 0;
@@ -51,6 +130,7 @@ JNIEXPORT jlong JNICALL Java_app_belle_assistant_threed_Ort_open(JNIEnv *e, jcla
         && ok(api->AddSessionConfigEntry(s->o, "session.intra_op.allow_spinning", "0"))
         && ok(api->AddSessionConfigEntry(s->o, "session.inter_op.allow_spinning", "0"))
         && (arena || ok(api->DisableCpuMemArena(s->o)))
+        && add_provider(s->o)
         && ok(api->CreateSession(env, p, s->o, &s->s));
     (*e)->ReleaseStringUTFChars(e, path, p);
     if (!good) { if (s->o) api->ReleaseSessionOptions(s->o); free(s); return 0; }
@@ -63,6 +143,8 @@ static void trim_heap(void) {
     mallopt(M_PURGE_ALL, 0);
 #elif defined(__ANDROID__) && defined(M_PURGE)
     mallopt(M_PURGE, 0);
+#elif defined(_WIN32)
+    _heapmin();
 #elif !defined(__ANDROID__)
     malloc_trim(0);
 #endif

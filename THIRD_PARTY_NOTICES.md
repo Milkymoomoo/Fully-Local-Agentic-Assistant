@@ -68,3 +68,31 @@ licence is shown before download and applies to you as the user.
 | Component | Use | Licence |
 |---|---|---|
 | [marked](https://github.com/markedjs/marked) (`docs-site/assets/vendor/marked.min.js`) | renders the Markdown docs in the browser | MIT, © MarkedJS, © Christopher Jeffrey; full text in `docs-site/assets/vendor/LICENSE` |
+
+## 5. Windows program (`desktop/`, in the installer and the portable zip)
+
+Everything in section 1 that the shared code uses (sherpa-onnx with ONNX Runtime and eSpeak NG, llama.cpp, Apache
+Commons Compress, the Kotlin standard library, the default avatars) is in the Windows program too, plus:
+
+| Component | Use | Licence |
+|---|---|---|
+| Java runtime (OpenJDK 21, trimmed by jpackage) | runs the program | GPL-2.0 with the Classpath Exception |
+| [Compose Multiplatform](https://github.com/JetBrains/compose-multiplatform) and Skiko / [Skia](https://skia.org) | windows, UI, drawing | Apache-2.0 (Compose, Skiko); BSD-3-Clause (Skia) |
+| [LWJGL](https://www.lwjgl.org) 3 (OpenGL bindings) | the 3D avatar renderer | BSD-3-Clause |
+| [JNA](https://github.com/java-native-access/jna) 5.17 | the few Win32 calls (DPAPI, keep awake, memory use) | Apache-2.0 (dual-licensed with LGPL-2.1) |
+| [sqlite-jdbc](https://github.com/xerial/sqlite-jdbc) 3.50 (with SQLite) | the memory store | Apache-2.0; SQLite is public domain |
+| [Apache PDFBox](https://pdfbox.apache.org) 2.0.32 | reading PDFs aloud | Apache-2.0 |
+| [org.json](https://github.com/stleary/JSON-java) | settings files | Public domain |
+| mp3spi, vorbisspi, JLayer, JOrbis, Tritonus share (JavaZOOM / soundlibs) | playing MP3 and Ogg chimes and sounds | **LGPL-2.1** (used as unmodified separate jars, which you may replace) |
+| belle_llm in CUDA and Vulkan builds (llama.cpp / ggml) | chat on the GPU | MIT |
+
+**Downloaded by the program only when you choose a GPU backend or video backgrounds.** They come straight from the
+publisher, are checked against a pinned SHA-256, and are never redistributed here:
+
+| Component | Source | Licence |
+|---|---|---|
+| ONNX Runtime GPU 1.32.0 (CUDA) | NuGet `Microsoft.ML.OnnxRuntime.Gpu.Windows` | MIT, © Microsoft |
+| NVIDIA CUDA 13 runtime, cuBLAS, cuFFT, cuDNN 9 | developer.download.nvidia.com (redistributable archives) | NVIDIA CUDA Toolkit EULA; NVIDIA cuDNN Software License Agreement |
+| ONNX Runtime DirectML 1.24.4, DirectML 1.15.4 | NuGet `Microsoft.ML.OnnxRuntime.DirectML`, `Microsoft.AI.DirectML` | MIT; Microsoft DirectML licence |
+| ONNX Runtime with OpenVINO 1.24.1 | NuGet `Intel.ML.OnnxRuntime.OpenVino` | MIT (ONNX Runtime); Apache-2.0 (OpenVINO) |
+| FFmpeg 9.0.2 essentials build (gyan.dev) | github.com/GyanD/codexffmpeg | **GPL-3.0**. A separate program that the assistant runs; it is not linked into it |

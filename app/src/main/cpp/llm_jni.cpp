@@ -1,5 +1,12 @@
 #include <jni.h>
+#ifdef __ANDROID__
 #include <android/log.h>
+#else   // desktop build (desktop/native): same messages on stderr
+#include <cstdio>
+#define ANDROID_LOG_INFO 4
+#define ANDROID_LOG_ERROR 6
+#define __android_log_print(prio, tag, ...) (std::fprintf(stderr, "%s/%s: ", (prio) == ANDROID_LOG_ERROR ? "E" : "I", tag), std::fprintf(stderr, __VA_ARGS__), std::fputc('\n', stderr))
+#endif
 #include <mutex>
 #include "llm_core.h"
 

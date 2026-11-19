@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -52,7 +53,7 @@ fun BackgroundPage(s: UiState, act: MainActivity) {
                     val usedElsewhere = app.belle.assistant.ProfileStore.ids(act).any { it != p.id && app.belle.assistant.ProfileStore.prefsOf(act, it).bgFile == old }
                     if (old.isNotEmpty() && !usedElsewhere) File(dir, old).delete()
                     apply()
-                } else { f.delete(); act.toast("I couldn't use that file on this phone ($err). Your previous background is unchanged.") }
+                } else { f.delete(); act.toast("I couldn't use that file on this ${Platform.device} ($err). Your previous background is unchanged.") }
             }
         }.start()
     }

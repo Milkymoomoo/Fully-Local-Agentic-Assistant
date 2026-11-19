@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.app.PendingIntent
 import android.appwidget.AppWidgetManager
 import android.appwidget.AppWidgetProvider
@@ -416,9 +417,9 @@ class AssistantWidget : AppWidgetProvider() {
             }
             // ONE 2D/3D toggle on the right; without a 3D mesh a tap stays on 2D and shows a hint
             rv.setImageViewBitmap(R.id.w_toggle, toggleBitmap(ctx, mode, has3d))
-            rv.setContentDescription(R.id.w_toggle, when { mode == "3d" -> "3D avatar on. Tap for 2D"; has3d -> "2D picture on. Tap for 3D"; else -> "2D picture. No 3D model for ${p.assistantName} yet" })
+            rv.setContentDescription(R.id.w_toggle, when { mode == "3d" -> "3D avatar on. ${Platform.tapCap} for 2D"; has3d -> "2D picture on. ${Platform.tapCap} for 3D"; else -> "2D picture. No 3D model for ${p.assistantName} yet" })
             rv.setImageViewBitmap(R.id.w_conv, convBitmap(ctx, p.continuous))
-            rv.setContentDescription(R.id.w_conv, if (p.continuous) "Continuous conversation on. Tap to turn off" else "Continuous conversation off. Tap to turn on")
+            rv.setContentDescription(R.id.w_conv, if (p.continuous) "Continuous conversation on. ${Platform.tapCap} to turn off" else "Continuous conversation off. ${Platform.tapCap} to turn on")
             rv.setOnClickPendingIntent(R.id.w_conv, PendingIntent.getBroadcast(ctx, 100000 + id,
                 Intent(ctx, AssistantWidget::class.java).setAction(ACTION_CONV).putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, id),
                 PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT))
@@ -460,7 +461,7 @@ class AssistantWidget : AppWidgetProvider() {
             AssistantRuntime.bookNow()?.let { (_, playing) ->
                 rv.setViewVisibility(R.id.w_state, View.VISIBLE)
                 rv.setOnClickPendingIntent(R.id.w_state, app.belle.assistant.service.BookPlaybackService.pending(ctx, "toggle", 7))
-                rv.setContentDescription(R.id.w_state, (if (playing) "Reading " else "Paused ") + AssistantRuntime.bookNow()?.first + ". Tap to " + if (playing) "pause" else "play")
+                rv.setContentDescription(R.id.w_state, (if (playing) "Reading " else "Paused ") + AssistantRuntime.bookNow()?.first + ". ${Platform.tapCap} to " + if (playing) "pause" else "play")
             }
             return rv
         }

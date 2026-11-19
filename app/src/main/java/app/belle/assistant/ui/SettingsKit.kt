@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.net.Uri
@@ -116,7 +117,7 @@ fun ListeningStatus(act: MainActivity) {
         Text("Spotter last heard: " + (d.lastKwsTokens.ifEmpty { "—" }) + (if (d.lastKwsAt > 0) " (${ago(d.lastKwsAt)})" else ""), style = mono)
         Text("Last wake: " + (if (d.lastWake.isEmpty()) "none yet" else "\"${d.lastWake}\" ${ago(d.lastWakeAt)}") +
             " · last sentence: " + (if (d.lastHeard.isEmpty()) "—" else "\"${d.lastHeard.take(60)}\""), style = mono)
-        Text("Score: the on-phone spotter only reports a hit once a phrase passes its threshold (Sensitivity ${(act.state.prefs.sensitivity * 100).toInt()}%); it gives no running score.", style = mono, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Score: the on-${Platform.device} spotter only reports a hit once a phrase passes its threshold (Sensitivity ${(act.state.prefs.sensitivity * 100).toInt()}%); it gives no running score.", style = mono, color = MaterialTheme.colorScheme.onSurfaceVariant)
         if (!running || silenced || !d.micAllowed) FilledTonalButton(onClick = {
             act.state.edit { serviceWanted = true }; AssistantService.start(act, AssistantService.ACTION_REARM, from = "app") }) { BtnText("Start listening now") }
     }
@@ -185,7 +186,7 @@ fun VoiceList(s: UiState, act: MainActivity, onlyInstalled: Boolean = false) {
     val p = s.prefs
     val installed = ModelFiles.installedVoices(act).toSet()
     var phrase by remember(p.id, p.previewPhrase) { mutableStateOf(p.previewPhrase) }
-    OutlinedTextField(phrase, { phrase = it; p.previewPhrase = it }, label = { Text("Preview phrase (installed voices speak it on this phone)") },
+    OutlinedTextField(phrase, { phrase = it; p.previewPhrase = it }, label = { Text("Preview phrase (installed voices speak it on this ${Platform.device})") },
         singleLine = true, modifier = Modifier.fillMaxWidth())
     val known = ModelCatalog.VOICES.map { it.dirName }.toSet()
     val rec = ModelCatalog.recommendedVoice(ramGb(act))
@@ -198,7 +199,7 @@ fun VoiceList(s: UiState, act: MainActivity, onlyInstalled: Boolean = false) {
             RadioButton(selected = p.voiceDir == v.dirName, onClick = null, enabled = have)
             Column(Modifier.weight(1f).padding(start = 8.dp)) {
                 Text(v.label, style = MaterialTheme.typography.titleMedium)
-                if (v.id == rec?.id) Text("★ Recommended for this phone (%.0f GB RAM) · high quality".format(ramGb(act)), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+                if (v.id == rec?.id) Text("★ Recommended for this ${Platform.device} (%.0f GB RAM) · high quality".format(ramGb(act)), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
                 else if (v.quality == "high") Text("High quality", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.tertiary)
                 Text("${v.gender} · ${v.accent}" + if (v.license.isNotEmpty()) " · ${v.license}" else "", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (v.archiveUrl.isNotEmpty()) Requires(*voiceReqs(v, have).toTypedArray())
@@ -283,7 +284,7 @@ fun AssistantPicker(s: UiState, act: MainActivity) {
             Box(Modifier.size(84.dp).clip(RoundedCornerShape(16.dp)).background(MaterialTheme.colorScheme.surfaceVariant)
                 .border(if (id == active) 3.dp else 0.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp))
                 .clickable { if (has3d) { pp.show3d = !pp.show3d; s.rev++; FramingRev.rev++; AssistantWidget.updateAll(act); if (id == active) AssistantService.start(act, AssistantService.ACTION_AVATAR) }
-                             else act.toast("${pp.assistantName} has no 3D model yet — tap Import 3D") }) {
+                             else act.toast("${pp.assistantName} has no 3D model yet — ${Platform.tap} Import 3D") }) {
                 if (bmp != null) Image(bmp.asImageBitmap(), pp.assistantName, contentScale = ContentScale.Crop, modifier = Modifier.size(84.dp))
                 else Text(if (show3d) "3D…" else "🙂", modifier = Modifier.align(Alignment.Center))
                 Text(if (show3d) "3D" else if (has3d) "2D" else "No 3D", style = MaterialTheme.typography.labelSmall, color = Color.White,
@@ -291,7 +292,7 @@ fun AssistantPicker(s: UiState, act: MainActivity) {
             }
             Column(Modifier.weight(1f).padding(start = 12.dp)) {
                 Text(pp.assistantName, style = MaterialTheme.typography.titleMedium)
-                Text(if (has3d) "Tap the picture: 2D ↔ 3D" else "2D only", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(if (has3d) "${Platform.tapCap} the picture: 2D ↔ 3D" else "2D only", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 if (!has3d) TextButton(onClick = { importFor = id; importer.launch(arrayOf("*/*")) }) { BtnText("Import 3D") }
             }
             Row(Modifier.clickable { ProfileStore.setActive(act, id); AssistantRuntime.reloadWakeWords(act); AssistantWidget.updateAll(act); s.rev++ }.padding(8.dp),
@@ -306,7 +307,7 @@ fun AssistantPicker(s: UiState, act: MainActivity) {
 @Composable
 fun SimpleSettings(s: UiState, act: MainActivity) {
     val p = s.prefs
-    Section("Assistant", "Pick who answers with Use. Tap a picture to switch it between 2D and 3D.") { AssistantPicker(s, act) }
+    Section("Assistant", "Pick who answers with Use. ${Platform.tapCap} a picture to switch it between 2D and 3D.") { AssistantPicker(s, act) }
     Section("Voice") {
         SubHeader("Text-to-speech › Voice model")
         VoiceList(s, act, onlyInstalled = true)
@@ -356,9 +357,10 @@ fun SimpleSettings(s: UiState, act: MainActivity) {
         TextButton(onClick = { s.page = "avatar3d" }) { BtnText("Import a 3D model ›") }
     }
     Section("Theme") {
-        ChoiceRow("Theme", null, listOf("dark" to "Dark", "light" to "Light", "system" to "Follow phone"), p.theme) { s.edit { theme = it } }
+        ChoiceRow("Theme", null, listOf("dark" to "Dark", "light" to "Light", "system" to "Follow ${Platform.system}"), p.theme) { s.edit { theme = it } }
     }
-    Section("Permissions") {
+    PlatformPages.simple?.invoke(s, act)
+    if (!Platform.desktop) Section("Permissions") {
         val details = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:${act.packageName}"))
         PermRow("Microphone", act.has(android.Manifest.permission.RECORD_AUDIO), "Allow") { act.requestCorePermissions() }
         PermRow("Display over other apps (avatar bubble, opening apps)", Settings.canDrawOverlays(act), "Allow") {

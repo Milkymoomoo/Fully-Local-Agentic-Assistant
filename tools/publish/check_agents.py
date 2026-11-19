@@ -5,6 +5,8 @@ copy runs it automatically). Checks:
   2. every settings page id (ui/SettingsScreen.kt) is in AGENTS.md and in docs/features/app-basics.md
   3. every feature page docs/features/*.md is linked from AGENTS.md, docs/README.md and docs-site/nav.json
   4. every settings key in Prefs.kt is in docs/settings-reference.md
+  5. every Kotlin file of the Windows program (desktop/src/main/kotlin) is named in AGENTS.md (Android API shims on
+     the line of their package), and every key in DesktopPrefs.kt is documented in docs/features/windows.md
 """
 import glob, json, os, re, sys
 
@@ -42,6 +44,24 @@ def main():
     keys = sorted(set(re.findall(r'"([a-z][a-z0-9_]*)"', read(f"{APP}/Prefs.kt"))) - set(NOT_KEYS))
     for k in keys:
         if not re.search(r"(?<![a-z0-9_])" + re.escape(k) + r"(?![a-z0-9])", ref): errs.append(f"docs/settings-reference.md doesn't document settings key {k}")
+    # 5. the Windows program
+    dsrcs = sorted(glob.glob("desktop/src/main/kotlin/**/*.kt", recursive=True))
+    for f in dsrcs:
+        name = os.path.basename(f)
+        rel = f[len("desktop/src/main/kotlin/"):]
+        if rel.split("/")[0] in ("android", "androidx", "com"):
+            # Android API shims: named on the AGENTS.md line of their package (e.g. "`android/graphics/`: Bitmap, Canvas")
+            pkg = os.path.dirname(rel) + "/"; stem = name[:-3]
+            if not any(f"`{pkg}`" in line and re.search(r"(?<![\w.])" + re.escape(stem) + r"\b", line) for line in agents.splitlines()):
+                errs.append(f"AGENTS.md doesn't list shim {stem} on the `{pkg}` line ({f})")
+        elif name not in agents: errs.append(f"AGENTS.md doesn't mention desktop source file {f}")
+    dp = "desktop/src/main/kotlin/app/belle/desktop/DesktopPrefs.kt"
+    dkeys = sorted(set(re.findall(r'(?:getString|getInt|getBoolean|getLong|getFloat|int|bool|put\w*)\("([a-z][a-z0-9_]*)"', read(dp)))) if os.path.exists(dp) else []
+    win = read("docs/features/windows.md") if os.path.exists("docs/features/windows.md") else ""
+    if dsrcs and not win: errs.append("docs/features/windows.md is missing")
+    for k in dkeys:
+        if f"`{k}`" not in win: errs.append(f"docs/features/windows.md doesn't document desktop setting `{k}`")
+    srcs += dsrcs
     if errs:
         print("AGENTS.md / docs coverage check FAILED:\n  " + "\n  ".join(errs)); sys.exit(1)
     print(f"AGENTS.md / docs coverage ok: {len(srcs)} source files, {len(pages)} settings pages, "

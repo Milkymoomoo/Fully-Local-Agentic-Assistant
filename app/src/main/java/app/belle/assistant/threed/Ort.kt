@@ -2,7 +2,7 @@ package app.belle.assistant.threed
 
 /** Thin JNI over the ONNX Runtime C API (see cpp/ort_jni.c). One [Session] per model file. */
 object Ort {
-    init { System.loadLibrary("onnxruntime"); System.loadLibrary("belle_ort") }
+    init { app.belle.assistant.core.NativeLibs.load("onnxruntime"); app.belle.assistant.core.NativeLibs.load("belle_ort") }
     @JvmStatic external fun open(path: String, threads: Int, arena: Boolean): Long
     @JvmStatic external fun close(h: Long)
     @JvmStatic external fun names(h: Long, io: Int): Array<String>
@@ -13,13 +13,31 @@ object Ort {
     @JvmStatic external fun lastError(): String
     /** Returns freed native heap to the system (also done on every [Session.close]). */
     @JvmStatic external fun trim()
+    /** Execution provider for sessions opened from now on: "cpu" (default), "cuda", "dml" or "openvino" (Windows program). */
+    @JvmStatic external fun setProvider(name: String, device: Int)
+    /** The execution providers the loaded onnxruntime has, e.g. CUDAExecutionProvider, CPUExecutionProvider. */
+    @JvmStatic external fun providers(): Array<String>
+
+    /** The provider in use; falls back to "cpu" for good if the GPU one can't open a model (said once in the build log). */
+    @Volatile var provider = "cpu"; private set
+    /** Told when the GPU provider failed and the run carries on on the CPU. */
+    @Volatile var onFallback: (String) -> Unit = {}
+    fun useProvider(name: String, device: Int = 0) { provider = name; setProvider(name, device) }
+    private fun openWithFallback(path: String, threads: Int, arena: Boolean): Long {
+        val h = open(path, threads, arena)
+        if (h != 0L || provider == "cpu") return h
+        val why = lastError(); val was = provider
+        useProvider("cpu")
+        runCatching { onFallback("$was couldn't open ${java.io.File(path).name} ($why) — carrying on with the CPU") }
+        return open(path, threads, arena)
+    }
 
     class Tensor(val data: FloatArray, val shape: LongArray)
     /** An output in native memory ([Big]): close it when done. */
     class BigTensor(val data: Big, val shape: LongArray) : AutoCloseable { override fun close() = data.close() }
 
     class Session(path: String, threads: Int = 4, arena: Boolean = false) : AutoCloseable {
-        private val h = open(path, threads, arena).also { if (it == 0L) error("ONNX Runtime couldn't load $path: ${lastError()}") }
+        private val h = openWithFallback(path, threads, arena).also { if (it == 0L) error("ONNX Runtime couldn't load $path: ${lastError()}") }
         val inputs: Array<String> = names(h, 0)
         val outputs: Array<String> = names(h, 1)
         /** [feeds]: name → (FloatArray, LongArray or [Big], shape). Returns every output on the Java heap: small outputs only. */

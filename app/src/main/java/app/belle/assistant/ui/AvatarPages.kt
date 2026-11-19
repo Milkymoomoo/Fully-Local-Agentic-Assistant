@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -129,7 +130,7 @@ fun Avatar3DSteps(s: UiState, act: MainActivity, full: Boolean) {
         val target = buildFor ?: pid
         val name = app.belle.assistant.ProfileStore.name(act, target)
         BuildPrep.askBatteryOnce(act)
-        act.toast("Making $name's 3D model on this phone. It keeps going in the background; you'll get a notification.")
+        act.toast("Making $name's 3D model on this ${Platform.device}. It keeps going in the background; you'll get a notification.")
         Thread {
             val r = runCatching { Pixal3DJob.run(act, target, bmp) }
             act.runOnUiThread { r.onSuccess { act.toast(it) }.onFailure { act.toast(if (it is Pixal3D.Cancelled) "Stopped making the 3D model" else "Couldn't make the 3D model: ${it.message}") }; changed() }
@@ -186,13 +187,13 @@ fun Avatar3DSteps(s: UiState, act: MainActivity, full: Boolean) {
             if (full) TextButton(enabled = !running, onClick = { Pixal3DJob.removeModels(act); changed() }) { BtnText("Remove 3D generation (${"%.1f".format(Pixal3DJob.modelBytes(act) / 1e9)} GB)") }
         }
         if (missing.isNotEmpty() && full) Expander("Install offline from a folder instead") {
-            Help("Copy the Pixal3D model folder (the release files with manifest.json, 5.3 GB) to the phone, then pick it. It's copied into the app (needs 5.3 GB free); delete the folder afterwards.")
+            Help("Copy the Pixal3D model folder (the release files with manifest.json, 5.3 GB) to the ${Platform.device}, then pick it. It's copied into the app (needs 5.3 GB free); delete the folder afterwards.")
             OutlinedButton(enabled = copying == null, onClick = { folder.launch(null) }) { BtnText("Pick the model folder") }
         }
     }
 
     val plan = remember(s.rev) { runCatching { Pixal3DJob.plan(act) }.getOrNull() }
-    StepCard(3, "Make 3D from a photo", "Pick a photo of one character. Runs on this phone in the background (minutes); you get a notification when it's done.", st3,
+    StepCard(3, "Make 3D from a photo", "Pick a photo of one character. Runs on this ${Platform.device} in the background (minutes); you get a notification when it's done.", st3,
         why = if (!ready) "finish step 2 ($readyCount of $total files ready${if (inst.busy) ", installing now" else ""})" else null) {
         if (full) {
             Text("Build it for", style = MaterialTheme.typography.titleSmall)
@@ -201,12 +202,12 @@ fun Avatar3DSteps(s: UiState, act: MainActivity, full: Boolean) {
         Button(enabled = ready && busy == null && !running, onClick = { photo3d.launch("image/*") }, modifier = Modifier.fillMaxWidth()) {
             BtnText(if (running) "Building… (status and Stop at the top)" else "Make 3D from a photo") }
         plan?.let { pl ->
-            val src = if (Avatar3DFiles.workflow(act).exists()) "your workflow" else "phone defaults"
+            val src = if (Avatar3DFiles.workflow(act).exists()) "your workflow" else "${Platform.device} defaults"
             // the plan's minutes use this phone's measured speed after a first run; before that the desktop's, scaled to a phone
             val measured = remember(s.rev) { Pixal3DJob.device(act).measured }
             val est = app.belle.assistant.core.Eta.format(pl.estMinutes * 60 * (if (measured) 1.0 else app.belle.assistant.core.Eta.PHONE_VS_DESKTOP)).removeSuffix(" left")
             Help("Uses $src: ${pl.structure.steps} rough + ${pl.shape.steps} detailed steps · $est of sampling" + (if (measured) "" else " (first guess)") +
-                (if (pl.items.any { it.adjusted }) " · fitted to this phone" else "") + (if (pl.items.any { it.overridden }) " · with your changes" else ""))
+                (if (pl.items.any { it.adjusted }) " · fitted to this ${Platform.device}" else "") + (if (pl.items.any { it.overridden }) " · with your changes" else ""))
         }
         if (full) {
             Expander("Workflow & run settings (ComfyUI .json)") { WorkflowSection(s, act) }
@@ -277,7 +278,7 @@ fun Avatar3DPage(s: UiState, act: MainActivity) {
     }
     Section("Detail", "Lower = fewer triangles, smaller textures and fewer frames: less battery and heat.") {
         val auto = p.detail3d < 0
-        SwitchRow("Automatic for this phone", null, auto) { s.edit { detail3d = if (it) -1f else p.detailFor("home") }; changed() }
+        SwitchRow("Automatic for this ${Platform.device}", null, auto) { s.edit { detail3d = if (it) -1f else p.detailFor("home") }; changed() }
         if (!auto) SliderRow("Detail", app.belle.assistant.core.Detail3D.label(p.detail3d), null, p.detail3d, 0f..1f) { v -> s.edit { detail3d = v }; FramingRev.rev++ }
         app.belle.assistant.core.Framing.SURFACES.forEach { (sf, label) ->
             val ov = p.detailOverride(sf)
@@ -307,16 +308,16 @@ fun WorkflowSection(s: UiState, act: MainActivity) {
     }
     val src = runCatching { F.workflowSource(act).readText().split("|") }.getOrNull()?.takeIf { F.workflow(act).exists() }
     val plan = Pixal3DJob.plan(act); val base = F.baseSettings(act)
-    Help("Load the .json you use in ComfyUI (TRELLIS 2 / Pixal3D, saved with Save, not Save (API)). Its steps, seeds, cfg, scheduler, sizes and background setting drive the phone run, fitted to this phone. The file isn't changed.")
-    Text(if (src != null) "Using ${src[0]}" else "Using the phone defaults (no workflow loaded)", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
+    Help("Load the .json you use in ComfyUI (TRELLIS 2 / Pixal3D, saved with Save, not Save (API)). Its steps, seeds, cfg, scheduler, sizes and background setting drive the ${Platform.device} run, fitted to this ${Platform.device}. The file isn't changed.")
+    Text(if (src != null) "Using ${src[0]}" else "Using the ${Platform.device} defaults (no workflow loaded)", style = MaterialTheme.typography.bodyLarge, fontWeight = FontWeight.Medium)
     ButtonRow {
         OutlinedButton(onClick = { wfImport.launch(arrayOf("application/json", "text/plain", "*/*")) }) { BtnText(if (src != null) "Load another" else "Import workflow") }
-        if (src != null) TextButton(onClick = { F.workflow(act).delete(); F.workflowSource(act).delete(); s.rev++ }) { BtnText("Use phone defaults") }
+        if (src != null) TextButton(onClick = { F.workflow(act).delete(); F.workflowSource(act).delete(); s.rev++ }) { BtnText("Use ${Platform.device} defaults") }
     }
     val dev = Pixal3DJob.device(act)
     Help("Sampling ≈ ${"%.0f".format(plan.estMinutes)} min (budget ${dev.budgetMin.roundToInt()} min) · " +
-        (if (dev.measured) "timed from this phone's last run" else "estimated from a desktop run until this phone has made one") + " · ${"%.0f".format(dev.ramGb)} GB RAM")
-    SubHeader("What the phone uses")
+        (if (dev.measured) "timed from this ${Platform.device}'s last run" else "estimated from a desktop run until this ${Platform.device} has made one") + " · ${"%.0f".format(dev.ramGb)} GB RAM")
+    SubHeader("What the ${Platform.device} uses")
     plan.items.forEach { it ->
         Column(Modifier.fillMaxWidth().padding(vertical = 3.dp)) {
             Row { Text(it.label, style = MaterialTheme.typography.bodyMedium, fontWeight = FontWeight.Medium, modifier = Modifier.weight(0.45f))

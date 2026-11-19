@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.app.AlertDialog
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,17 +29,17 @@ import app.belle.assistant.memory.SqlMemoryStore
 import java.text.DateFormat
 import java.util.Date
 
-const val MEMORY_EXPLAINER = "So I don't forget what we talked about, I keep a private memory of our conversations. " +
+val MEMORY_EXPLAINER = "So I don't forget what we talked about, I keep a private memory of our conversations. " +
     "What it stores: what you said and what I answered, a short running summary of older talks, and a list of facts I picked up (like names or things you like). " +
     "Roleplay / story chats get their own separate story memory (characters, setting, plot so far). " +
-    "Where: only in this app's private storage on this phone, encrypted with a key kept in the phone's secure keystore. It is never uploaded, never backed up to the cloud, and other apps can't read it. " +
-    "How it works: when our talk gets too long for the thinking model, it writes a summary of the older part itself, on this phone. Each time you speak I give the model the summary, the facts and earlier lines that match what you just said, and our latest exchanges — always trimmed to fit, so it never runs out of room."
+    "Where: only in this app's private storage on this ${Platform.device}, encrypted with a key kept in the ${Platform.device}'s secure keystore. It is never uploaded, never backed up to the cloud, and other apps can't read it. " +
+    "How it works: when our talk gets too long for the thinking model, it writes a summary of the older part itself, on this ${Platform.device}. Each time you speak I give the model the summary, the facts and earlier lines that match what you just said, and our latest exchanges — always trimmed to fit, so it never runs out of room."
 
 /** Short version for the Simple page. */
 @Composable
 fun MemorySimple(s: UiState, act: MainActivity) {
     val p = s.prefs
-    SwitchRow("Remember our conversations", "Kept only on this phone, encrypted, never uploaded. Per assistant.", p.memoryEnabled) { s.edit { memoryEnabled = it } }
+    SwitchRow("Remember our conversations", "Kept only on this ${Platform.device}, encrypted, never uploaded. Per assistant.", p.memoryEnabled) { s.edit { memoryEnabled = it } }
         ResetConversationButton(act)
     TextButton(onClick = { s.page = "memory" }) { BtnText("Manage memory ›") }
 }
@@ -58,13 +59,13 @@ fun MemoryPage(s: UiState, act: MainActivity) {
         Row {
             FilledTonalButton(onClick = {
                 AlertDialog.Builder(act).setTitle("Clear ${p.assistantName}'s memory?")
-                    .setMessage("Everything ${p.assistantName} remembers (all lines, summaries, facts and story memory) is permanently erased from this phone: the database is wiped and compacted, its file deleted and its encryption key destroyed. This can't be undone.")
+                    .setMessage("Everything ${p.assistantName} remembers (all lines, summaries, facts and story memory) is permanently erased from this ${Platform.device}: the database is wiped and compacted, its file deleted and its encryption key destroyed. This can't be undone.")
                     .setPositiveButton("Clear") { _, _ -> store.clear(); app.belle.assistant.service.AssistantRuntime.resetConversation(); rev++; act.toast("Memory cleared") }
                     .setNegativeButton("Cancel", null).show()
             }) { BtnText("Clear memory") }
             OutlinedButton(onClick = {
                 AlertDialog.Builder(act).setTitle("Clear memory for ALL assistants?")
-                    .setMessage("Every assistant's memory on this phone is permanently erased (databases wiped, files deleted, keys destroyed). This can't be undone.")
+                    .setMessage("Every assistant's memory on this ${Platform.device} is permanently erased (databases wiped, files deleted, keys destroyed). This can't be undone.")
                     .setPositiveButton("Clear all") { _, _ -> SqlMemoryStore.clearAll(act); app.belle.assistant.service.AssistantRuntime.resetConversation(); rev++; act.toast("All memory cleared") }
                     .setNegativeButton("Cancel", null).show()
             }, modifier = Modifier.padding(start = 8.dp)) { BtnText("Clear all assistants") }

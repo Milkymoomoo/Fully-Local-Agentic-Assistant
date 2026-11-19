@@ -251,14 +251,15 @@ class AvatarView(ctx: Context, var surface: String = "bubble", private val fill:
                     inFlight = false; postInvalidate()
                 }
             }
+            if (!syncRender && isShown) postInvalidateDelayed(1000L / fps)
             frame3d?.let { b ->
                 bmpPaint.isFilterBitmap = frameSmooth
                 bmpPaint.alpha = if (state == Ui.SLEEPING) (255 * (0.45 + 0.55 * minOf(1.0, t / 1.5))).toInt() else 255
                 rect3d.set(fl, ft, fl + fw, ft + fh); c.drawBitmap(b, null, rect3d, bmpPaint)
+                c.restore()
+                return
             }
-            c.restore()
-            if (!syncRender && isShown) postInvalidateDelayed(1000L / fps)
-            return
+            // no 3D frame (the first one is still rendering, or this device can't render 3D): the 2D picture instead of an empty frame
         }
         if (sk != null && bmp != null && (animate || prefs.avatarMouth)) {
             val pl = fr.place(bmp.width.toFloat(), bmp.height.toFloat(), fw, fh)

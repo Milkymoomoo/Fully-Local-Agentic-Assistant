@@ -1,5 +1,6 @@
 package app.belle.assistant.models
 
+import app.belle.assistant.core.Platform
 import android.app.ActivityManager
 import android.content.Context
 import android.net.Uri
@@ -160,7 +161,7 @@ object Downloads {
             }
             if (r.isSuccess || d.id in cancel) setWanted(app, d.id, false)
             state[d.id] = r.fold({ St(Phase.DONE, d.bytes, d.bytes, "Installed") },
-                { e -> if (d.id in cancel) St(Phase.PAUSED, state[d.id]?.done ?: 0, d.bytes, "Paused — tap Download to resume") else St(Phase.FAILED, state[d.id]?.done ?: 0, d.bytes, e.message ?: "Failed") })
+                { e -> if (d.id in cancel) St(Phase.PAUSED, state[d.id]?.done ?: 0, d.bytes, "Paused — ${Platform.tap} Download to resume") else St(Phase.FAILED, state[d.id]?.done ?: 0, d.bytes, e.message ?: "Failed") })
             changed(true)
             DownloadService.finished(app)
         }
@@ -202,7 +203,7 @@ object Downloads {
             }
             conn.disconnect(); break
         }
-        if (part.length() != p.bytes) error("Download incomplete (${part.length()} of ${p.bytes} bytes) — tap Download to resume")
+        if (part.length() != p.bytes) error("Download incomplete (${part.length()} of ${p.bytes} bytes) — ${Platform.tap} Download to resume")
         state[id] = St(Phase.VERIFYING, base + have, total, "Checking SHA-256…"); changed(true)
         if (p.sha256.isNotEmpty()) {
             val sha = sha256(part)

@@ -6,4 +6,4 @@ dependencyResolutionManagement {
     repositories { google(); mavenCentral() }
 }
 rootProject.name = "BelleAssistant"
-include(":app", ":downloader")
+include(":app", ":downloader", ":desktop")

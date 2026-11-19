@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.semantics.contentDescription
@@ -106,7 +107,7 @@ fun StateOrb(ui: Ui, size: Int = 260) {
     val c = stateColor(ui)
     val tapCtx = androidx.compose.ui.platform.LocalContext.current
     // the whole circle (avatar, its background and the ring) is the tap target: talk, or end a conversation
-    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(size.dp).semantics { contentDescription = "Avatar. Tap to talk." }.pointerInput(Unit) {
+    Box(contentAlignment = Alignment.Center, modifier = Modifier.size(size.dp).semantics { contentDescription = "Avatar. ${Platform.tapCap} to talk." }.pointerInput(Unit) {
         detectTapGestures { if (AssistantRuntime.inSession) AssistantRuntime.endSession(tapCtx, "avatar tap") else AssistantService.start(tapCtx, AssistantService.ACTION_LISTEN, from = "app") }
     }) {
         Box(Modifier.size((size * 0.92).dp).scale(if (ui == Ui.IDLE) 1f else pulse).clip(androidx.compose.foundation.shape.RoundedCornerShape(30)).background(c.copy(alpha = if (ui == Ui.IDLE) 0.10f else 0.22f)))
@@ -131,7 +132,7 @@ fun HomeScreen(s: UiState, act: MainActivity) {
     val mode = AssistantRuntime.mode
     Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(20.dp), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(p.assistantName, style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
-        Text("Private voice assistant · runs on this phone", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text("Private voice assistant · runs on this ${Platform.device}", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(20.dp))
         StateOrb(ui)
         Spacer(Modifier.height(12.dp))
@@ -184,8 +185,10 @@ fun HomeScreen(s: UiState, act: MainActivity) {
 
         Section("What you can say", "Start with a wake word, then just talk normally. Say a sleep word to end.") {
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                listOf("set a timer for 10 minutes", "call mom", "text Sam I'm on my way", "turn on the flashlight", "open Spotify",
-                    "remind me to take my pills at 8", "what's the latest news", "look up how tall Everest is", p.sleepPhrases.firstOrNull() ?: "goodnight")
+                (if (Platform.desktop) listOf("set a timer for 10 minutes", "open Notepad", "pause the music", "turn the volume down",
+                    "remind me to take my pills at 8", "what's the latest news", "look up how tall Everest is", "read to me", p.sleepPhrases.firstOrNull() ?: "goodnight")
+                else listOf("set a timer for 10 minutes", "call mom", "text Sam I'm on my way", "turn on the flashlight", "open Spotify",
+                    "remind me to take my pills at 8", "what's the latest news", "look up how tall Everest is", p.sleepPhrases.firstOrNull() ?: "goodnight"))
                     .forEach { AssistChip(onClick = { AssistantRuntime.handleText(act, it) }, label = { Text("\"$it\"") }) }
             }
         }
@@ -196,7 +199,7 @@ fun HomeScreen(s: UiState, act: MainActivity) {
                  else "Everything stays loaded for the fastest replies (uses more memory and battery).")
         }
         Section("Internet") {
-            Text(if (p.internetEnabled) "On — I can look things up and read the news (${p.searchOrder.firstOrNull() ?: "search"} first)." else "Off — nothing leaves this phone.",
+            Text(if (p.internetEnabled) "On — I can look things up and read the news (${p.searchOrder.firstOrNull() ?: "search"} first)." else "Off — nothing leaves this ${Platform.device}.",
                 style = MaterialTheme.typography.bodyLarge)
             TextButton(onClick = { s.tab = "settings"; s.page = "internet" }) { BtnText("Change") }
         }

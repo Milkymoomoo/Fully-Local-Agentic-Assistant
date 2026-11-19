@@ -17,7 +17,7 @@ import java.nio.LongBuffer
 object NativeMem {
     @JvmStatic private external fun alloc(bytes: Long): ByteBuffer?
     @JvmStatic external fun free(buf: ByteBuffer)
-    val native: Boolean by lazy { runCatching { System.loadLibrary("belle_ort"); alloc(8)!!.also { free(it) }; true }.getOrDefault(false) }
+    val native: Boolean by lazy { runCatching { app.belle.assistant.core.NativeLibs.load("belle_ort"); alloc(8)!!.also { free(it) }; true }.getOrDefault(false) }
     /** Native bytes handed out and not yet freed (for tests and the build log). */
     val live = java.util.concurrent.atomic.AtomicLong()
     val peak = java.util.concurrent.atomic.AtomicLong()

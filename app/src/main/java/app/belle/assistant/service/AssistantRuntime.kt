@@ -1,5 +1,6 @@
 package app.belle.assistant.service
 
+import app.belle.assistant.core.Platform
 import app.belle.assistant.core.TimedCall
 import app.belle.assistant.core.LlmOnDemand
 import app.belle.assistant.core.ModelChoice
@@ -592,7 +593,7 @@ object AssistantRuntime {
 
     fun wakeStatus(): String = if (prefs.wakeWordEnabled)
         "Waiting for: " + (wake?.phrases ?: prefs.wakePhrases).joinToString(", ") { "\"" + it.lowercase() + "\"" }
-    else "Ready (wake words off; tap the avatar or Talk)"
+    else "Ready (wake words off; ${Platform.tap} the avatar or Talk)"
 
     private fun backToWake() {
         ProfileStore.sessionProfile = null   // next wake word decides again

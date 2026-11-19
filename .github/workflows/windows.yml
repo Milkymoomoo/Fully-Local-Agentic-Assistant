@@ -1,0 +1,177 @@
+# Builds the Windows program (installer + portable zip) on windows-latest and tests it.
+#   natives:  belle_llm for CPU / CUDA / Vulkan and belle_ort, compiled with MSVC from the same C/C++ as the phone app
+#   package:  sherpa-onnx (speech) fetched with a checksum, desktop tests with small real models, MSI + setup + zip,
+#             then the packaged program's own --selftest, both from the zip and after a silent per-user install.
+# Artifacts only: this workflow never publishes a release.
+name: Windows program
+on:
+  push:
+    paths: ["app/src/main/**", "desktop/**", "third_party/**", "gradle/**", "*.gradle.kts", ".github/workflows/windows.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: windows-${{ github.ref }}
+  cancel-in-progress: true
+env:
+  CUDA_VERSION: "13.5.0"
+  VULKAN_SDK_VERSION: "1.4.363.1"
+  SHERPA_VERSION: "1.13.8"
+  SHERPA_SHA256: d1da3b30a1ce347461dbe62d3114255b3e5bb1d6180f0b404a7915d1c5a956b4
+jobs:
+  natives:
+    name: natives (${{ matrix.backend }})
+    runs-on: windows-latest
+    timeout-minutes: 150
+    strategy:
+      fail-fast: false
+      matrix:
+        backend: [cpu, cuda, vulkan]
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: CUDA toolkit (NVIDIA redistributables, checksummed)
+        if: matrix.backend == 'cuda'
+        shell: pwsh
+        run: desktop/native/ci/fetch-cuda.ps1 -Version $env:CUDA_VERSION -Out C:\cuda
+      - name: Vulkan SDK
+        if: matrix.backend == 'vulkan'
+        shell: pwsh
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          $exe = "$env:RUNNER_TEMP\vulkansdk.exe"
+          Invoke-WebRequest "https://sdk.lunarg.com/sdk/download/$env:VULKAN_SDK_VERSION/windows/vulkansdk-windows-X64-$env:VULKAN_SDK_VERSION.exe" -OutFile $exe
+          Write-Host "Vulkan SDK sha256 $((Get-FileHash $exe).Hash)"
+          Start-Process $exe -ArgumentList "--root C:\VulkanSDK --accept-licenses --default-answer --confirm-command install" -Wait -NoNewWindow
+          "VULKAN_SDK=C:\VulkanSDK" >> $env:GITHUB_ENV
+          "C:\VulkanSDK\Bin" >> $env:GITHUB_PATH
+          Remove-Item $exe
+      - name: Build
+        shell: pwsh
+        run: desktop/native/ci/build-natives.ps1 -Backend ${{ matrix.backend }} -Out natives-${{ matrix.backend }} -CudaRoot C:\cuda
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: natives-${{ matrix.backend }}
+          path: natives-${{ matrix.backend }}
+          retention-days: 7
+
+  package:
+    needs: natives
+    runs-on: windows-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+      - uses: actions/setup-java@d1374f8ac74474200d16ef8ecee22c7ae7a51880 # v6.3.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: natives-*
+          path: nat
+      - name: Lay out the bundled natives (CPU set + llm-cuda + llm-vulkan) and the licences
+        shell: pwsh
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          $n = "desktop\resources\windows-x64\natives"
+          New-Item -ItemType Directory -Force $n, "$n\llm-cuda", "$n\llm-vulkan" | Out-Null
+          Copy-Item nat\natives-cpu\*.dll $n
+          Copy-Item nat\natives-cuda\*.dll "$n\llm-cuda"
+          Copy-Item nat\natives-vulkan\*.dll "$n\llm-vulkan"
+          $t = "$env:RUNNER_TEMP\sherpa.tar.bz2"
+          Invoke-WebRequest "https://github.com/k2-fsa/sherpa-onnx/releases/download/v$env:SHERPA_VERSION/sherpa-onnx-v$env:SHERPA_VERSION-win-x64-jni.tar.bz2" -OutFile $t
+          if ((Get-FileHash $t).Hash.ToLower() -ne $env:SHERPA_SHA256) { throw "sherpa-onnx checksum mismatch" }
+          tar -xjf $t -C $env:RUNNER_TEMP
+          Copy-Item "$env:RUNNER_TEMP\sherpa-onnx-v$env:SHERPA_VERSION-win-x64-jni\lib\*.dll" $n
+          # licences travel with the program (resources\common ends up in the installed app folder)
+          $l = "desktop\resources\common\legal"
+          New-Item -ItemType Directory -Force $l | Out-Null
+          Copy-Item LICENSE, THIRD_PARTY_NOTICES.md $l
+          Copy-Item licenses $l -Recurse
+          Copy-Item third_party\llama.cpp\LICENSE "$l\licenses\llama.cpp-LICENSE.txt"
+          Get-ChildItem desktop\resources -Recurse -File | Format-Table FullName, Length
+      - name: Test models (cached)
+        id: models
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ runner.temp }}/models
+          key: desk-test-models-v1
+      - name: Download test models
+        if: steps.models.outputs.cache-hit != 'true'
+        shell: pwsh
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          $m = "$env:RUNNER_TEMP\models"; New-Item -ItemType Directory -Force $m | Out-Null
+          $gh = "https://github.com/k2-fsa/sherpa-onnx/releases/download"
+          Invoke-WebRequest "$gh/asr-models/sherpa-onnx-moonshine-tiny-en-quantized-2026-02-27.tar.bz2" -OutFile "$m\stt.tar.bz2"
+          Invoke-WebRequest "$gh/tts-models/vits-piper-en_US-amy-medium-int8.tar.bz2" -OutFile "$m\voice.tar.bz2"
+          Invoke-WebRequest "$gh/asr-models/silero_vad.onnx" -OutFile "$m\silero_vad.onnx"
+          Invoke-WebRequest "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf" -OutFile "$m\chat.gguf"
+          tar -xjf "$m\stt.tar.bz2" -C $m; tar -xjf "$m\voice.tar.bz2" -C $m; Remove-Item "$m\*.tar.bz2"
+          Get-FileHash "$m\chat.gguf", "$m\silero_vad.onnx" | Format-Table Hash, Path
+      - name: Desktop tests (speech round trip, chat, name art)
+        shell: pwsh
+        env:
+          BELLE_NATIVES: ${{ github.workspace }}\desktop\resources\windows-x64\natives
+          BELLE_CI_NO_GPU: "1"     # hosted runners have no OpenGL 3 driver; the 3D render test runs on a real PC / Xvfb
+        run: ./gradlew --no-daemon :desktop:test "-Ddesk.models=$env:RUNNER_TEMP\models" "-Ddesk.gguf=$env:RUNNER_TEMP\models\chat.gguf"
+      - name: Package (MSI, setup program, portable folder)
+        shell: pwsh
+        run: ./gradlew --no-daemon :desktop:packageMsi :desktop:packageExe :desktop:createDistributable
+      - name: Name the artifacts with the version, checksums
+        id: names
+        shell: pwsh
+        run: |
+          $v = (Select-String -Path app/build.gradle.kts -Pattern 'versionName = "([^"]+)"').Matches[0].Groups[1].Value
+          $sha = (git rev-parse --short HEAD)
+          $base = "MilkyMoosAssistant-$v-windows-x64"
+          New-Item -ItemType Directory -Force dist-win | Out-Null
+          Copy-Item (Get-ChildItem desktop\build\compose\binaries\main\msi\*.msi)[0] "dist-win\$base-installer.msi"
+          Copy-Item (Get-ChildItem desktop\build\compose\binaries\main\exe\*.exe)[0] "dist-win\$base-setup.exe"
+          Compress-Archive desktop\build\compose\binaries\main\app\MilkyMoosAssistant "dist-win\$base-portable.zip"
+          Get-ChildItem dist-win | ForEach-Object { "$((Get-FileHash $_.FullName).Hash.ToLower())  $($_.Name)" } | Set-Content dist-win\SHA256SUMS.txt
+          "Built from commit $sha of https://github.com/$env:GITHUB_REPOSITORY (run $env:GITHUB_RUN_ID)" | Set-Content dist-win\SOURCE.txt
+          Get-Content dist-win\SHA256SUMS.txt
+          "base=$base" >> $env:GITHUB_OUTPUT
+      - name: Self-test the packaged program (portable)
+        shell: pwsh
+        run: |
+          $env:BELLE_HOME = "$env:RUNNER_TEMP\home-portable"
+          $exe = "desktop\build\compose\binaries\main\app\MilkyMoosAssistant\MilkyMoosAssistant.exe"
+          $p = Start-Process $exe -ArgumentList "--selftest", "$env:RUNNER_TEMP\selftest-portable.txt" -Wait -PassThru
+          Get-Content "$env:RUNNER_TEMP\selftest-portable.txt"
+          if ($p.ExitCode -ne 0) { throw "self-test failed ($($p.ExitCode))" }
+      - name: Self-test after a silent install of the MSI
+        shell: pwsh
+        run: |
+          $msi = (Get-ChildItem dist-win\*.msi)[0].FullName
+          $i = Start-Process msiexec -ArgumentList "/i", "`"$msi`"", "/qn", "/l*v", "`"$env:RUNNER_TEMP\msi.log`"" -Wait -PassThru
+          if ($i.ExitCode -ne 0) { Get-Content "$env:RUNNER_TEMP\msi.log" -Tail 60; throw "install failed ($($i.ExitCode))" }
+          $exe = Get-ChildItem "$env:LOCALAPPDATA", "$env:ProgramFiles" -Recurse -Filter MilkyMoosAssistant.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) { throw "installed program not found" }
+          Write-Host "installed at $($exe.FullName)"
+          $env:BELLE_HOME = "$env:RUNNER_TEMP\home-installed"
+          $p = Start-Process $exe.FullName -ArgumentList "--selftest", "$env:RUNNER_TEMP\selftest-installed.txt" -Wait -PassThru
+          Get-Content "$env:RUNNER_TEMP\selftest-installed.txt"
+          if ($p.ExitCode -ne 0) { throw "self-test failed ($($p.ExitCode))" }
+          Copy-Item "$env:RUNNER_TEMP\selftest-*.txt" dist-win
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ${{ steps.names.outputs.base }}
+          path: dist-win
+          retention-days: 30
+      - if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports
+          path: desktop/build/reports/tests
+          retention-days: 7

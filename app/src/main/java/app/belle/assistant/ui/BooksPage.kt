@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.app.AlertDialog
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -42,7 +43,7 @@ fun BooksPage(s: UiState, act: MainActivity) {
         if (uri != null) AssistantRuntime.importBook(act, uri) { msg -> act.toast(msg); s.rev++ }
     }
 
-    Section("Read to me", "$name reads your EPUB, PDF and text books aloud, word for word, in $name's voice. Everything stays on this phone.") {
+    Section("Read to me", "$name reads your EPUB, PDF and text books aloud, word for word, in $name's voice. Everything stays on this ${Platform.device}.") {
         Button(onClick = { pick.launch(arrayOf("application/epub+zip", "application/pdf", "text/plain", "application/octet-stream")) },
             enabled = AssistantRuntime.importing == null, modifier = Modifier.fillMaxWidth()) { BtnText("Add a book") }
         AssistantRuntime.importing?.let { Text(it, modifier = Modifier.padding(top = 8.dp)); LinearProgressIndicator(Modifier.fillMaxWidth().padding(top = 4.dp)) }
@@ -98,7 +99,7 @@ fun BooksPage(s: UiState, act: MainActivity) {
                     Button(onClick = { AssistantRuntime.bookControl(act, "play", b.id) }) { BtnText(if (pos != null && !pos.finished) "Resume" else "Play") }
                     OutlinedButton(onClick = { openChapters = if (openChapters == b.id) null else b.id }) { BtnText("Chapters") }
                     TextButton(onClick = {
-                        AlertDialog.Builder(act).setTitle("Delete \"${b.title}\"?").setMessage("This removes the book and your place in it from this phone. The original file you picked isn't touched.")
+                        AlertDialog.Builder(act).setTitle("Delete \"${b.title}\"?").setMessage("This removes the book and your place in it from this ${Platform.device}. The original file you picked isn't touched.")
                             .setPositiveButton("Delete") { _, _ -> AssistantRuntime.bookControl(act, "delete", b.id); s.rev++ }.setNegativeButton("Cancel", null).show()
                     }) { BtnText("Delete") }
                 }
@@ -115,12 +116,12 @@ fun BooksPage(s: UiState, act: MainActivity) {
 
 @Composable
 private fun HowItWorks(name: String, wake: String) = Column {
-    Help("• Add a book: EPUB, PDF (with a text layer) or plain text. It is cleaned up on the phone: copyright pages, \"sign up for our newsletter\" pages, contents, page numbers and running headers are left out; words split by line-end hyphens are joined again; chapters come from the book's own table of contents (or its chapter headings).")
+    Help("• Add a book: EPUB, PDF (with a text layer) or plain text. It is cleaned up on the ${Platform.device}: copyright pages, \"sign up for our newsletter\" pages, contents, page numbers and running headers are left out; words split by line-end hyphens are joined again; chapters come from the book's own table of contents (or its chapter headings).")
     Help("• Front matter and back matter (acknowledgments, notes, previews) are kept but not read, unless you pick them in the chapter list.")
     Help("• Reading is word for word with $name's voice (whichever assistant is active), without the thinking model. The next sentences are prepared while one plays, so there are no gaps.")
     Help("• Your place is saved at every sentence, per book. Resume carries on where you stopped.")
     Help("• Say \"$wake\" any time while reading: the book pauses, you can talk to $name, and the book carries on by itself afterwards.")
     Help("• Voice commands (after \"$wake\"): \"read me <book title>\", \"continue reading\", \"pause\", \"stop\", \"resume\", \"next chapter\", \"previous chapter\", \"go to chapter 5\", \"go back\", \"faster\", \"slower\", \"stop reading in 30 minutes\", \"where am I\", and \"what just happened?\" (a short recap of the last few pages by the thinking model; it only sees the last ~1,500 words' worth, never the whole book).")
-    Help("• The notification and the home-screen widget show the book and chapter; tap them to play or pause.")
-    Help("• Only your own files: books bought with DRM can't be opened. Book text never leaves the phone.")
+    Help("• The notification and the home-screen widget show the book and chapter; ${Platform.tap} them to play or pause.")
+    Help("• Only your own files: books bought with DRM can't be opened. Book text never leaves the ${Platform.device}.")
 }

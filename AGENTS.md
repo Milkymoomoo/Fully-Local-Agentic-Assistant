@@ -33,7 +33,7 @@ Non-negotiables: **local first** (the network is used only for downloads the use
 **honest UI** (no fake progress, no claims that weren't measured), and **robust long jobs** (resume, never corrupt).
 
 Platform today: Android 10 to 17 (minSdk 29, target/compile 37), Kotlin + Jetpack Compose, JDK 17, NDK 29.0.14206865,
-ABIs arm64-v8a and x86_64. The planned next target is a **Windows desktop widget** (see §5).
+ABIs arm64-v8a and x86_64. A **Windows program** (`desktop/`, Compose Desktop, same shared code) is in progress: see §2 *Windows program* and [windows](docs/features/windows.md).
 
 ## 2. Feature inventory
 
@@ -61,7 +61,7 @@ Paths are relative to `app/src/main/java/app/belle/assistant/` unless they start
 | Personality and prompt | `core/PersonaPrompt.kt`, `ui/PromptEditor.kt`, `core/Directives.kt` | Four editable sections per assistant, and a section left at its default follows the assistant's name. Standing directives are pinned into the prompt. |
 | Long stories and songs | `core/LongForm.kt` | Streamed sentence by sentence while the model writes, with a loop guard. |
 | Voices | `speech/SpeechEngines.kt` (TTS), `core/VoiceShift.kt`, `speech/VoicePreview.kt`, `speech/Sounds.kt` | Piper/Kokoro through sherpa-onnx. The masculine ↔ feminine slider shifts pitch and formants **separately** (no chipmunk effect). There is a 0.97 peak limiter. The speaker id is saved per voice. |
-| Phone actions | `actions/AndroidPhoneActions.kt`, `actions/BelleAccessibilityService.kt`, `service/Reminders.kt`, `service/Receivers.kt` | Texts are read back and need *yes* first. Reminders survive a reboot (`reminders.json`, re-armed at boot). Accessibility acts only when asked and never logs the screen. |
+| Phone actions | `actions/AndroidPhoneActions.kt`, `actions/BelleAccessibilityService.kt`, `service/Reminders.kt`, `service/ReminderStore.kt`, `service/Receivers.kt` | Texts are read back and need *yes* first. Reminders survive a reboot (`reminders.json`, re-armed at boot). Accessibility acts only when asked and never logs the screen. |
 | Default assistant | `service/VoiceInteraction.kt` | Can be the phone's digital assistant (long-press Home). |
 | Web and news | `net/Net.kt`, `net/WebViewFetcher.kt`, `core/Web.kt`, `core/RateLimiter.kt` | `Net` is the **only** place that opens connections, and it refuses everything while *Internet access* is off (the default). HTTPS only, 1.5 MB cap per page, polite rate limits. |
 | Memory | `core/Memory.kt`, `memory/SqlMemoryStore.kt`, `ui/MemoryPage.kt` | Kept per assistant, in SQLite with every text column encrypted (AES-256-GCM, Keystore key) and excluded from backups. Every entry is visible and deletable. |
@@ -74,8 +74,8 @@ Paths are relative to `app/src/main/java/app/belle/assistant/` unless they start
 |---|---|---|
 | 2D avatar | `core/Skin2D.kt`, `avatar/RigStore.kt`, `avatar/RigEditorActivity.kt`, `avatar/AvatarView.kt`, `avatar/LipSync.kt`, `ui/AvatarPages.kt` (`Avatar2DSteps`, `Avatar2DPage`, `assign2DPicture`) | A 20×20 mesh warp with linear-blend skinning. Lip sync follows the RMS of the audio that is actually playing. Each assistant keeps its own picture, rig and framing. |
 | Bubble and listening light | `avatar/AvatarOverlay.kt`, `ui/AvatarPages.kt` (`BubbleWidgetPage`) | The bubble window is only as big as the avatar and is not focusable (it never blocks touches elsewhere). It shows the *current* assistant (the active one, or the one just called by name) and swaps the picture when that changes (`syncPicture`). |
-| Framing | `core/Framing.kt`, `avatar/FramingEditorActivity.kt` | Per assistant, and per surface (Home, bubble, widget) or the same for all. |
-| Backgrounds | `avatar/Backgrounds.kt`, `avatar/Cutout.kt`, `avatar/Av1.kt`, `avatar/Avif.kt`, `ui/BackgroundPage.kt`, `app/src/main/cpp/av1_jni.c` | Still pictures, GIF/WebP/AVIF and video. AVIF works on Android 10–11 through the bundled dav1d and our own container parser. |
+| Framing | `core/Framing.kt`, `avatar/FramingEditorActivity.kt`, `avatar/EditorViews.kt` (the framing / rig canvases, shared with the PC editor windows) | Per assistant, and per surface (Home, bubble, widget) or the same for all. |
+| Backgrounds | `avatar/Backgrounds.kt`, `avatar/BackgroundDecoders.kt` (the phone decoders, split out so the PC can plug in Skia + FFmpeg), `avatar/Cutout.kt`, `avatar/Av1.kt`, `avatar/Avif.kt`, `ui/BackgroundPage.kt`, `app/src/main/cpp/av1_jni.c` | Still pictures, GIF/WebP/AVIF and video. AVIF works on Android 10–11 through the bundled dav1d and our own container parser. |
 | 3D avatar | `avatar/Avatar3DRenderer.kt`, `avatar/Avatar3DFiles.kt`, `core/Avatar3DSettings.kt`, `mesh/Mesh3D.kt`, `mesh/Import3D.kt`, `mesh/ProgressiveMesh.kt`, `mesh/TextureMips.kt`, `mesh/Orientation.kt`, `ui/AvatarPages.kt` (`Avatar3DSteps`, `Avatar3DPage`) | OpenGL ES 3 off-screen, one GL thread, bitmaps for every surface. If 3D is impossible, the 2D picture is used. One `avatar.glb` per assistant (standard glTF with the progressive-mesh tables and the rig in `extras`/`skins`). Detail levels come from the progressive mesh. Retro shaders: Retrostation (PS1) and Retro64 (N64). |
 | AutoRig3D v6 | `mesh/AutoRig3D.kt` (+ `tools/rig_v6_notes.md`) | Works on any model, furry and anthro included. Two weight sets are mixed live by *animation strength*. Motion per part must stay at 95 % or more of the plain weighting, with no region stretching more than 1.15 (rig tests). **Never reduce animation to hide tearing** (see §4). Inner loops stay allocation-free (primitive arrays, `CellMap`, `BoneMix`, `LongHeap`): Android's runtime doesn't remove boxed temporaries, and boxed maps made the first-launch rig take minutes and stall the UI with garbage collection (`RigAllocationTest` budget). |
 | Widget | `ui/AssistantWidget.kt`, `ui/WidgetIdleLoop.kt`, `core/WidgetPlan.kt`, `ui/NameArt.kt`, `ui/NameStyleSection.kt` | One widget type that **always renders the active assistant's own avatar** (`WidgetPlan.decide`: 2D with the 3D toggle greyed when that profile has no mesh). Every view uses `Prefs(ctx, activeId)`, never `Prefs(ctx)`, which follows a conversation's session profile. Cached idle loops are keyed by profile id and mode (`WidgetPlan.canReuse`). Call `AssistantWidget.avatarChanged()` after any avatar or active-profile change. Regression test: `WidgetPlanTest`. The idle loop is pre-rendered so the launcher animates it without waking the app. The name is drawn as a bitmap. There is no 3D-generation progress on the widget (so no countdown there). |
@@ -107,6 +107,47 @@ Paths are relative to `app/src/main/java/app/belle/assistant/` unless they start
 | Catalog and downloads | `core/ModelCatalog.kt` (in `shared/`), `models/Downloads.kt`, `models/Fetcher.kt`, `models/ModelFiles.kt`, `models/ModelImport.kt`, `models/DownloadService.kt` | HTTPS with an allow-list checked on every redirect hop. Size and SHA-256 are checked before the rename. A sticky `dataSync` foreground service with wake and Wi-Fi locks. Downloads resume after a kill or reboot. Offline import by file type. The page is `ui/ModelsPage.kt`: a `LazyColumn` whose installed? / RAM / recommended-voice facts are loaded once on a background thread (`ModelsPageData`); progress ticks recompose only the visible rows. Total RAM is looked up once per process (`Downloads.totalRamGb`). |
 | Companion downloader | `downloader/DownloaderActivity.kt` | An optional separate app. The *Open Downloader* button appears only when it is installed. |
 
+### Windows program (`desktop/`)
+
+The Gradle `:desktop` module (Kotlin/JVM, Compose Multiplatform Desktop, JDK 21 to build) compiles the phone app's own
+sources **unchanged**: `syncSharedSources` copies the `sharedFromApp` list from `app/src/main/java` into the build, and
+the Android APIs they touch are provided by small shims (below). Where the phone has an Android-only class, the desktop
+has a **same-name twin** (`*Desktop.kt`, same package and members), so shared callers compile untouched. Rule: a fix
+for a shared screen goes into the shared file, never into a desktop copy. Shared hooks: `core/Platform.kt` (phone or
+PC: phone-only settings pages are left out on the PC, and "tap" reads "click"), `core/NativeLibs.kt` (the PC picks the
+backend's library variant), `ui/UiState.kt` (observable settings / state counters).
+
+| What | Files | Invariants |
+|---|---|---|
+| Start, single copy, self-test | `Main.kt`, `ui/SingleInstance.kt`, `SelfTest.kt` | One copy at a time (a loopback port in `instance.port`; a second start shows the first). `--tray` starts hidden, `--settings` opens settings, `--version`, `--selftest <report>` loads every native part and exits 0/1 (CI runs it on the packaged program). |
+| Widget, tray, windows | `ui/DesktopApp.kt`, `ui/WidgetWindow.kt`, `ui/WidgetMode.kt`, `ui/SettingsWindow.kt`, `ui/EditorWindow.kt`, `ui/Screens.kt`, `ui/FileDialogs.kt`, `ui/Notify.kt`, `ui/UiThread.kt` | The widget window is **always composed**, so hiding it to the tray never stops wake word, listening, voice or builds. Its place is clamped to the screens (`widgetPlace`). The settings window hosts the phone's Home / Conversation / Settings screens. Notifications are tray toasts; the tray tooltip is the ongoing-progress notification. |
+| Desktop-only settings | `DesktopPrefs.kt`, `ui/DesktopPages.kt` | Global (not per assistant), in `belle_desktop.json`; every key is in [windows](docs/features/windows.md). Extra pages are added through `PlatformPages` in the shared SettingsScreen. |
+| Acceleration | `accel/Backend.kt`, `accel/Hardware.kt`, `Natives.kt`, `RuntimePacks.kt` | CPU always works (bundled). GPU runtimes are **downloaded on demand** from their publishers (NuGet, NVIDIA, FFmpeg builds) with pinned size + SHA-256, resume and per-part retry. Auto never picks an untested path; a failing provider falls back to the CPU and says so in the build log. Speech always uses the bundled CPU onnxruntime; the 3D runner gets the GPU one by full path (`BELLE_ORT_DLL`). |
+| Platform layer | `Paths.kt`, `DesktopContext.kt`, `JsonPrefs.kt`, `DesktopLog.kt`, `platform/KeepAwake.kt`, `platform/SecretKeys.kt`, `platform/Win32.kt`, `platform/WinActions.kt`, `platform/Autostart.kt`, `platform/Chimes.kt`, `platform/ProcMem.kt` | Settings as JSON per profile, written temp → fsync → rename. Memory key wrapped with DPAPI. The PC is kept awake (`SetThreadExecutionState`) during builds, downloads and books. Start with Windows = an HKCU Run entry (no admin). |
+| Twins of Android-only classes | `R.kt`, `actions/AndroidPhoneActionsDesktop.kt`, `avatar/BackgroundDecodersDesktop.kt`, `avatar/EditorsDesktop.kt`, `memory/SqlMemoryStoreDesktop.kt`, `models/DownloadServiceDesktop.kt`, `net/WebViewFetcherDesktop.kt`, `service/AssistantServiceDesktop.kt`, `service/BookPlaybackServiceDesktop.kt`, `service/RemindersDesktop.kt`, `threed/Pixal3DServiceDesktop.kt`, `ui/AssistantWidgetDesktop.kt`, `ui/MainActivityDesktop.kt` | Same class names and members as the phone ones. Phone-only actions (calls, texts, flashlight, camera) answer plainly that a PC can't, never pretend. Reminders re-arm at every start from `reminders.json`. |
+| Native build and CI | `desktop/native/CMakeLists.txt`, `desktop/native/ci/build-natives.ps1`, `desktop/native/ci/fetch-cuda.ps1`, `.github/workflows/windows.yml` | Same C/C++ as the phone (`llm_core.cpp`, `ort_jni.c`). belle_llm in CPU / CUDA / Vulkan builds (`natives/`, `natives/llm-cuda/`, `natives/llm-vulkan/`), static CRT. CI builds on windows-latest, runs the desktop tests with small real models and the packaged `--selftest`, and uploads **artifacts only** (no release). |
+
+Android API shims (`desktop/src/main/kotlin/`), one line per package. They implement only what the shared code calls,
+on Skia / AWT / Java Sound / LWJGL:
+- `android/`: Manifest
+- `android/app/`: ActivityManager, AlertDialog · `android/app/role/`: RoleManager · `android/appwidget/`: AppWidgetManager (one desktop widget, id 1)
+- `android/content/`: ComponentName, Context, DialogInterface, Intent, SharedPreferences
+- `android/content/pm/`: ApplicationInfo, PackageManager · `android/content/res/`: AssetFileDescriptor, AssetManager, Resources
+- `android/database/`: Cursor, ListCursor
+- `android/graphics/`: Bitmap, BitmapFactory, Canvas, Color, ImageDecoder, Paint, Path, RectF (all on Skia; Typeface falls back through common system fonts)
+- `android/graphics/drawable/`: Drawable
+- `android/media/`: AudioAttributes, AudioFormat, AudioManager, AudioTrack, FaceDetector, MediaPlayer, RingtoneManager
+- `android/net/`: Uri
+- `android/opengl/`: EGL14, GLES30, GLUtils, Matrix (LWJGL, an offscreen GL context for the 3D renderer)
+- `android/os/`: Build, Debug, Handler, Looper (the main looper is the AWT event thread), PowerManager, Process, SystemClock
+- `android/provider/`: DocumentsContract, OpenableColumns, Settings
+- `android/text/`: StaticLayout · `android/util/`: Log, Size · `android/webkit/`: MimeTypeMap · `android/widget/`: Toast
+- `android/view/`: ScaleGestureDetector, View, WindowManager
+- `androidx/activity/`: ComponentActivity · `androidx/activity/compose/`: ActivityResult · `androidx/activity/result/`: ActivityResult · `androidx/activity/result/contract/`: ActivityResultContracts
+- `androidx/compose/material3/`: DynamicColor · `androidx/compose/ui/graphics/`: AndroidBitmap · `androidx/compose/ui/platform/`: LocalContext · `androidx/compose/ui/res/`: PainterResource · `androidx/compose/ui/viewinterop/`: AndroidView (hosts the custom-drawn views)
+- `androidx/core/content/`: FileProvider
+- `com/tom_roush/pdfbox/`: Aliases (PdfBox-Android names onto Apache PDFBox) · `com/tom_roush/pdfbox/android/`: PDFBoxResourceLoader · `com/tom_roush/pdfbox/io/`: Aliases · `com/tom_roush/pdfbox/text/`: Aliases · `com/tom_roush/pdfbox/pdmodel/interactive/documentnavigation/outline/`: Aliases
+
 ### Feature docs (each must stay in sync with the code)
 
 [app-basics](docs/features/app-basics.md) · [wake-word](docs/features/wake-word.md) · [speech-recognition](docs/features/speech-recognition.md) ·
@@ -115,7 +156,7 @@ Paths are relative to `app/src/main/java/app/belle/assistant/` unless they start
 [stories](docs/features/stories.md) · [read-to-me](docs/features/read-to-me.md) · [avatar-studio](docs/features/avatar-studio.md) ·
 [avatar-2d](docs/features/avatar-2d.md) · [avatar-3d](docs/features/avatar-3d.md) · [autorig3d](docs/features/autorig3d.md) ·
 [widget](docs/features/widget.md) · [photo-to-3d](docs/features/photo-to-3d.md) · [models-and-downloads](docs/features/models-and-downloads.md) ·
-[privacy-permissions-storage](docs/features/privacy-permissions-storage.md)
+[privacy-permissions-storage](docs/features/privacy-permissions-storage.md) · [windows](docs/features/windows.md)
 
 ## 3. Architecture and data flow
 
@@ -265,12 +306,15 @@ scripts/heap_gate.sh <x86_64 apk> <dir> # release gate: 1+1 steps, 512 px, 20k t
 scripts/release.sh                      # maintainer: clean-worktree release build, HEAP GATE, signing check, SHA256SUMS, stable names;
                                         # commits dist/INSTALL.txt and dist/SHA256SUMS.txt for the new release
 scripts/emulator_test.sh                # emulator smoke test
+./gradlew :desktop:test                 # desktop tests (speech/chat need BELLE_NATIVES + -Ddesk.models / -Ddesk.gguf)
+./gradlew :desktop:run --args=--settings # run the Windows program from source (BELLE_NATIVES, BELLE_HOME)
+./gradlew :desktop:packageMsi :desktop:packageExe   # the Windows program's installers (on Windows)
 tools/publish/make_publish_copy.sh      # public copy with link and AGENTS.md coverage checks (never pushes)
 python3 tools/security/test_security.py # security tooling tests
 ```
 
 - Kotlin JVM 17, Compose. Native code: `app/src/main/cpp` (CMake; 16 KB page alignment). Third-party code lives in `third_party/`.
-- CI (`.github/workflows/`): CodeQL, gitleaks, OSV-Scanner, Scorecard, VirusTotal on release, and the docs site (manual). Every action is pinned to a commit SHA. See [docs/SECURITY.md](docs/SECURITY.md).
+- CI (`.github/workflows/`): CodeQL, gitleaks, OSV-Scanner, Scorecard, VirusTotal on release, the docs site (manual), and the Windows program build (`windows.yml`, artifacts only). Every action is pinned to a commit SHA. See [docs/SECURITY.md](docs/SECURITY.md).
 - Pixal3D export and port: `tools/pixal3d_port/` (PyTorch → ONNX, int8, fixtures, `ref_pipeline.py`, `make_bundle.py`).
 - Host LLM test harness: `tools/host_llm/`. Rig notes: `tools/rig_v6_notes.md`.
 
@@ -279,7 +323,7 @@ python3 tools/security/test_security.py # security tooling tests
 See [docs/status.md](docs/status.md) for the honest table. In short: the app is used daily on Android, and the 3D
 widget is verified on a real phone. Photo → 3D is verified end to end on a desktop CPU, but a phone run has not yet
 been timed to the end. Its resume logic is verified by unit tests (kill after every step, truncated checkpoints).
-There is no desktop port yet.
+The Windows program is in progress: it runs from source with the widget, tray, settings, chat and voice on the CPU, and CI builds and self-tests the installer; GPU (CUDA) and photo → 3D on a real PC have not been run yet. See [windows](docs/features/windows.md) for the tested / untested table.
 
 ## 9. Explaining choices to users
 

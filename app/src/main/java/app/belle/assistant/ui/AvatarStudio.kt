@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.content.Intent
 import android.net.Uri
 import android.provider.Settings
@@ -123,7 +124,7 @@ fun AvatarStudioPage(s: UiState, act: MainActivity) {
     }
 
     // 3 · 2D or 3D
-    StepCard(3, "2D or 3D", "2D animates the picture itself, ready in seconds. 3D builds a model from it on this phone (minutes, 5.3 GB download once).",
+    StepCard(3, "2D or 3D", "2D animates the picture itself, ready in seconds. 3D builds a model from it on this ${Platform.device} (minutes, 5.3 GB download once).",
         state(3), steps[2].why) {
         listOf("2d" to "2D: animate this picture", "3d" to "3D: build a 3D model from it").forEach { (k, label) ->
             Row(Modifier.fillMaxWidth().clickable(enabled = state(3) != StepState.BLOCKED) { update(st.copy(kind = k, finished = false, buildStarted = false)) }.padding(vertical = 2.dp),
@@ -145,11 +146,11 @@ fun AvatarStudioPage(s: UiState, act: MainActivity) {
     }
 
     // 5 · Build, then the avatar is assigned (only after the final atomic commit)
-    StepCard(5, "Build the avatar", if (st.kind == "3d") "Runs on this phone; keeps going with the screen off, and continues after a restart." else "Gives the picture to the assistant.",
+    StepCard(5, "Build the avatar", if (st.kind == "3d") "Runs on this ${Platform.device}; keeps going with the screen off, and continues after a restart." else "Gives the picture to the assistant.",
         state(5), steps[4].why) {
         val name = st.profileId?.let { ProfileStore.name(act, it) } ?: ""
         val pm = act.getSystemService(android.os.PowerManager::class.java)
-        if (st.kind == "3d" && !pm.isIgnoringBatteryOptimizations(act.packageName)) {
+        if (!Platform.desktop && st.kind == "3d" && !pm.isIgnoringBatteryOptimizations(act.packageName)) {
             Help("Optional: allow running in the background so Android doesn't pause a long build. It works without, but may be slower with the screen off.")
             TextButton(onClick = { runCatching { act.startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${act.packageName}"))) }
                 .onFailure { act.startActivity(Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)) } }) { BtnText("Allow background running") }

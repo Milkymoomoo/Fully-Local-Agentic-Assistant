@@ -1,19 +1,8 @@
 package app.belle.assistant.avatar
 
 import android.app.Activity
-import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
-import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.ImageDecoder
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.RectF
 import android.os.Bundle
 import android.view.Gravity
-import android.view.MotionEvent
-import android.view.ScaleGestureDetector
 import android.view.View
 import android.widget.Button
 import android.widget.CheckBox
@@ -25,7 +14,6 @@ import android.widget.SeekBar
 import android.widget.TextView
 import app.belle.assistant.Prefs
 import app.belle.assistant.ProfileStore
-import app.belle.assistant.R
 import app.belle.assistant.core.Framing
 import app.belle.assistant.service.AssistantService
 import app.belle.assistant.ui.AssistantWidget
@@ -39,7 +27,7 @@ import java.io.File
 class FramingEditorActivity : Activity() {
     private lateinit var prefs: Prefs
     private var surface = "home"
-    private lateinit var editor: Editor
+    private lateinit var editor: FramingCanvas
     private val previews = mutableListOf<View>()
 
     override fun onCreate(b: Bundle?) {
@@ -61,7 +49,7 @@ class FramingEditorActivity : Activity() {
         col.addView(surfaces)
         surfaces.visibility = if (same.isChecked) View.GONE else View.VISIBLE
 
-        editor = Editor(this, loadStill()) { f -> prefs.setFraming(surface, f); refreshPreviews() }
+        editor = FramingCanvas(this, EditorStill.load(this, prefs)) { f -> prefs.setFraming(surface, f); refreshPreviews() }
         col.addView(editor, LinearLayout.LayoutParams(-1, (resources.displayMetrics.widthPixels * 0.9).toInt()))
 
         label("Frame shape")
@@ -131,58 +119,4 @@ class FramingEditorActivity : Activity() {
         AssistantWidget.updateAll(this)
     }
 
-    private fun loadStill(): Bitmap {
-        val f = prefs.avatarFile.takeIf { it.isNotEmpty() }?.let { File(filesDir, it) }
-        return runCatching { ImageDecoder.decodeBitmap(ImageDecoder.createSource(f!!)) { d, _, _ -> d.allocator = ImageDecoder.ALLOCATOR_SOFTWARE } }
-            .getOrElse { BitmapFactory.decodeResource(resources, R.drawable.avatar_default) }
-    }
-
-    private class Editor(ctx: Context, val bmp: Bitmap, val onChange: (Framing) -> Unit) : View(ctx) {
-        var framing = Framing(); var surface = "home"
-        private val dim = Paint().apply { color = 0xB0000000.toInt() }
-        private val edge = Paint(Paint.ANTI_ALIAS_FLAG).apply { style = Paint.Style.STROKE; strokeWidth = 5f; color = 0xFFD2BCFF.toInt() }
-        private val path = Path(); private val frame = RectF(); private val dst = RectF()
-        private var lastX = 0f; private var lastY = 0f
-        private val scaler = ScaleGestureDetector(ctx, object : ScaleGestureDetector.SimpleOnScaleGestureListener() {
-            override fun onScale(d: ScaleGestureDetector): Boolean {
-                framing = framing.copy(zoom = (framing.zoom * d.scaleFactor).coerceIn(0.5f, 5f)); onChange(framing); invalidate(); return true
-            }
-        })
-
-        override fun onDraw(c: Canvas) {
-            val side = minOf(width, height) * 0.78f
-            frame.set((width - side) / 2, (height - side) / 2, (width + side) / 2, (height + side) / 2)
-            val pl = framing.place(bmp.width.toFloat(), bmp.height.toFloat(), side, side)
-            dst.set(frame.left + pl[0], frame.top + pl[1], frame.left + pl[0] + pl[2], frame.top + pl[1] + pl[3])
-            c.drawColor(0xFF221E25.toInt())
-            c.drawBitmap(bmp, null, dst, null)
-            path.reset(); path.fillType = Path.FillType.EVEN_ODD
-            path.addRect(0f, 0f, width.toFloat(), height.toFloat(), Path.Direction.CW)
-            when (framing.shape) {
-                "circle" -> path.addCircle(frame.centerX(), frame.centerY(), side / 2, Path.Direction.CW)
-                "rounded" -> path.addRoundRect(frame, side * 0.18f, side * 0.18f, Path.Direction.CW)
-                else -> path.addRect(frame, Path.Direction.CW)
-            }
-            c.drawPath(path, dim)
-            when (framing.shape) {
-                "circle" -> c.drawCircle(frame.centerX(), frame.centerY(), side / 2, edge)
-                "rounded" -> c.drawRoundRect(frame, side * 0.18f, side * 0.18f, edge)
-                else -> c.drawRect(frame, edge)
-            }
-        }
-
-        override fun onTouchEvent(e: MotionEvent): Boolean {
-            scaler.onTouchEvent(e)
-            when (e.actionMasked) {
-                MotionEvent.ACTION_DOWN -> { lastX = e.x; lastY = e.y }
-                MotionEvent.ACTION_MOVE -> if (!scaler.isInProgress && e.pointerCount == 1) {
-                    val w = dst.width().coerceAtLeast(1f); val h = dst.height().coerceAtLeast(1f)
-                    framing = framing.copy(cx = (framing.cx - (e.x - lastX) / w).coerceIn(0f, 1f), cy = (framing.cy - (e.y - lastY) / h).coerceIn(0f, 1f))
-                    lastX = e.x; lastY = e.y; onChange(framing); invalidate()
-                }
-                MotionEvent.ACTION_POINTER_UP -> { lastX = e.getX(0); lastY = e.getY(0) }
-            }
-            return true
-        }
-    }
 }

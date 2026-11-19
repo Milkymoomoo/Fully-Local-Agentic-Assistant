@@ -24,28 +24,12 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import app.belle.assistant.Prefs
 import app.belle.assistant.models.ModelImport
 import app.belle.assistant.service.AssistantRuntime
 import app.belle.assistant.service.AssistantService
 import java.util.concurrent.Executors
-
-/** Shared, observable UI state: bump [rev] after writing prefs, [tick] when the assistant changes state. */
-class UiState(val prefs: Prefs) {
-    /** Same counter as [app.belle.assistant.SettingsRev]: bumping it redraws everything that shows a setting. */
-    var rev by app.belle.assistant.SettingsRev.state
-    var tick by mutableIntStateOf(0)
-    var tab by mutableStateOf("home")
-    /** Settings sub-screen ("" = settings list). */
-    var page by mutableStateOf("")
-    var busy by mutableStateOf<String?>(null)
-    fun edit(f: Prefs.() -> Unit) { prefs.f(); rev++ }
-}
 
 /** Home, Conversation and Settings. Jetpack Compose + Material 3. */
 class MainActivity : ComponentActivity() {

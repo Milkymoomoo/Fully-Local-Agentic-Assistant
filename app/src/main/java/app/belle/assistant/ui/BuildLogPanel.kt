@@ -94,7 +94,7 @@ object BuildPrep {
 object DiagnosticsExport {
     fun header(ctx: Context): List<String> {
         val mi = android.app.ActivityManager.MemoryInfo(); ctx.getSystemService(android.app.ActivityManager::class.java).getMemoryInfo(mi)
-        return listOf(buildLabel(), "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} · Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT}) · " +
+        return listOf(buildLabel(), (app.belle.assistant.core.Platform.describe?.invoke() ?: "Device: ${android.os.Build.MANUFACTURER} ${android.os.Build.MODEL} · Android ${android.os.Build.VERSION.RELEASE} (API ${android.os.Build.VERSION.SDK_INT})") + " · " +
             "RAM ${"%.1f".format(mi.totalMem / 1073741824.0)} GB", "Made: ${BuildRecord.clock(System.currentTimeMillis())}",
             "Contains: 3D build history and events, the last run's measurements, and app events about 3D, installs, downloads and errors. No speech, replies, memory or pictures.")
     }

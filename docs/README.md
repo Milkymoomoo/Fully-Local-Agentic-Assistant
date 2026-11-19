@@ -56,6 +56,7 @@
 | [3D avatar](features/avatar-3d.md) | 3D models, retro looks, detail levels |
 | [AutoRig3D](features/autorig3d.md) | How a still 3D model is made to move |
 | [Widget](features/widget.md) | The home-screen widget and its buttons |
+| [Windows program](features/windows.md) | The PC version: desktop widget, tray, GPU backends (in progress) |
 | [Photo → 3D](features/photo-to-3d.md) | Making a 3D avatar from one photo, on the phone |
 
 ### Reference

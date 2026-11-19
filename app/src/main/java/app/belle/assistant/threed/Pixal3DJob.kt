@@ -117,6 +117,8 @@ object Pixal3DJob {
 
     // ---- build history, the build's own event log, and the newest generated model ----
     fun history(ctx: Context) = app.belle.assistant.core.BuildLog(File(ctx.filesDir, "pixal3d_history.ck"))
+    /** A note in the build log from outside the job (e.g. the Windows program's GPU backend falling back to the CPU). */
+    fun note(ctx: Context, msg: String) = log(ctx, msg)
     private fun log(ctx: Context, msg: String) {
         app.belle.assistant.service.AssistantRuntime.event(msg); history(ctx).event(System.currentTimeMillis(), msg)
     }

@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import android.app.ActivityManager
 import android.app.AlertDialog
 import android.app.role.RoleManager
@@ -76,6 +77,19 @@ import java.io.File
 
 private data class Page(val id: String, val icon: String, val title: String, val group: String, val hidden: Boolean = false, val summary: (Prefs) -> String)
 
+/** A settings page a platform adds (the Windows program: acceleration & setup, widget window & tray). */
+class ExtraPage(val id: String, val icon: String, val title: String, val group: String, val summary: (Prefs) -> String,
+                val content: @Composable (UiState, MainActivity) -> Unit)
+/** Pages added by the platform, and the simple-view section it adds (both empty on the phone). */
+object PlatformPages {
+    @Volatile var extra: List<ExtraPage> = emptyList()
+    @Volatile var simple: (@Composable (UiState, MainActivity) -> Unit)? = null
+}
+/** Phone-only pages left out on the PC: the floating bubble / home-screen widget, and Android permissions & battery. */
+private val PHONE_ONLY = setOf("bubble", "setup")
+private fun pages(): List<Page> = PAGES.filter { !(Platform.desktop && it.id in PHONE_ONLY) } +
+    PlatformPages.extra.map { e -> Page(e.id, e.icon, e.title, e.group, summary = e.summary) }
+
 /** Advanced settings, grouped: section › page › (sub-headings inside each page). */
 private val PAGES = listOf(
     Page("books", "📖", "Read to me (audiobooks)", "Read to me") { _ -> AssistantRuntime.bookNow()?.first ?: "Read your EPUB, PDF and text books aloud" },
@@ -90,15 +104,15 @@ private val PAGES = listOf(
     Page("bubble", "🫧", "Bubble & widget", "Avatar") { p -> if (p.avatarEnabled) "Bubble " + (if (p.avatarMode == "always") "always shown" else "only while active") else "Bubble off" },
     Page("background", "🖼", "Background", "Background") { p -> if (p.bgMode == "custom") p.bgFile.substringAfterLast('.').uppercase() + (if (p.bgSound) " · sound on" else " · muted") else "The picture's own background" },
     Page("chimes", "🔔", "Chimes & sounds", "Chimes") { p -> app.belle.assistant.speech.Sounds.SLOTS.count { p.sound(it.id).isNotEmpty() }.let { if (it == 0) "Built-in chimes" else "$it custom" } },
-    Page("getmodels", "⬇️", "Downloads (one tap)", "Models") { _ -> "Thinking models, speech recognition, voices, 3D generation" },
+    Page("getmodels", "⬇️", "Downloads (one ${Platform.tap})", "Models") { _ -> "Thinking models, speech recognition, voices, 3D generation" },
     Page("model", "🧠", "Thinking model", "Models") { p -> p.llmFile.ifEmpty { "None — simple commands only" } + if (p.loadOnDemand) " · load on demand" else "" },
-    Page("memory", "🗂", "Memory", "Models") { p -> if (p.memoryEnabled) "On · only on this phone" else "Off" },
-    Page("speech", "👂", "Speech recognition", "Models") { _ -> "Understanding your voice (on this phone)" },
+    Page("memory", "🗂", "Memory", "Models") { p -> if (p.memoryEnabled) "On · only on this ${Platform.device}" else "Off" },
+    Page("speech", "👂", "Speech recognition", "Models") { _ -> "Understanding your voice (on this ${Platform.device})" },
     Page("internet", "🌐", "Internet & search", "Internet") { p -> if (p.internetEnabled) "On · " + (SearchProvider.fromId(p.searchOrder.first())?.label ?: "") else "Off (default)" },
     Page("news", "📰", "News feeds", "Internet") { p -> "${p.newsFeeds.size} feeds" },
     Page("setup", "🔐", "Permissions & background listening", "Permissions") { _ -> "Microphone, restricted settings, battery, Accessibility" },
-    Page("look", "🎨", "Appearance", "Appearance & privacy") { p -> mapOf("system" to "Follow phone", "light" to "Light", "dark" to "Dark")[p.theme] + if (p.largeText) " · large text" else "" },
-    Page("privacy", "🛡", "Privacy", "Appearance & privacy") { _ -> "What stays on your phone, and what doesn't" },
+    Page("look", "🎨", "Appearance", "Appearance & privacy") { p -> mapOf("system" to "Follow ${Platform.system}", "light" to "Light", "dark" to "Dark")[p.theme] + if (p.largeText) " · large text" else "" },
+    Page("privacy", "🛡", "Privacy", "Appearance & privacy") { _ -> "What stays on your ${Platform.device}, and what doesn't" },
 )
 
 /** "Milky Moo's Assistant 0.1.1 · version code 2 · build abc1234 (release)". */
@@ -110,7 +124,7 @@ fun fmtSec(s: Int) = if (s >= 60 && s % 60 == 0) "${s / 60} min" else if (s >= 6
 @Composable
 fun SettingsScreen(s: UiState, act: MainActivity) {
     s.rev
-    val page = PAGES.firstOrNull { it.id == s.page }
+    val page = pages().firstOrNull { it.id == s.page }
     Column(Modifier.fillMaxSize()) {
         Row(Modifier.fillMaxWidth().padding(horizontal = 8.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
             if (page != null) IconButton(onClick = { s.page = "" }) { Icon(Icons.Filled.ArrowBack, "Back") } else Spacer(Modifier.width(12.dp))
@@ -129,7 +143,7 @@ fun SettingsScreen(s: UiState, act: MainActivity) {
                     ChoiceRow("Settings view", null, listOf("simple" to "Simple", "advanced" to "Advanced"), if (simple) "simple" else "advanced") {
                         app.belle.assistant.ProfileStore.setSimpleSettings(act, it == "simple") }
                     if (simple) SimpleSettings(s, act)
-                    else PAGES.filter { !it.hidden }.groupBy { it.group }.forEach { (g, pages) ->
+                    else pages().filter { !it.hidden }.groupBy { it.group }.forEach { (g, pages) ->
                         Text(g, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.padding(top = 16.dp, bottom = 2.dp))
                         pages.forEach { pg -> NavRow(pg.icon, pg.title, pg.summary(s.prefs)) { s.page = pg.id }; HorizontalDivider() }
@@ -157,6 +171,7 @@ fun SettingsScreen(s: UiState, act: MainActivity) {
                 "setup" -> SetupPage(s, act)
                 "look" -> LookPage(s)
                 "privacy" -> PrivacyPage()
+                else -> PlatformPages.extra.firstOrNull { it.id == page.id }?.content?.invoke(s, act)
             }
         }
         }
@@ -196,7 +211,7 @@ private fun WakePage(s: UiState, act: MainActivity) {
         }
     }
     Section("Listening for wake words") {
-        GatedSwitch("Wake words on", "Off = I only listen when you tap Talk, the avatar, or use the assistant gesture.", p.wakeWordEnabled,
+        GatedSwitch("Wake words on", "Off = I only listen when you ${Platform.tap} Talk, the avatar, or use the assistant gesture.", p.wakeWordEnabled,
             if (act.has(android.Manifest.permission.RECORD_AUDIO)) null else "Needs the microphone permission.", "Allow", { act.requestCorePermissions() },
             listOf("🎤 microphone", "✈️ offline", "~6 MB RAM", "Background: see Permissions")) { s.edit { wakeWordEnabled = it }; if (it) { s.edit { serviceWanted = true }; AssistantService.start(act, AssistantService.ACTION_REARM, from = "app") } }
         SliderRow("Sensitivity", "${(p.sensitivity * 100).toInt()}%", "Higher hears you more easily from across the room but wakes by mistake more often.",
@@ -286,7 +301,7 @@ private fun SleepPage(s: UiState) {
     }
     Section("End buttons", "You can also end a conversation without speaking.") {
         Help("• Notification: \"End conversation\" appears while I'm listening or talking.\n• Avatar bubble: long-press for the menu, then End conversation.")
-        SwitchRow("Tap the avatar to end", "While I'm listening or talking, one tap on the bubble ends the conversation.", p.avatarTapEnds) { s.edit { avatarTapEnds = it } }
+        SwitchRow("${Platform.tapCap} the avatar to end", "While I'm listening or talking, one ${Platform.tap} on the bubble ends the conversation.", p.avatarTapEnds) { s.edit { avatarTapEnds = it } }
     }
 }
 
@@ -319,7 +334,7 @@ private fun ConversationPage(s: UiState, act: MainActivity) {
     }
     Section("Conversation") {
         GatedSwitch("Continuous conversation", (if (!p.listenTimeoutOn) "(Unlimited listening is on, so I always keep listening after answers.) " else "") + "After I answer, I keep listening so you can just keep talking — no wake word needed — until you say a sleep word or press End — no time limits apply while it's on. I remember the last few things we said, so follow-ups like \"and tomorrow?\" work.", p.continuous,
-            if (ModelFiles.hasStt(act)) null else "Needs speech recognition (one-tap download).", "Get it", { s.page = "getmodels" },
+            if (ModelFiles.hasStt(act)) null else "Needs speech recognition (${Platform.oneTap} download).", "Get it", { s.page = "getmodels" },
             listOf("Saved per assistant", "Also on the widget")) { s.edit { continuous = it }; AssistantWidget.updateAll(act) }
         SwitchRow("Ask before sending messages", "I read back texts and wait for \"yes\" before sending.", p.confirmMessages) { s.edit { confirmMessages = it } }
         Help("I always answer out loud.")
@@ -351,7 +366,7 @@ private fun SoundsSection(s: UiState, act: MainActivity) {
                 .onFailure { act.toast("Couldn't use that file: ${it.message}") }
         }
     }
-    Section("Chime sounds", "Pick one of your phone's own sounds or import any sound file (MP3, OGG, WAV, M4A, FLAC, OPUS…) for each moment. Imported files are copied into the app. Sounds longer than 8 seconds are cut off. Saved per assistant.") {
+    Section("Chime sounds", "Pick one of your ${Platform.device}'s own sounds or import any sound file (MP3, OGG, WAV, M4A, FLAC, OPUS…) for each moment. Imported files are copied into the app. Sounds longer than 8 seconds are cut off. Saved per assistant.") {
         app.belle.assistant.speech.Sounds.SLOTS.forEach { slot ->
             val v = p.sound(slot.id)
             Text(slot.title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(top = 10.dp))
@@ -379,12 +394,12 @@ private fun SpeechPage(s: UiState, act: MainActivity) {
     s.rev
     val ok = ModelFiles.hasStt(act)
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenMultipleDocuments()) { uris -> uris.forEach(act::importFile) }
-    Section("Speech recognition", "Turns your voice into text, entirely on this phone. Not included in the app download to keep it small — add it once.") {
+    Section("Speech recognition", "Turns your voice into text, entirely on this ${Platform.device}. Not included in the app download to keep it small — add it once.") {
         Text(if (ok) "✅ Installed: Moonshine Tiny (English) + Silero voice detector" else "⚠️ Not installed yet — I can hear my wake words but not what you say after.",
             style = MaterialTheme.typography.bodyLarge)
-        Help("You need two files:\n• ${ModelCatalog.STT.fileName} (${ModelCatalog.STT.bytes / 1_000_000} MB)\n• ${ModelCatalog.VAD.fileName} (under 1 MB)\nGet both with one tap on the Downloads page, or download them on any computer from the sherpa-onnx releases page, copy them to the phone and import them here.")
+        Help("You need two files:\n• ${ModelCatalog.STT.fileName} (${ModelCatalog.STT.bytes / 1_000_000} MB)\n• ${ModelCatalog.VAD.fileName} (under 1 MB)\nGet both with one ${Platform.tap} on the Downloads page, or download them on any computer from the sherpa-onnx releases page, copy them to the ${Platform.device} and import them here.")
         ButtonRow {
-            Button(onClick = { s.page = "getmodels" }) { BtnText("One-tap download") }
+            Button(onClick = { s.page = "getmodels" }) { BtnText("${Platform.oneTapCap} download") }
             OutlinedButton(onClick = { pick.launch(arrayOf("*/*")) }) { BtnText("Import files") }
             if (downloaderInstalled(act)) TextButton(onClick = { openDownloader(act) }) { BtnText("Open Downloader") }
         }
@@ -397,18 +412,18 @@ private fun VoicePage(s: UiState, act: MainActivity) {
     val p = s.prefs
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(act::importFile) }
     SpeakerPicker(s, act)   // first, so a multi-speaker voice's speakers aren't below the long voice list
-    Section("Text-to-speech › Voice model", "Every voice runs on this phone. ▶ plays installed voices live; others play the official sample. Tap an installed voice to use it.") {
+    Section("Text-to-speech › Voice model", "Every voice runs on this ${Platform.device}. ▶ plays installed voices live; others play the official sample. ${Platform.tapCap} an installed voice to use it.") {
         if (ModelFiles.installedVoices(act).isEmpty()) Blocked("No voice installed yet: I show replies as text only.", "Get a voice") { s.page = "getmodels" }
         VoiceList(s, act)
         ButtonRow {
-            Button(onClick = { s.page = "getmodels" }) { BtnText("One-tap downloads") }
+            Button(onClick = { s.page = "getmodels" }) { BtnText("${Platform.oneTapCap} downloads") }
             OutlinedButton(onClick = { pick.launch(arrayOf("*/*")) }) { BtnText("Import voice file") }
         }
         Help("Standard = int8 (small, fast). High = bigger Piper model, clearer. Full precision = same voice without int8 rounding (smoothest, ~3–4× size). Kokoro = most natural, slower.")
     }
     Section("Text-to-speech › Quality") {
         SliderRow("Speed", "${"%.2f".format(p.voiceSpeed)}×", "Talking speed (the model's length scale).", p.voiceSpeed, 0.6f..1.6f) { v -> p.voiceSpeed = v }
-        SliderRow("Volume", "${(p.voiceVolume * 100).toInt()}%", "How loud I talk, on top of the phone's own volume. Saved for ${p.assistantName}.", p.voiceVolume, 0f..1f) { v -> s.edit { voiceVolume = v } }
+        SliderRow("Volume", "${(p.voiceVolume * 100).toInt()}%", "How loud I talk, on top of the ${Platform.device}'s own volume. Saved for ${p.assistantName}.", p.voiceVolume, 0f..1f) { v -> s.edit { voiceVolume = v } }
         val shift = p.voiceShift(p.voiceDir)
         SliderRow("Masculine ↔ Feminine", when { shift < -0.05f -> "Deeper ${"%.0f".format(-shift * 100)}%"; shift > 0.05f -> "Lighter ${"%.0f".format(shift * 100)}%"; else -> "Natural" },
             "Moves pitch and voice character together. Leave at Natural for the cleanest sound. Saved for this voice.", shift, -1f..1f) { v -> s.edit { setVoiceShift(voiceDir, v) } }
@@ -474,7 +489,7 @@ private fun ModelPage(s: UiState, act: MainActivity) {
     val rec = ModelCatalog.recommendedLlm(ram)
     val installed = ModelFiles.installedLlms(act)
     val pick = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { it?.let(act::importFile) }
-    Section("Memory", "Long-term conversation memory, kept only on this phone.") { MemorySimple(s, act) }
+    Section("Memory", "Long-term conversation memory, kept only on this ${Platform.device}.") { MemorySimple(s, act) }
     Section("Model", "A small language model lets me understand everyday speech and answer questions. Simple commands (timers, calls, flashlight…) work even without one.") {
         if (installed.isEmpty()) Help("No model installed yet.")
         // say exactly what will run when the choice and the files disagree (missing file, profile without a choice)
@@ -508,7 +523,7 @@ private fun ModelPage(s: UiState, act: MainActivity) {
                 fontWeight = if (m.id == rec.id) FontWeight.SemiBold else FontWeight.Normal)
         }
         ButtonRow {
-            Button(onClick = { s.page = "getmodels" }) { BtnText("One-tap download") }
+            Button(onClick = { s.page = "getmodels" }) { BtnText("${Platform.oneTapCap} download") }
             OutlinedButton(onClick = { pick.launch(arrayOf("*/*")) }) { BtnText("Import .gguf file") }
             if (downloaderInstalled(act)) TextButton(onClick = { openDownloader(act) }) { BtnText("Open Downloader") }
         }
@@ -518,7 +533,7 @@ private fun ModelPage(s: UiState, act: MainActivity) {
         SwitchRow("Load assistant on demand", "Recommended. Only the tiny wake-word listener stays in memory. Speech, voice and the model load when you wake me (about 1–3 s) and unload when idle — saves memory and battery.",
             p.loadOnDemand) { s.edit { loadOnDemand = it }; AssistantRuntime.applyLoadOnDemand(act) }
         if (p.loadOnDemand) SliderRow("Unload after idle", fmtSec(p.unloadAfterSec), null, p.unloadAfterSec.toFloat(), 10f..600f) { v -> s.edit { unloadAfterSec = (v / 10).toInt() * 10 } }
-        SliderRow("Processor threads", if (p.llmThreads == 0) "Auto" else "${p.llmThreads}", "Auto picks the phone's fast cores.", p.llmThreads.toFloat(), 0f..8f, steps = 7) { v -> s.edit { llmThreads = v.toInt() } }
+        SliderRow("Processor threads", if (p.llmThreads == 0) "Auto" else "${p.llmThreads}", "Auto picks the ${Platform.device}'s fast cores.", p.llmThreads.toFloat(), 0f..8f, steps = 7) { v -> s.edit { llmThreads = v.toInt() } }
         Text(AssistantRuntime.loadState(), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         ButtonRow {
             OutlinedButton(onClick = { AssistantRuntime.bookControl(act, "unload"); act.toast("Book unloaded. Your place is saved.") }) { BtnText("Unload the book") }
@@ -533,7 +548,7 @@ private fun ModelPage(s: UiState, act: MainActivity) {
 private fun InternetPage(s: UiState) {
     val p = s.prefs
     Section("Internet access", "Off by default. When on, I can look things up and read the news. Nothing else ever goes online — no accounts, tracking or analytics.") {
-        SwitchRow("Allow internet access", if (p.internetEnabled) "On — searches go to the providers below." else "Off — everything stays on this phone.", p.internetEnabled) { s.edit { internetEnabled = it } }
+        SwitchRow("Allow internet access", if (p.internetEnabled) "On — searches go to the providers below." else "Off — everything stays on this ${Platform.device}.", p.internetEnabled) { s.edit { internetEnabled = it } }
         Requires("🌐 needs internet", "Off = fully offline")
         Help("Note: Android can't remove the internet permission from a single app. This switch blocks every request inside the app. For a hard guarantee, use a firewall app like NetGuard or RethinkDNS and block ${p.assistantName} (and allow it only when you want).")
     }
@@ -545,7 +560,7 @@ private fun InternetPage(s: UiState) {
         else "Frontend: the search also opens as a new tab in your own browser so you can see it, while the hidden reader answers out loud at the same time.")
         if (p.browsingMode == "frontend") SwitchRow("Also read the browser tab", "Uses Accessibility (lets me tap/scroll/read the screen) to read what's in the tab if the hidden reader gets nothing.", p.frontendScreenRead) { s.edit { frontendScreenRead = it } }
         if (p.browsingMode == "frontend") Requires("Needs Accessibility (lets me tap/scroll/read the screen) — Permissions page", "🌐 internet")
-        Help("Why this works: searches come from your phone's real browser engine and your own home or mobile connection, like any person browsing, so sites rarely block them (\"too many requests\" / captcha). If one site does ask for a captcha, I quietly try the next one.")
+        Help("Why this works: searches come from your ${Platform.device}'s real browser engine and your own home or mobile connection, like any person browsing, so sites rarely block them (\"too many requests\" / captcha). If one site does ask for a captcha, I quietly try the next one.")
         TextButton(onClick = { AssistantRuntime.webView.clear(); }) { BtnText("Clear browsing data") }
     }
     Section("Search providers", "I try them top to bottom and use the first that answers. The top one is your default. No Google.") {
@@ -631,7 +646,7 @@ private fun SetupPage(s: UiState, act: MainActivity) {
         }
     }
     Section("Keep listening in the background", "So wake words work with the screen off and inside other apps, Android and Samsung's battery savers must leave me running.") {
-        Item("Battery optimization: unrestricted", "Lets the wake word keep running when the phone is idle.", pm.isIgnoringBatteryOptimizations(act.packageName), "Allow") {
+        Item("Battery optimization: unrestricted", "Lets the wake word keep running when the ${Platform.device} is idle.", pm.isIgnoringBatteryOptimizations(act.packageName), "Allow") {
             if (runCatching { act.startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:${act.packageName}"))) }.isFailure) act.startActivity(details)
         }
         Item("Samsung: Never sleeping apps", "Settings › Battery › Background usage limits › Never sleeping apps › + › ${p.assistantName}. Also turn off \"Put unused apps to sleep\".", null, "Open") {
@@ -647,7 +662,7 @@ private fun SetupPage(s: UiState, act: MainActivity) {
         if (AssistantRuntime.micSilenced) Text("⚠️ Android is blocking the microphone right now (another app is recording, or listening was started in the background after a restart). Open the app once to fix it.", color = MaterialTheme.colorScheme.error)
     }
     Section("Permissions") {
-        Item("Microphone", "To hear wake words and you. Audio never leaves the phone.", act.has(android.Manifest.permission.RECORD_AUDIO), "Allow") { act.requestCorePermissions() }
+        Item("Microphone", "To hear wake words and you. Audio never leaves the ${Platform.device}.", act.has(android.Manifest.permission.RECORD_AUDIO), "Allow") { act.requestCorePermissions() }
         Item("Calls, texts & contacts", "So \"call Mom\" and \"text Sam\" work.", act.corePermissions().all { act.has(it) }, "Allow") { act.requestCorePermissions() }
         Item("Display over other apps", "For the floating avatar and edge glow.", Settings.canDrawOverlays(act), "Allow") {
             act.startActivity(Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION, Uri.parse("package:${act.packageName}")))
@@ -690,8 +705,8 @@ private fun SetupPage(s: UiState, act: MainActivity) {
 private fun LookPage(s: UiState) {
     val p = s.prefs
     Section("Appearance") {
-        ChoiceRow("Theme", null, listOf("dark" to "Dark (default)", "light" to "Light", "system" to "Follow phone"), p.theme) { s.edit { theme = it } }
-        GatedSwitch("Wallpaper colours", "Use colours from your wallpaper. Off = the app's own high-contrast colours.", p.wallpaperColors,
+        ChoiceRow("Theme", null, listOf("dark" to "Dark (default)", "light" to "Light", "system" to "Follow ${Platform.system}"), p.theme) { s.edit { theme = it } }
+        if (!Platform.desktop) GatedSwitch("Wallpaper colours", "Use colours from your wallpaper. Off = the app's own high-contrast colours.", p.wallpaperColors,
             if (android.os.Build.VERSION.SDK_INT >= 31) null else "Needs Android 12 or newer.", null, null, listOf("Android 12+")) { s.edit { wallpaperColors = it } }
         SwitchRow("Large text", "Makes all text in the app bigger.", p.largeText) { s.edit { largeText = it } }
     }
@@ -706,7 +721,7 @@ private fun PrivacyPage() {
     Section("Diagnostics", "For reporting a problem: nothing is sent; you choose where the file goes.") {
         (androidx.compose.ui.platform.LocalContext.current as? MainActivity)?.let { ExportLogButtons(it) }
     }
-    Section("What stays on this phone") {
+    Section("What stays on this ${Platform.device}") {
         Help("""
             • Wake words, speech recognition, the voice and the language model all run on this phone. Audio is never recorded to storage or sent anywhere.
             • No Google Play Services, Firebase, analytics, ads, crash reporters, or accounts. Settings are stored only in this app's private storage and excluded from cloud backup.

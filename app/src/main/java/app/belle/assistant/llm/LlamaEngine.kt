@@ -102,6 +102,6 @@ class LlamaEngine : LlmBackend {
     companion object {
         /** Room for the system prompt with all four persona sections filled, the memory block and a long reply. */
         const val DEFAULT_CTX = 4096
-        init { System.loadLibrary("belle_llm") }
+        init { app.belle.assistant.core.NativeLibs.load("belle_llm") }
     }
 }

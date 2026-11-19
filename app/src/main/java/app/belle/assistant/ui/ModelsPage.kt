@@ -1,5 +1,6 @@
 package app.belle.assistant.ui
 
+import app.belle.assistant.core.Platform
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -60,7 +61,7 @@ object ModelsPageData {
             Triple("Models › Thinking model — Abliterated", "Standard models with the refusal behaviour removed afterwards by the community. Fewer refusals than Standard, but unlike trained-uncensored models they can still refuse sometimes.", cat.filter { it.kind == "llm" && llm(it.id)?.censor == "abliterated" }),
             Triple("Models › Thinking model — Standard", "As released by Qwen / Meta. More cautious.", cat.filter { it.kind == "llm" && llm(it.id)?.censor.let { c -> c == null || c == "standard" } }),
             Triple("Models › Roleplay / story", "Creative-writing and roleplay fine-tunes (uncensored, trained). Choosing one switches me to a story / roleplay persona.", cat.filter { it.kind == "llm" && llm(it.id)?.roleplay == true }),
-            Triple("Voice › High-quality voices", "Recommended. Piper \"high\" models: clearer and more natural, a bit slower. ★ = best fit for this phone's memory (used automatically once downloaded).", cat.filter { d -> voiceOf(d)?.let { it.engine == "piper" && it.quality == "high" } == true }.sortedBy { d -> if (voiceOf(d)?.id == recommendedVoiceId) 0 else 1 }),
+            Triple("Voice › High-quality voices", "Recommended. Piper \"high\" models: clearer and more natural, a bit slower. ★ = best fit for this ${Platform.device}'s memory (used automatically once downloaded).", cat.filter { d -> voiceOf(d)?.let { it.engine == "piper" && it.quality == "high" } == true }.sortedBy { d -> if (voiceOf(d)?.id == recommendedVoiceId) 0 else 1 }),
             Triple("Voice › Standard voices (int8)", "Small and fast. ▶ plays the official sample.", cat.filter { d -> voiceOf(d)?.let { it.engine == "piper" && it.precision == "int8" && it.quality != "high" } == true }),
             Triple("Voice › Full-precision voices", "Same voices without int8 rounding: smoothest Piper sound, 3–4× bigger.", cat.filter { d -> voiceOf(d)?.let { it.engine == "piper" && it.precision == "fp32" && it.quality != "high" } == true }),
             Triple("Voice › Kokoro (most natural)", "Very natural, but slower to start each sentence. Best on 8 GB+ phones.", cat.filter { d -> voiceOf(d)?.engine == "kokoro" }),
@@ -111,8 +112,8 @@ fun GetModelsPage(s: UiState, act: MainActivity, modifier: Modifier = Modifier) 
     }
     LazyColumn(modifier.fillMaxSize().padding(horizontal = 16.dp).testTag("models_list"), contentPadding = PaddingValues(bottom = 24.dp)) {
         item(key = "intro") {
-            Section("One-tap downloads", "Hugging Face and GitHub files (official uploads, plus the clearly labelled less-restricted models). Downloads resume if interrupted and are checked before use." +
-                (ram?.let { " Ram: your phone has ${"%.1f".format(it)} GB." } ?: "")) {
+            Section("${Platform.oneTapCap} downloads", "Hugging Face and GitHub files (official uploads, plus the clearly labelled less-restricted models). Downloads resume if interrupted and are checked before use." +
+                (ram?.let { " Ram: your ${Platform.device} has ${"%.1f".format(it)} GB." } ?: "")) {
                 ImportFileRow { picker.launch(arrayOf("*/*")) }
             }
         }
@@ -140,7 +141,7 @@ fun GetModelsPage(s: UiState, act: MainActivity, modifier: Modifier = Modifier) 
 @Composable
 internal fun ImportFileRow(onImport: () -> Unit) {
     OutlinedButton(onClick = onImport, modifier = Modifier.testTag("import_file")) { BtnText("Import a file") }
-    Help("Already have a model file on this phone? Import it instead of downloading.")
+    Help("Already have a model file on this ${Platform.device}? Import it instead of downloading.")
 }
 
 // a Section card cut into lazy items: rounded top with the title, plain middle rows, rounded bottom
@@ -165,7 +166,7 @@ private fun ModelRow(row: ModelRowInfo, tick: State<Int>, s: UiState, act: MainA
         // info first, then the progress, then the action button under it (full width while downloading):
         // a button never sits beside text or a bar, so nothing is squeezed at large text sizes
         Text(d.label, style = MaterialTheme.typography.titleMedium)
-        if (row.recommended) Text("★ Recommended for this phone", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
+        if (row.recommended) Text("★ Recommended for this ${Platform.device}", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.primary)
         llmOf(d.id)?.let { m -> Text(m.censorLabel + if (m.roleplay) " · Roleplay / story" else "", style = MaterialTheme.typography.labelMedium,
             color = when (m.censor) { "uncensored" -> MaterialTheme.colorScheme.primary; "abliterated" -> MaterialTheme.colorScheme.tertiary; else -> MaterialTheme.colorScheme.onSurfaceVariant }) }
         Text(listOfNotNull(fmtBytes(d.bytes), row.fit.takeIf { d.minRamGb > 0 }, d.license.takeIf { it.isNotEmpty() }).joinToString(" · "),
