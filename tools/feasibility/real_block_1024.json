@@ -1,0 +1,1 @@
+{"tokens": 1024, "onnx_mb": 44.582835, "load_s": 0.07, "block_s": 0.171, "rel_err_of_update": 0.0115, "cosine_of_update": 0.99994, "peak_rss_gb": 1.12, "finite": true, "threads": 2}

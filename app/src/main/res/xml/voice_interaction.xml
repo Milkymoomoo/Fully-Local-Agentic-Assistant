@@ -1,0 +1,7 @@
+<voice-interaction-service xmlns:android="http://schemas.android.com/apk/res/android"
+    android:sessionService="app.belle.assistant.service.BelleSessionService"
+    android:recognitionService="app.belle.assistant.service.BelleRecognitionService"
+    android:settingsActivity="app.belle.assistant.ui.MainActivity"
+    android:supportsAssist="true"
+    android:supportsLaunchVoiceAssistFromKeyguard="true"
+    android:supportsLocalInteraction="true" />

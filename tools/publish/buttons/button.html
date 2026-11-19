@@ -1,0 +1,21 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:transparent}
+body{display:flex;align-items:center;justify-content:center;width:2000px;height:360px;font-family:Inter,"Noto Sans",Arial,sans-serif}
+.btn{position:relative;display:flex;align-items:center;gap:26px;padding:26px 46px 30px 30px;border-radius:30px;color:#fff;
+  background:linear-gradient(180deg,{{TOP}} 0%,{{BOTTOM}} 100%);
+  box-shadow:0 8px 0 {{EDGE}}, 0 18px 34px rgba(0,0,0,.28), inset 0 2px 0 rgba(255,255,255,.45)}
+.light .btn{border:3px solid rgba(255,255,255,.0)}
+.dark .btn{box-shadow:0 8px 0 {{EDGE}}, 0 0 46px {{GLOW}}66, 0 18px 30px rgba(0,0,0,.6), inset 0 2px 0 rgba(255,255,255,.45);border:3px solid rgba(255,255,255,.18)}
+.btn::after{content:"";position:absolute;left:14px;right:14px;top:8px;height:42%;border-radius:22px;background:linear-gradient(180deg,rgba(255,255,255,.28),rgba(255,255,255,0))}
+.ico{flex:none;width:98px;height:98px;border-radius:50%;background:rgba(0,0,0,.18);display:flex;align-items:center;justify-content:center;
+  box-shadow:inset 0 2px 6px rgba(0,0,0,.25)}
+.ico svg{width:64px;height:64px;color:#fff}
+.txt{display:flex;flex-direction:column}
+.label{font-weight:900;font-size:58px;letter-spacing:1.5px;line-height:1.05;text-shadow:0 3px 0 rgba(0,0,0,.25);white-space:nowrap}
+.sub{margin-top:8px;font-weight:600;font-size:25px;letter-spacing:.4px;opacity:.95;text-shadow:0 1px 0 rgba(0,0,0,.25)}
+.arrow{position:absolute;right:-6px;top:-14px}
+</style></head><body class="{{THEME}}">
+<div class="btn">
+  <div class="ico"><svg viewBox="0 0 64 64">{{ICON}}{{GLYPH}}</svg></div>
+  <div class="txt"><div class="label">{{LABEL}}</div><div class="sub">{{SUB}}</div></div>
+</div></body></html>

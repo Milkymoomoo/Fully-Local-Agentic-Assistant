@@ -1,0 +1,188 @@
+{
+ "version": "2",
+ "release": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/tag/models-3d-v2",
+ "files": [
+  {
+   "name": "pixal3d_ss_flow.onnx",
+   "label": "Pixal3D structure flow",
+   "size": 3345748,
+   "sha256": "b57ae453dd9a9c240a0b5d0d132b3d9224f9a19fddc3ef6a2361fdee5f4df610",
+   "license": "MIT (Tencent Pixal3D)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/pixal3d_ss_flow.onnx"
+  },
+  {
+   "name": "pixal3d_ss_flow.onnx.data",
+   "label": "Pixal3D structure flow (weights)",
+   "size": 1667555328,
+   "sha256": "9e85bb8d6efc24e48209bc84da30de4872ea800ec16053611d1e9fa7ebd9478d",
+   "license": "MIT (Tencent Pixal3D)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/pixal3d_ss_flow.onnx.data"
+  },
+  {
+   "name": "trellis2_struct_dec.onnx",
+   "label": "TRELLIS.2 structure decoder",
+   "size": 36020,
+   "sha256": "d858c88ff0ba42f886af771959c0b9f56c6aaca2df65f2ab147e98968d4f2d5a",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_struct_dec.onnx"
+  },
+  {
+   "name": "trellis2_struct_dec.onnx.data",
+   "label": "TRELLIS.2 structure decoder (weights)",
+   "size": 294695296,
+   "sha256": "df1ab8c032795149547f9ed9f170e86ff2a18438033100002a79d98d8579906a",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_struct_dec.onnx.data"
+  },
+  {
+   "name": "pixal3d_shape512_flow.onnx",
+   "label": "Pixal3D shape flow",
+   "size": 1406232,
+   "sha256": "79b1f0aa9494e8dd8e2602dba67e90d3f5ea52191b6d5e23694e3574a3d59122",
+   "license": "MIT (Tencent Pixal3D)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/pixal3d_shape512_flow.onnx"
+  },
+  {
+   "name": "pixal3d_shape512_flow.onnx.data",
+   "label": "Pixal3D shape flow (weights)",
+   "size": 1464276992,
+   "sha256": "c4ac82ddfa4adccc9b63a2fb8343f6aa3225ce1cecf64bfc0c98d4573851608f",
+   "license": "MIT (Tencent Pixal3D)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/pixal3d_shape512_flow.onnx.data"
+  },
+  {
+   "name": "naf_q_r1.onnx",
+   "label": "NAF upsampler",
+   "size": 36655,
+   "sha256": "91568c0cae7c28925889689f1bf7fe15a36be5e1bfc1f63c1f088372f19368fb",
+   "license": "Apache-2.0 (valeo.ai NAF)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/naf_q_r1.onnx"
+  },
+  {
+   "name": "naf_q_r1.onnx.data",
+   "label": "NAF upsampler (weights)",
+   "size": 2636800,
+   "sha256": "4d0a746ca0e42365c5c3c0b33a154486d783d43863b227033b08f74f9207d6c7",
+   "license": "Apache-2.0 (valeo.ai NAF)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/naf_q_r1.onnx.data"
+  },
+  {
+   "name": "dinov3_l_nb8.onnx",
+   "label": "DINOv3 ViT-L image encoder",
+   "size": 308082,
+   "sha256": "b519f34e5e657402a5de05e4957ba9eb720cc5282444087559e96624ae7068f4",
+   "license": "DINOv3 License (Meta)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/dinov3_l_nb8.onnx"
+  },
+  {
+   "name": "dinov3_l_nb8.onnx.data",
+   "label": "DINOv3 ViT-L image encoder (weights)",
+   "size": 315789312,
+   "sha256": "0d0d13831c083cb12ae37fb7e4a3c4a96a16cba57b15ad0b9710aebc37728f63",
+   "license": "DINOv3 License (Meta)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/dinov3_l_nb8.onnx.data"
+  },
+  {
+   "name": "moge2_l_3600_nb8.onnx",
+   "label": "MoGe-2 depth / camera",
+   "size": 419356217,
+   "sha256": "8c327a4600444413cde37f44be167a4049d6930d744c22be9941929faa298659",
+   "license": "MIT (Microsoft MoGe-2; DINOv2 backbone Apache-2.0)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/moge2_l_3600_nb8.onnx"
+  },
+  {
+   "name": "trellis2_shape_dec_seg0.onnx",
+   "label": "TRELLIS.2 shape decoder seg0",
+   "size": 112288,
+   "sha256": "07f87fe8fbc4c131705122837ed9f269674288bf69ab73d3518ec4cc4552925f",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg0.onnx"
+  },
+  {
+   "name": "trellis2_shape_dec_seg0.onnx.data",
+   "label": "TRELLIS.2 shape decoder seg0 (weights)",
+   "size": 268476416,
+   "sha256": "1e12927503c66c7004ad2848fd83807d0262776aa9deaf766b97a2342c03a901",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg0.onnx.data"
+  },
+  {
+   "name": "trellis2_shape_dec_seg1.onnx",
+   "label": "TRELLIS.2 shape decoder seg1",
+   "size": 251618,
+   "sha256": "958193c28d53c552245773df48c402bd5b56b7b23c48c4a41fd3f77ac37ee14b",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg1.onnx"
+  },
+  {
+   "name": "trellis2_shape_dec_seg1.onnx.data",
+   "label": "TRELLIS.2 shape decoder seg1 (weights)",
+   "size": 729063424,
+   "sha256": "c7eb681802a00e86107b751092a3be959917a55934374d9726992561656851fc",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg1.onnx.data"
+  },
+  {
+   "name": "trellis2_shape_dec_seg2.onnx",
+   "label": "TRELLIS.2 shape decoder seg2",
+   "size": 109023506,
+   "sha256": "ffa59395f5b79d48ec7ad2dcf97cbb50d0007af6640ab335fc31aae081d9b755",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg2.onnx"
+  },
+  {
+   "name": "trellis2_shape_dec_seg3.onnx",
+   "label": "TRELLIS.2 shape decoder seg3",
+   "size": 18139030,
+   "sha256": "25557baada8b890bd28e5d0c068c1c3ddc97be8560dafb953df9f93f9b5a0271",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg3.onnx"
+  },
+  {
+   "name": "trellis2_shape_dec_seg4.onnx",
+   "label": "TRELLIS.2 shape decoder seg4",
+   "size": 464648,
+   "sha256": "9258e4e2c9da6f3113b430a4bcc982dd2fca7213df3a811b49e5e81ab873b2a3",
+   "license": "MIT (Microsoft TRELLIS.2)",
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/models-3d-v2/trellis2_shape_dec_seg4.onnx"
+  }
+ ],
+ "licenses": [
+  {
+   "id": "dinov3",
+   "title": "DINOv3 License",
+   "mustAccept": true,
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/blob/main/licenses/DINOv3-LICENSE.md",
+   "notice": "Built with DINOv3. The image encoder is Meta's DINOv3 ViT-L/16, converted to ONNX and redistributed under the DINOv3 License. By installing it you agree to that licence (including its acceptable-use and trade-control terms).",
+   "files": [
+    "dinov3_l_nb8.onnx",
+    "dinov3_l_nb8.onnx.data"
+   ]
+  },
+  {
+   "id": "mit-apache",
+   "title": "Pixal3D, TRELLIS.2, MoGe-2 (MIT) \u00b7 NAF, DINOv2 (Apache-2.0)",
+   "mustAccept": false,
+   "url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/blob/main/THIRD_PARTY_NOTICES.md",
+   "notice": "Converted from the official checkpoints; see THIRD_PARTY_NOTICES.md for the copyright notices.",
+   "files": [
+    "pixal3d_ss_flow.onnx",
+    "pixal3d_ss_flow.onnx.data",
+    "trellis2_struct_dec.onnx",
+    "trellis2_struct_dec.onnx.data",
+    "pixal3d_shape512_flow.onnx",
+    "pixal3d_shape512_flow.onnx.data",
+    "naf_q_r1.onnx",
+    "naf_q_r1.onnx.data",
+    "moge2_l_3600_nb8.onnx",
+    "trellis2_shape_dec_seg0.onnx",
+    "trellis2_shape_dec_seg0.onnx.data",
+    "trellis2_shape_dec_seg1.onnx",
+    "trellis2_shape_dec_seg1.onnx.data",
+    "trellis2_shape_dec_seg2.onnx",
+    "trellis2_shape_dec_seg3.onnx",
+    "trellis2_shape_dec_seg4.onnx"
+   ]
+  }
+ ]
+}

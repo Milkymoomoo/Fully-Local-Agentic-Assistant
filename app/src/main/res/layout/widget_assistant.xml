@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Short widget: book buttons on the far left (Choose book, play / pause), avatar next to them (full height), full name + rotating wake word centred, 2D/3D toggle on the right with the continuous-conversation toggle under it. -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="horizontal" android:gravity="center_vertical"
+    android:padding="6dp" android:background="@drawable/widget_bg">
+    <!-- left column, mirroring the right one at the same heights: (space where the background button is), Choose book
+         where the 2D/3D switch is, book play / pause where the conversation toggle is -->
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent" android:layout_marginEnd="4dp"
+        android:orientation="vertical" android:gravity="center_horizontal">
+        <ImageView android:id="@+id/w_bookstop" android:layout_width="32dp" android:layout_height="32dp"
+            android:scaleType="fitXY" android:contentDescription="Stop the book" />
+        <ImageView android:id="@+id/w_book" android:layout_width="34dp" android:layout_height="0dp" android:layout_weight="1"
+            android:maxHeight="58dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:contentDescription="Choose book" />
+        <ImageView android:id="@+id/w_bookplay" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginTop="2dp"
+            android:scaleType="fitCenter" android:contentDescription="Play or pause the book" />
+    </LinearLayout>
+    <FrameLayout android:id="@+id/w_avatar_box" android:layout_width="wrap_content" android:layout_height="match_parent" android:contentDescription="Talk">
+        <!-- idle loop: the launcher flips these frames by itself (pauses when the screen is off / widget hidden) -->
+        <ViewFlipper android:id="@+id/w_idle" android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:autoStart="true" android:flipInterval="125" />
+        <!-- live frames (talking) and the still fallback -->
+        <ImageView android:id="@+id/w_avatar" android:layout_width="wrap_content" android:layout_height="match_parent"
+            android:adjustViewBounds="true" android:scaleType="fitCenter" android:contentDescription="Talk" />
+        <ImageView android:id="@+id/w_live" android:layout_width="12dp" android:layout_height="12dp"
+            android:layout_gravity="top|start" android:src="@drawable/widget_live" android:visibility="gone"
+            android:contentDescription="Listening" />
+        <!-- full-size transparent tap layer on top: the WHOLE avatar area (over the background too) starts talking -->
+        <ImageView android:id="@+id/w_tap" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:background="@android:color/transparent" android:contentDescription="Talk" />
+    </FrameLayout>
+    <LinearLayout android:layout_width="0dp" android:layout_weight="1" android:layout_height="wrap_content"
+        android:orientation="vertical" android:gravity="center_horizontal" android:paddingStart="6dp" android:paddingEnd="6dp">
+        <ImageView android:id="@+id/w_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true" android:scaleType="fitCenter" android:contentDescription="Open the app" />
+        <TextView android:id="@+id/w_state" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#FFE6DCEA" android:textSize="13sp" android:maxLines="2" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="8sp" android:autoSizeMaxTextSize="13sp" />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="match_parent"
+        android:orientation="vertical" android:gravity="center_horizontal">
+        <ImageView android:id="@+id/w_bg" android:layout_width="32dp" android:layout_height="32dp"
+            android:src="@drawable/ic_bg_picker" android:scaleType="fitXY" android:contentDescription="Choose background" />
+        <ImageView android:id="@+id/w_toggle" android:layout_width="34dp" android:layout_height="0dp" android:layout_weight="1"
+            android:maxHeight="58dp" android:adjustViewBounds="true" android:scaleType="fitCenter" android:contentDescription="Switch 2D / 3D" />
+        <ImageView android:id="@+id/w_conv" android:layout_width="30dp" android:layout_height="30dp" android:layout_marginTop="2dp"
+            android:scaleType="fitCenter" android:contentDescription="Continuous conversation" />
+    </LinearLayout>
+</LinearLayout>

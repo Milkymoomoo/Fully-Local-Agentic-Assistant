@@ -1,0 +1,13 @@
+# gitleaks: the default rules plus three reviewed false positives (no secrets: SIMD variable names in the
+# vendored xxhash, and a label-building line). See docs/SECURITY.md.
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "vendored xxhash: AVX-512 code named data_key / secret, not credentials"
+paths = ['''third_party/llama\.cpp/vendor/hash/xxhash/xxhash\.h''']
+
+[[allowlists]]
+description = "make_release_manifest.py builds display labels from a LABEL table"
+regexTarget = "line"
+regexes = ['''LABEL\.get\(key, stem\)''']

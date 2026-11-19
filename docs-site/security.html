@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Security &amp; verification · Milky Moo's Assistant</title>
+<meta name="description" content="Live VirusTotal, CodeQL, gitleaks, OSV-Scanner and OpenSSF Scorecard results for every release, and how to verify the APK yourself.">
+<link rel="icon" href="docs/images/cow-moon.png">
+<script src="assets/theme.js"></script>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="top"><div class="in">
+  <a class="brand" href="./">Milky Moo's <span>Assistant</span></a>
+  <nav><a href="./">Docs</a><a href="security.html" class="on">Security &amp; verification</a>
+    <a href="https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant">GitHub</a>
+    <a href="https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases">Releases</a></nav>
+  <button id="theme-toggle" type="button" onclick="mmTheme.toggle()" aria-label="Toggle dark mode" aria-pressed="false">
+    <img src="docs/images/cow-moon.png" alt=""><span class="lbl"></span></button>
+</div></header>
+<div class="wrap">
+  <aside id="side"></aside>
+  <main class="md">
+    <h1>Security &amp; verification</h1>
+    <p>Every release is checked by independent, free services, and every result is kept: nothing is overwritten. This page
+      reads the live results (<a href="security/index.json">security/index.json</a>) each time you open it. You can check
+      everything yourself: the hashes, the public reports and the scans' source.</p>
+    <p class="hero-dl">
+      <a href="https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/download/v0.1.5/MilkyMoosAssistant-0.1.5-3b2686c-arm64-v8a.apk"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/buttons/download-apk-dark.png"><img alt="DOWNLOAD PREMADE APK HERE" src="docs/images/buttons/download-apk.png"></picture></a>
+      <a class="vt" id="vt-hero" href="#latest"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/images/buttons/verify-virustotal-dark.png"><img alt="CHECK IT ON VIRUSTOTAL" src="docs/images/buttons/verify-virustotal.png"></picture></a>
+    </p>
+    <h2 id="latest">Latest results <span class="muted small" id="updated"></span></h2>
+    <div id="state" class="banner">Loading the live results…</div>
+    <div class="cards" id="cards"></div>
+
+    <h2 id="history">Version history</h2>
+    <p>Pick a version to see every scan recorded for it (newest first). Each row links to the official public report and to the
+      JSON file it was stored in.</p>
+    <p><label>Version <select id="ver"></select></label> <a class="btn" id="rel" href="#">Release notes</a></p>
+    <div id="vtable"></div>
+
+    <h2 id="verify">Verify a download yourself</h2>
+    <p>Compare the SHA-256 of the file you downloaded with the one on its card above (and in the release's
+      <code>SHA256SUMS.txt</code>). They must match exactly.</p>
+    <div class="tabs" id="ostabs"><button data-os="win" class="on">Windows</button><button data-os="mac">macOS</button><button data-os="linux">Linux</button><button data-os="android">Android</button></div>
+    <div class="verify" id="osbox"></div>
+    <p class="small muted">The APK is also signed. Its signing certificate's SHA-256 is
+      <code>0e:5a:b9:71:bb:55:b0:ff:14:0d:ac:bc:cb:75:04:3e:ae:1f:88:3c:4e:ec:4c:2b:66:4f:fa:71:ea:6f:ed:8b</code>;
+      check it with <code>apksigner verify --print-certs MilkyMoosAssistant-arm64-v8a.apk</code> (Android SDK build-tools).
+      Every update must carry the same certificate, or Android refuses to install it over the old one.</p>
+
+    <h2>What the scans mean</h2>
+    <table>
+      <tr><th>Scan</th><th>What it checks</th><th>When</th></tr>
+      <tr><td>VirusTotal</td><td>The exact release file, checked by ~70 antivirus engines. "0 of N engines flag it" is the result to look for.</td><td>Each release, rechecked weekly</td></tr>
+      <tr><td>CodeQL</td><td>GitHub's code analysis of the Kotlin/Java and C/C++ source for security bugs.</td><td>Every push, weekly</td></tr>
+      <tr><td>gitleaks</td><td>The whole git history for committed passwords, keys and tokens.</td><td>Every push, weekly</td></tr>
+      <tr><td>OSV-Scanner</td><td>Dependencies and vendored libraries against the OSV database of known vulnerabilities.</td><td>Every push, weekly</td></tr>
+      <tr><td>OpenSSF Scorecard</td><td>How the repository is run: branch protection, pinned actions, token permissions and more (0–10).</td><td>Every push to main, weekly</td></tr>
+    </table>
+    <p>Limits, honestly: no scanner proves software is safe. Antivirus engines can miss new threats and sometimes flag harmless
+      apps (false positives), especially unusual ones like an app that bundles AI models. Read the full explanation in
+      <a href="./#/docs/SECURITY.md">the security guide</a>.</p>
+  </main>
+</div>
+<script src="assets/security.js"></script>
+</body>
+</html>

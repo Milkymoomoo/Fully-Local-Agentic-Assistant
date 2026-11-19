@@ -1,0 +1,8 @@
+name: CodeQL config
+# Vendored third-party code (llama.cpp, ONNX Runtime headers, dav1d) is upstream's; it is checked by OSV-Scanner
+# against known vulnerabilities instead. With build-mode none (C/C++) these paths are skipped.
+paths-ignore:
+  - third_party
+  - "**/build"
+queries:
+  - uses: security-extended

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tall/large widget: the avatar fills most of it; the full name and the rotating wake word are centred below;
+     one 2D/3D toggle sits on the right edge, the continuous-conversation toggle under it; on the left edge
+     the same pair for books: Choose book, and play / pause under it. -->
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:padding="6dp" android:background="@drawable/widget_bg">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="match_parent" android:orientation="vertical">
+        <!-- side margins keep the avatar and its tap area clear of the button pairs on both sides -->
+        <FrameLayout android:id="@+id/w_avatar_box" android:layout_width="match_parent" android:layout_height="0dp" android:layout_weight="1"
+            android:layout_marginStart="38dp" android:layout_marginEnd="38dp" android:contentDescription="Talk">
+            <ViewFlipper android:id="@+id/w_idle" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:autoStart="true" android:flipInterval="125" />
+            <ImageView android:id="@+id/w_avatar" android:layout_width="match_parent" android:layout_height="match_parent"
+                android:scaleType="fitCenter" android:contentDescription="Talk" />
+            <ImageView android:id="@+id/w_live" android:layout_width="14dp" android:layout_height="14dp"
+                android:layout_gravity="top|start" android:layout_margin="4dp" android:src="@drawable/widget_live"
+                android:visibility="gone" android:contentDescription="Listening" />
+        <!-- full-size transparent tap layer on top: the WHOLE avatar area (over the background too) starts talking -->
+        <ImageView android:id="@+id/w_tap" android:layout_width="match_parent" android:layout_height="match_parent"
+            android:background="@android:color/transparent" android:contentDescription="Talk" />
+        </FrameLayout>
+        <ImageView android:id="@+id/w_name" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_gravity="center_horizontal"
+            android:adjustViewBounds="true" android:scaleType="fitCenter" android:contentDescription="Open the app" />
+        <TextView android:id="@+id/w_state" android:layout_width="match_parent" android:layout_height="wrap_content"
+            android:gravity="center" android:textColor="#FFE6DCEA" android:textSize="13sp" android:maxLines="2" android:autoSizeTextType="uniform" android:autoSizeMinTextSize="8sp" android:autoSizeMaxTextSize="13sp"
+            />
+    </LinearLayout>
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="end|center_vertical" android:orientation="vertical">
+        <ImageView android:id="@+id/w_toggle" android:layout_width="34dp" android:layout_height="58dp"
+            android:scaleType="fitCenter" android:contentDescription="Switch 2D / 3D" />
+        <ImageView android:id="@+id/w_conv" android:layout_width="34dp" android:layout_height="34dp" android:layout_marginTop="6dp"
+            android:scaleType="fitCenter" android:contentDescription="Continuous conversation" />
+    </LinearLayout>
+    <!-- left pair, mirroring the right one at the same heights: choose a book, then play / pause it -->
+    <LinearLayout android:layout_width="wrap_content" android:layout_height="wrap_content"
+        android:layout_gravity="start|center_vertical" android:orientation="vertical">
+        <ImageView android:id="@+id/w_book" android:layout_width="34dp" android:layout_height="58dp"
+            android:scaleType="fitCenter" android:contentDescription="Choose book" />
+        <ImageView android:id="@+id/w_bookplay" android:layout_width="34dp" android:layout_height="34dp" android:layout_marginTop="6dp"
+            android:scaleType="fitCenter" android:contentDescription="Play or pause the book" />
+    </LinearLayout>
+    <ImageView android:id="@+id/w_bookstop" android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_gravity="top|start" android:scaleType="fitXY" android:contentDescription="Stop the book" />
+    <ImageView android:id="@+id/w_bg" android:layout_width="32dp" android:layout_height="32dp"
+        android:layout_gravity="top|end" android:src="@drawable/ic_bg_picker" android:scaleType="fitXY"
+        android:contentDescription="Choose background" />
+</FrameLayout>

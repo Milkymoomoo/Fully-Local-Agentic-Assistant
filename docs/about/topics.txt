@@ -1,0 +1,14 @@
+3d-avatar
+android
+auto-rigging
+furry
+image-to-3d
+llama-cpp
+local-llm
+no-gms
+offline
+onnx
+privacy
+speech-recognition
+text-to-speech
+voice-assistant

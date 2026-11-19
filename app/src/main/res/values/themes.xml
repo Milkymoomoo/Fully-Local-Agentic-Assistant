@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Dark by default (the app's Compose theme follows the user's choice once loaded). -->
+    <style name="Theme.Belle" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/belle_bg</item>
+        <item name="android:colorBackground">@color/belle_bg</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+    </style>
+    <color name="belle_bg">#FF151218</color>
+</resources>

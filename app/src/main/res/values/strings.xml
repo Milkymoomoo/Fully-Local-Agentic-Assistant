@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">Milky Moo\'s Assistant</string>
+    <string name="a11y_desc">Optional. Lets Milky Moo\'s Assistant open apps and act on the screen when you ask by voice: it can tap buttons, scroll, type into fields and read the text that\'s on screen (for example \"open Spotify and play\", \"scroll down\", \"read this page\"). It only acts when you ask. It doesn\'t record your screen, and nothing it reads leaves the phone. Everything else in the app works with this off.</string>
+    <string name="widget_desc">Shows your active assistant. Tap to talk.</string>
+</resources>

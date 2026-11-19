@@ -1,0 +1,3 @@
+ONNX Runtime 1.28.0 C API headers (MIT License, Microsoft), from the official
+com.microsoft.onnxruntime:onnxruntime-android:1.28.0 AAR on Maven Central.
+Used against the libonnxruntime.so (1.28.2) that ships inside sherpa-onnx.

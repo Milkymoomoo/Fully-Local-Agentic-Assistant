@@ -1,0 +1,57 @@
+# Build output
+.gradle/
+build/
+.cxx/
+.kotlin/
+/captures
+*.iml
+.idea/
+local.properties
+
+# Signing keys and their passwords: never commit
+keystore/
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
+signing.properties
+
+# Release output (published as GitHub Release assets instead)
+/dist/
+*.apk
+*.aab
+
+# Models: fetched by scripts/fetch_models.sh, downloaded in the app or published as release assets
+app/src/main/assets/models/
+*.gguf
+*.onnx.data
+/models-3d*/
+*.safetensors
+
+# Personal content: books, recordings, photos and videos you test with
+books/
+*.pdf
+*.epub
+*.mobi
+*.azw3
+/media/
+/user_media/
+*.mp4
+*.mov
+*.wav
+*.m4a
+*.heic
+
+# Logs, run records and test output
+*.log
+last_run.json
+/proof/
+/emulator_out/
+*.hprof
+.env
+.env.*
+
+# Python caches
+__pycache__/
+*.pyc

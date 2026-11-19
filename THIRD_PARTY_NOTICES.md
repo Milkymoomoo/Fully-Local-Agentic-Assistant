@@ -62,3 +62,9 @@ licence is shown before download and applies to you as the user.
 | Piper voices | k2-fsa/sherpa-onnx `tts-models` | per voice: public domain, CC0, CC BY 4.0, MIT, **CC BY-NC-SA 4.0** or **Blizzard 2013 Lessac (non-commercial)** |
 | Kokoro-82M voices | k2-fsa/sherpa-onnx `tts-models` | Apache-2.0 |
 | Language models (Qwen2.5, Qwen3, Llama 3.2, Dolphin and others, GGUF) | Hugging Face | per model, e.g. Apache-2.0, Llama 3.2 Community License, **Qwen Research License (non-commercial)** |
+
+## 4. Docs site (`docs-site/`, not in the APK)
+
+| Component | Use | Licence |
+|---|---|---|
+| [marked](https://github.com/markedjs/marked) (`docs-site/assets/vendor/marked.min.js`) | renders the Markdown docs in the browser | MIT, © MarkedJS, © Christopher Jeffrey; full text in `docs-site/assets/vendor/LICENSE` |

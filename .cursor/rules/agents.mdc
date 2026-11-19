@@ -1,0 +1,9 @@
+---
+description: Project guide for coding agents. Always read AGENTS.md first.
+alwaysApply: true
+---
+
+Read and follow `AGENTS.md` at the repository root before making changes: the feature inventory with file locations,
+architecture, rules (generic fixes only; never cut animation to hide tearing; consistency over single runs; no secrets
+or personal data; licence duties), platform mapping and playbook. Document new settings, pages and features in the
+same change, or `tools/publish/make_publish_copy.sh` fails.

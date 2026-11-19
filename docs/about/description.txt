@@ -1,0 +1,1 @@
+Private, offline Android AI assistant, no Google services. Turns a single photo into a rigged, animated 3D avatar right on the phone (Pixal3D image-to-mesh). Wake word, local LLM chat, natural voices, long-term memory, custom personalities, 2D/3D home-screen widget with auto-rigging for any model (furry/anthro too), and a Read to me audiobook mode.

@@ -1,0 +1,239 @@
+{
+ "ms": 466926,
+ "mesh_vertices": 505314,
+ "glb_vertices": 111623,
+ "stages": [
+  {
+   "note": "",
+   "stage": "crop",
+   "ms": 266,
+   "peak_mb": 234,
+   "base_mb": 157
+  },
+  {
+   "note": "",
+   "stage": "crop mask",
+   "ms": 112,
+   "peak_mb": 277,
+   "base_mb": 234
+  },
+  {
+   "note": "",
+   "stage": "moge2 fov",
+   "ms": 12284,
+   "peak_mb": 2939,
+   "base_mb": 277
+  },
+  {
+   "note": "",
+   "stage": "load dinov3",
+   "ms": 1453,
+   "peak_mb": 686,
+   "base_mb": 360
+  },
+  {
+   "note": "",
+   "stage": "dinov3 512px",
+   "ms": 2127,
+   "peak_mb": 1005,
+   "base_mb": 686
+  },
+  {
+   "note": "",
+   "stage": "proj ss",
+   "ms": 60,
+   "peak_mb": 402,
+   "base_mb": 393
+  },
+  {
+   "note": "",
+   "stage": "load pixal3d_ss_flow.onnx",
+   "ms": 5704,
+   "peak_mb": 1846,
+   "base_mb": 406
+  },
+  {
+   "note": "",
+   "stage": "ss flow 8 steps",
+   "ms": 277835,
+   "peak_mb": 3265,
+   "base_mb": 1840
+  },
+  {
+   "note": "",
+   "stage": "load trellis2_struct_dec.onnx",
+   "ms": 10,
+   "peak_mb": 495,
+   "base_mb": 494
+  },
+  {
+   "note": "",
+   "stage": "struct decode",
+   "ms": 2083,
+   "peak_mb": 1057,
+   "base_mb": 494
+  },
+  {
+   "note": "",
+   "stage": "naf q 512/1",
+   "ms": 3986,
+   "peak_mb": 1408,
+   "base_mb": 495
+  },
+  {
+   "note": "",
+   "stage": "proj shape_512",
+   "ms": 4922,
+   "peak_mb": 1408,
+   "base_mb": 495
+  },
+  {
+   "note": "",
+   "stage": "load pixal3d_shape512_flow.onnx",
+   "ms": 18700,
+   "peak_mb": 2248,
+   "base_mb": 759
+  },
+  {
+   "note": "",
+   "stage": "shape512 flow 12 steps N=1517",
+   "ms": 121474,
+   "peak_mb": 2963,
+   "base_mb": 2246
+  },
+  {
+   "note": "",
+   "stage": "neighbours L0 N=1517",
+   "ms": 7,
+   "peak_mb": 886,
+   "base_mb": 885
+  },
+  {
+   "note": "",
+   "stage": "shape dec seg0 N=1517",
+   "ms": 1666,
+   "peak_mb": 2006,
+   "base_mb": 886
+  },
+  {
+   "note": "",
+   "stage": "subdivide L0",
+   "ms": 11,
+   "peak_mb": 890,
+   "base_mb": 890
+  },
+  {
+   "note": "",
+   "stage": "neighbours L1 N=6434",
+   "ms": 10,
+   "peak_mb": 891,
+   "base_mb": 890
+  },
+  {
+   "note": "",
+   "stage": "shape dec seg1 N=6434",
+   "ms": 5689,
+   "peak_mb": 2127,
+   "base_mb": 891
+  },
+  {
+   "note": "",
+   "stage": "subdivide L1",
+   "ms": 22,
+   "peak_mb": 895,
+   "base_mb": 893
+  },
+  {
+   "note": "",
+   "stage": "neighbours L2 N=27904",
+   "ms": 34,
+   "peak_mb": 900,
+   "base_mb": 895
+  },
+  {
+   "note": "",
+   "stage": "shape dec seg2 N=27904",
+   "ms": 3935,
+   "peak_mb": 1707,
+   "base_mb": 901
+  },
+  {
+   "note": "",
+   "stage": "subdivide L2",
+   "ms": 47,
+   "peak_mb": 896,
+   "base_mb": 895
+  },
+  {
+   "note": "",
+   "stage": "neighbours L3 N=118900",
+   "ms": 139,
+   "peak_mb": 905,
+   "base_mb": 896
+  },
+  {
+   "note": "",
+   "stage": "shape dec seg3 N=118900",
+   "ms": 4615,
+   "peak_mb": 1839,
+   "base_mb": 905
+  },
+  {
+   "note": "",
+   "stage": "subdivide L3",
+   "ms": 98,
+   "peak_mb": 1019,
+   "base_mb": 898
+  },
+  {
+   "note": "",
+   "stage": "neighbours L4 N=505314",
+   "ms": 625,
+   "peak_mb": 1132,
+   "base_mb": 1019
+  },
+  {
+   "note": "",
+   "stage": "shape dec seg4 N=505314",
+   "ms": 1297,
+   "peak_mb": 1990,
+   "base_mb": 1132
+  },
+  {
+   "note": "",
+   "stage": "dual grid mesh",
+   "ms": 272,
+   "peak_mb": 1130,
+   "base_mb": 1125
+  },
+  {
+   "note": "",
+   "stage": "texture bake 505314 verts",
+   "ms": 571,
+   "peak_mb": 1149,
+   "base_mb": 1130
+  },
+  {
+   "note": "",
+   "stage": "cluster 256",
+   "ms": 65,
+   "peak_mb": 1151,
+   "base_mb": 1149
+  },
+  {
+   "note": "",
+   "stage": "write glb",
+   "ms": 24,
+   "peak_mb": 1152,
+   "base_mb": 1151
+  }
+ ],
+ "threads": 4,
+ "peak_mb": 3265,
+ "filled": 70816,
+ "mesh_triangles": 1056640,
+ "glb_triangles": 239378,
+ "fov": 47.043162546864195,
+ "voxels": 1517,
+ "seen": 114296
+}

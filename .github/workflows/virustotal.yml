@@ -1,0 +1,77 @@
+# VirusTotal for release assets (the APKs now, the Windows program later), within the free API limits
+# (4 requests/min, 500/day): every file is looked up by SHA-256 first and only uploaded if VirusTotal has never seen
+# it; calls are spaced 15 s apart and counted per UTC day in security/quota.json on gh-pages. If the quota is hit,
+# or an analysis takes longer than this run waits, the file goes into security/queue.json and the hourly run finishes it.
+# Results are appended to security/history/ on gh-pages (never overwritten). Needs the VT_API_KEY repository secret.
+name: VirusTotal
+on:
+  release:
+    types: [published]
+  schedule:
+    - cron: "17 * * * *"        # hourly: finish anything in the queue (exits in seconds when it's empty)
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Release tag to scan (empty = finish the queue)"
+        required: false
+permissions:
+  contents: write              # push results to gh-pages, add the security link to the release notes
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+env:
+  ASSET_PATTERNS: "*.apk *.zip *.msi"   # what counts as a downloadable program; SHA256SUMS/INSTALL text is skipped
+jobs:
+  virustotal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: true
+      - name: Open gh-pages
+        run: tools/security/pages.sh open site
+      - name: Scan release assets
+        if: github.event_name == 'release' || inputs.tag != ''
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          mkdir -p "$RUNNER_TEMP/assets"
+          for p in $ASSET_PATTERNS; do gh release download "$TAG" --pattern "$p" --dir "$RUNNER_TEMP/assets" || true; done
+          ls -la "$RUNNER_TEMP/assets"
+          commit=$(git rev-list -n1 "refs/tags/$TAG" 2>/dev/null || gh api "repos/$GITHUB_REPOSITORY/commits/$TAG" --jq .sha)
+          echo "VERSION=${TAG#v}" >> "$GITHUB_ENV"; echo "COMMIT=$commit" >> "$GITHUB_ENV"
+          python3 tools/security/vt.py scan --site site --version "${TAG#v}" --commit "$commit" --out "$RUNNER_TEMP/vt.json" \
+            --url-base "https://github.com/$GITHUB_REPOSITORY/releases/download/$TAG" "$RUNNER_TEMP"/assets/*
+          rm -rf "$RUNNER_TEMP/assets"      # keep disk use low
+      - name: Finish queued scans
+        if: github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.tag == '')
+        env:
+          VT_API_KEY: ${{ secrets.VT_API_KEY }}
+        run: |
+          if [ "$(python3 -c 'import json,sys; print(len(json.load(open("site/security/queue.json"))))' 2>/dev/null || echo 0)" = 0 ]; then
+            echo "queue empty"; exit 0; fi
+          python3 tools/security/vt.py queue --site site --out "$RUNNER_TEMP/vt.json"
+      - name: Record results on gh-pages
+        if: always()
+        env:
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          [ -f "$RUNNER_TEMP/vt.json" ] || [ -f site/security/queue.json ] || exit 0
+          [ -f "$RUNNER_TEMP/vt.json" ] || echo '{"scan":"virustotal","entries":[]}' > "$RUNNER_TEMP/vt.json"
+          python3 tools/security/record.py --site site --version "${VERSION:-queue}" --commit "${COMMIT:-$GITHUB_SHA}" --run-url "$RUN_URL" "$RUNNER_TEMP/vt.json"
+          tools/security/pages.sh push site "VirusTotal results ($GITHUB_EVENT_NAME)"
+      - name: Link the release notes to their security entry
+        if: github.event_name == 'release' || inputs.tag != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name || inputs.tag }}
+        run: |
+          owner=${GITHUB_REPOSITORY%%/*}; name=${GITHUB_REPOSITORY#*/}
+          url="https://${owner,,}.github.io/$name/security.html#v${TAG#v}"
+          body=$(gh release view "$TAG" --json body --jq .body)
+          grep -qF "$url" <<<"$body" && exit 0
+          printf '%s\n\n---\n**Security & verification:** VirusTotal, CodeQL, gitleaks, OSV-Scanner and Scorecard results for this release: %s\n' "$body" "$url" > "$RUNNER_TEMP/notes.md"
+          gh release edit "$TAG" --notes-file "$RUNNER_TEMP/notes.md"

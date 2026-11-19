@@ -1,0 +1,27 @@
+# Publishes docs-site/ (the docs viewer + README.md, AGENTS.md and docs/) to the gh-pages branch, next to the
+# security/ history the scan workflows keep there (which this never touches).
+# Manual only for now: run it from Actions › Docs site › Run workflow. To publish on every push to main, add:
+#   push: { branches: [main], paths: [docs/**, docs-site/**, README.md, AGENTS.md] }
+# Then set Settings › Pages › Source to "Deploy from a branch", branch gh-pages, folder / (root).
+name: Docs site
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: gh-pages
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Build the site
+        run: docs-site/build.sh "$RUNNER_TEMP/site"
+      - name: Copy into gh-pages (keeping security/)
+        run: |
+          tools/security/pages.sh open pages
+          find pages -mindepth 1 -maxdepth 1 ! -name .git ! -name security -exec rm -rf {} +
+          cp -a "$RUNNER_TEMP/site/." pages/
+          tools/security/pages.sh push pages "Docs site from $GITHUB_SHA"

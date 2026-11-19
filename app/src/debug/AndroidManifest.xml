@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
+    <application>
+        <!-- Test hook for adb only (DUMP is held by the shell, never by normal apps). -->
+        <receiver android:name="app.belle.assistant.DebugReceiver" android:exported="true"
+            android:permission="android.permission.DUMP" />
+        <!-- Debug only: let adb open the editors for proof screenshots. -->
+        <activity android:name="app.belle.assistant.avatar.FramingEditorActivity" android:exported="true" android:permission="android.permission.DUMP" tools:replace="android:exported" />
+        <activity android:name="app.belle.assistant.avatar.RigEditorActivity" android:exported="true" android:permission="android.permission.DUMP" tools:replace="android:exported" />
+    </application>
+</manifest>

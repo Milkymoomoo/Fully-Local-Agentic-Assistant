@@ -1,0 +1,2415 @@
+[
+{
+"text": "BELLE",
+"tokens": [
+"\u2581BE",
+"LL",
+"E"
+]
+},
+{
+"text": "HEY BELLE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581BE",
+"LL",
+"E"
+]
+},
+{
+"text": "OK BELLE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581BE",
+"LL",
+"E"
+]
+},
+{
+"text": "DIXIE",
+"tokens": [
+"\u2581DI",
+"X",
+"I",
+"E"
+]
+},
+{
+"text": "HEY DIXIE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581DI",
+"X",
+"I",
+"E"
+]
+},
+{
+"text": "OK DIXIE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581DI",
+"X",
+"I",
+"E"
+]
+},
+{
+"text": "MOOBER",
+"tokens": [
+"\u2581MO",
+"O",
+"BER"
+]
+},
+{
+"text": "HEY MOOBER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581MO",
+"O",
+"BER"
+]
+},
+{
+"text": "OK MOOBER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581MO",
+"O",
+"BER"
+]
+},
+{
+"text": "JARVIS",
+"tokens": [
+"\u2581JA",
+"R",
+"VI",
+"S"
+]
+},
+{
+"text": "HEY JARVIS",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581JA",
+"R",
+"VI",
+"S"
+]
+},
+{
+"text": "OK JARVIS",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581JA",
+"R",
+"VI",
+"S"
+]
+},
+{
+"text": "COMPUTER",
+"tokens": [
+"\u2581COMP",
+"U",
+"TER"
+]
+},
+{
+"text": "HEY COMPUTER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581COMP",
+"U",
+"TER"
+]
+},
+{
+"text": "OK COMPUTER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581COMP",
+"U",
+"TER"
+]
+},
+{
+"text": "ASSISTANT",
+"tokens": [
+"\u2581AS",
+"S",
+"IST",
+"ANT"
+]
+},
+{
+"text": "HEY ASSISTANT",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581AS",
+"S",
+"IST",
+"ANT"
+]
+},
+{
+"text": "OK ASSISTANT",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581AS",
+"S",
+"IST",
+"ANT"
+]
+},
+{
+"text": "HEY",
+"tokens": [
+"\u2581HE",
+"Y"
+]
+},
+{
+"text": "HEY HEY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HE",
+"Y"
+]
+},
+{
+"text": "OK HEY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HE",
+"Y"
+]
+},
+{
+"text": "OK",
+"tokens": [
+"\u2581O",
+"K"
+]
+},
+{
+"text": "HEY OK",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581O",
+"K"
+]
+},
+{
+"text": "OK OK",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581O",
+"K"
+]
+},
+{
+"text": "HELLO",
+"tokens": [
+"\u2581HE",
+"LL",
+"O"
+]
+},
+{
+"text": "HEY HELLO",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HE",
+"LL",
+"O"
+]
+},
+{
+"text": "OK HELLO",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HE",
+"LL",
+"O"
+]
+},
+{
+"text": "JOSEPHINE",
+"tokens": [
+"\u2581JO",
+"SE",
+"PH",
+"IN",
+"E"
+]
+},
+{
+"text": "HEY JOSEPHINE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581JO",
+"SE",
+"PH",
+"IN",
+"E"
+]
+},
+{
+"text": "OK JOSEPHINE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581JO",
+"SE",
+"PH",
+"IN",
+"E"
+]
+},
+{
+"text": "SCARLETT",
+"tokens": [
+"\u2581S",
+"C",
+"AR",
+"LE",
+"T",
+"T"
+]
+},
+{
+"text": "HEY SCARLETT",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581S",
+"C",
+"AR",
+"LE",
+"T",
+"T"
+]
+},
+{
+"text": "OK SCARLETT",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581S",
+"C",
+"AR",
+"LE",
+"T",
+"T"
+]
+},
+{
+"text": "MAGNOLIA",
+"tokens": [
+"\u2581MA",
+"G",
+"N",
+"OL",
+"IA"
+]
+},
+{
+"text": "HEY MAGNOLIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581MA",
+"G",
+"N",
+"OL",
+"IA"
+]
+},
+{
+"text": "OK MAGNOLIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581MA",
+"G",
+"N",
+"OL",
+"IA"
+]
+},
+{
+"text": "PEACHES",
+"tokens": [
+"\u2581P",
+"E",
+"A",
+"CH",
+"ES"
+]
+},
+{
+"text": "HEY PEACHES",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581P",
+"E",
+"A",
+"CH",
+"ES"
+]
+},
+{
+"text": "OK PEACHES",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581P",
+"E",
+"A",
+"CH",
+"ES"
+]
+},
+{
+"text": "DAISY",
+"tokens": [
+"\u2581DA",
+"IS",
+"Y"
+]
+},
+{
+"text": "HEY DAISY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581DA",
+"IS",
+"Y"
+]
+},
+{
+"text": "OK DAISY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581DA",
+"IS",
+"Y"
+]
+},
+{
+"text": "LUCY",
+"tokens": [
+"\u2581",
+"LU",
+"C",
+"Y"
+]
+},
+{
+"text": "HEY LUCY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"LU",
+"C",
+"Y"
+]
+},
+{
+"text": "OK LUCY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"LU",
+"C",
+"Y"
+]
+},
+{
+"text": "ROSIE",
+"tokens": [
+"\u2581RO",
+"S",
+"I",
+"E"
+]
+},
+{
+"text": "HEY ROSIE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581RO",
+"S",
+"I",
+"E"
+]
+},
+{
+"text": "OK ROSIE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581RO",
+"S",
+"I",
+"E"
+]
+},
+{
+"text": "SAVANNAH",
+"tokens": [
+"\u2581SA",
+"V",
+"AN",
+"N",
+"A",
+"H"
+]
+},
+{
+"text": "HEY SAVANNAH",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581SA",
+"V",
+"AN",
+"N",
+"A",
+"H"
+]
+},
+{
+"text": "OK SAVANNAH",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581SA",
+"V",
+"AN",
+"N",
+"A",
+"H"
+]
+},
+{
+"text": "CHARLOTTE",
+"tokens": [
+"\u2581CHA",
+"R",
+"LO",
+"T",
+"TE"
+]
+},
+{
+"text": "HEY CHARLOTTE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581CHA",
+"R",
+"LO",
+"T",
+"TE"
+]
+},
+{
+"text": "OK CHARLOTTE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581CHA",
+"R",
+"LO",
+"T",
+"TE"
+]
+},
+{
+"text": "GEORGIA",
+"tokens": [
+"\u2581G",
+"E",
+"OR",
+"G",
+"IA"
+]
+},
+{
+"text": "HEY GEORGIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581G",
+"E",
+"OR",
+"G",
+"IA"
+]
+},
+{
+"text": "OK GEORGIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581G",
+"E",
+"OR",
+"G",
+"IA"
+]
+},
+{
+"text": "MAYBELLE",
+"tokens": [
+"\u2581MAYBE",
+"LL",
+"E"
+]
+},
+{
+"text": "HEY MAYBELLE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581MAYBE",
+"LL",
+"E"
+]
+},
+{
+"text": "OK MAYBELLE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581MAYBE",
+"LL",
+"E"
+]
+},
+{
+"text": "ARIEL",
+"tokens": [
+"\u2581A",
+"RI",
+"EL"
+]
+},
+{
+"text": "HEY ARIEL",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"RI",
+"EL"
+]
+},
+{
+"text": "OK ARIEL",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"RI",
+"EL"
+]
+},
+{
+"text": "ZELDA",
+"tokens": [
+"\u2581",
+"Z",
+"EL",
+"D",
+"A"
+]
+},
+{
+"text": "HEY ZELDA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"Z",
+"EL",
+"D",
+"A"
+]
+},
+{
+"text": "OK ZELDA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"Z",
+"EL",
+"D",
+"A"
+]
+},
+{
+"text": "LINK",
+"tokens": [
+"\u2581LI",
+"N",
+"K"
+]
+},
+{
+"text": "HEY LINK",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581LI",
+"N",
+"K"
+]
+},
+{
+"text": "OK LINK",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581LI",
+"N",
+"K"
+]
+},
+{
+"text": "NAVI",
+"tokens": [
+"\u2581NA",
+"VI"
+]
+},
+{
+"text": "HEY NAVI",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581NA",
+"VI"
+]
+},
+{
+"text": "OK NAVI",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581NA",
+"VI"
+]
+},
+{
+"text": "TIMMY",
+"tokens": [
+"\u2581T",
+"IM",
+"M",
+"Y"
+]
+},
+{
+"text": "HEY TIMMY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581T",
+"IM",
+"M",
+"Y"
+]
+},
+{
+"text": "OK TIMMY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581T",
+"IM",
+"M",
+"Y"
+]
+},
+{
+"text": "GROK",
+"tokens": [
+"\u2581G",
+"RO",
+"K"
+]
+},
+{
+"text": "HEY GROK",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581G",
+"RO",
+"K"
+]
+},
+{
+"text": "OK GROK",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581G",
+"RO",
+"K"
+]
+},
+{
+"text": "FRIDAY",
+"tokens": [
+"\u2581F",
+"RI",
+"DAY"
+]
+},
+{
+"text": "HEY FRIDAY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581F",
+"RI",
+"DAY"
+]
+},
+{
+"text": "OK FRIDAY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581F",
+"RI",
+"DAY"
+]
+},
+{
+"text": "KITT",
+"tokens": [
+"\u2581K",
+"IT",
+"T"
+]
+},
+{
+"text": "HEY KITT",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581K",
+"IT",
+"T"
+]
+},
+{
+"text": "OK KITT",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581K",
+"IT",
+"T"
+]
+},
+{
+"text": "HAL",
+"tokens": [
+"\u2581HA",
+"L"
+]
+},
+{
+"text": "HEY HAL",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HA",
+"L"
+]
+},
+{
+"text": "OK HAL",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HA",
+"L"
+]
+},
+{
+"text": "ALEXIS",
+"tokens": [
+"\u2581A",
+"LE",
+"X",
+"IS"
+]
+},
+{
+"text": "HEY ALEXIS",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"LE",
+"X",
+"IS"
+]
+},
+{
+"text": "OK ALEXIS",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"LE",
+"X",
+"IS"
+]
+},
+{
+"text": "SIRI",
+"tokens": [
+"\u2581S",
+"I",
+"RI"
+]
+},
+{
+"text": "HEY SIRI",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581S",
+"I",
+"RI"
+]
+},
+{
+"text": "OK SIRI",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581S",
+"I",
+"RI"
+]
+},
+{
+"text": "EMMA",
+"tokens": [
+"\u2581E",
+"M",
+"MA"
+]
+},
+{
+"text": "HEY EMMA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581E",
+"M",
+"MA"
+]
+},
+{
+"text": "OK EMMA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581E",
+"M",
+"MA"
+]
+},
+{
+"text": "OLIVIA",
+"tokens": [
+"\u2581O",
+"LI",
+"VI",
+"A"
+]
+},
+{
+"text": "HEY OLIVIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581O",
+"LI",
+"VI",
+"A"
+]
+},
+{
+"text": "OK OLIVIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581O",
+"LI",
+"VI",
+"A"
+]
+},
+{
+"text": "AVA",
+"tokens": [
+"\u2581A",
+"V",
+"A"
+]
+},
+{
+"text": "HEY AVA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"V",
+"A"
+]
+},
+{
+"text": "OK AVA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"V",
+"A"
+]
+},
+{
+"text": "ISABELLA",
+"tokens": [
+"\u2581IS",
+"A",
+"B",
+"EL",
+"LA"
+]
+},
+{
+"text": "HEY ISABELLA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581IS",
+"A",
+"B",
+"EL",
+"LA"
+]
+},
+{
+"text": "OK ISABELLA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581IS",
+"A",
+"B",
+"EL",
+"LA"
+]
+},
+{
+"text": "SOPHIA",
+"tokens": [
+"\u2581SO",
+"PH",
+"IA"
+]
+},
+{
+"text": "HEY SOPHIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581SO",
+"PH",
+"IA"
+]
+},
+{
+"text": "OK SOPHIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581SO",
+"PH",
+"IA"
+]
+},
+{
+"text": "MIA",
+"tokens": [
+"\u2581MI",
+"A"
+]
+},
+{
+"text": "HEY MIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581MI",
+"A"
+]
+},
+{
+"text": "OK MIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581MI",
+"A"
+]
+},
+{
+"text": "AMELIA",
+"tokens": [
+"\u2581A",
+"ME",
+"LI",
+"A"
+]
+},
+{
+"text": "HEY AMELIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"ME",
+"LI",
+"A"
+]
+},
+{
+"text": "OK AMELIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"ME",
+"LI",
+"A"
+]
+},
+{
+"text": "HARPER",
+"tokens": [
+"\u2581HA",
+"R",
+"PER"
+]
+},
+{
+"text": "HEY HARPER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HA",
+"R",
+"PER"
+]
+},
+{
+"text": "OK HARPER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HA",
+"R",
+"PER"
+]
+},
+{
+"text": "EVELYN",
+"tokens": [
+"\u2581E",
+"VE",
+"LY",
+"N"
+]
+},
+{
+"text": "HEY EVELYN",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581E",
+"VE",
+"LY",
+"N"
+]
+},
+{
+"text": "OK EVELYN",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581E",
+"VE",
+"LY",
+"N"
+]
+},
+{
+"text": "ABIGAIL",
+"tokens": [
+"\u2581A",
+"B",
+"IG",
+"A",
+"IL"
+]
+},
+{
+"text": "HEY ABIGAIL",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"B",
+"IG",
+"A",
+"IL"
+]
+},
+{
+"text": "OK ABIGAIL",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"B",
+"IG",
+"A",
+"IL"
+]
+},
+{
+"text": "JACKSON",
+"tokens": [
+"\u2581JA",
+"CK",
+"S",
+"ON"
+]
+},
+{
+"text": "HEY JACKSON",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581JA",
+"CK",
+"S",
+"ON"
+]
+},
+{
+"text": "OK JACKSON",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581JA",
+"CK",
+"S",
+"ON"
+]
+},
+{
+"text": "LIAM",
+"tokens": [
+"\u2581LI",
+"A",
+"M"
+]
+},
+{
+"text": "HEY LIAM",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581LI",
+"A",
+"M"
+]
+},
+{
+"text": "OK LIAM",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581LI",
+"A",
+"M"
+]
+},
+{
+"text": "NOAH",
+"tokens": [
+"\u2581NO",
+"A",
+"H"
+]
+},
+{
+"text": "HEY NOAH",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581NO",
+"A",
+"H"
+]
+},
+{
+"text": "OK NOAH",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581NO",
+"A",
+"H"
+]
+},
+{
+"text": "OLIVER",
+"tokens": [
+"\u2581O",
+"LI",
+"VER"
+]
+},
+{
+"text": "HEY OLIVER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581O",
+"LI",
+"VER"
+]
+},
+{
+"text": "OK OLIVER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581O",
+"LI",
+"VER"
+]
+},
+{
+"text": "ELIJAH",
+"tokens": [
+"\u2581E",
+"LI",
+"J",
+"A",
+"H"
+]
+},
+{
+"text": "HEY ELIJAH",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581E",
+"LI",
+"J",
+"A",
+"H"
+]
+},
+{
+"text": "OK ELIJAH",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581E",
+"LI",
+"J",
+"A",
+"H"
+]
+},
+{
+"text": "JAMES",
+"tokens": [
+"\u2581JA",
+"ME",
+"S"
+]
+},
+{
+"text": "HEY JAMES",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581JA",
+"ME",
+"S"
+]
+},
+{
+"text": "OK JAMES",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581JA",
+"ME",
+"S"
+]
+},
+{
+"text": "WILLIAM",
+"tokens": [
+"\u2581WILL",
+"IA",
+"M"
+]
+},
+{
+"text": "HEY WILLIAM",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581WILL",
+"IA",
+"M"
+]
+},
+{
+"text": "OK WILLIAM",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581WILL",
+"IA",
+"M"
+]
+},
+{
+"text": "BENJAMIN",
+"tokens": [
+"\u2581BE",
+"N",
+"J",
+"A",
+"M",
+"IN"
+]
+},
+{
+"text": "HEY BENJAMIN",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581BE",
+"N",
+"J",
+"A",
+"M",
+"IN"
+]
+},
+{
+"text": "OK BENJAMIN",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581BE",
+"N",
+"J",
+"A",
+"M",
+"IN"
+]
+},
+{
+"text": "LUCAS",
+"tokens": [
+"\u2581",
+"LU",
+"CA",
+"S"
+]
+},
+{
+"text": "HEY LUCAS",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"LU",
+"CA",
+"S"
+]
+},
+{
+"text": "OK LUCAS",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"LU",
+"CA",
+"S"
+]
+},
+{
+"text": "HENRY",
+"tokens": [
+"\u2581HE",
+"N",
+"RY"
+]
+},
+{
+"text": "HEY HENRY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HE",
+"N",
+"RY"
+]
+},
+{
+"text": "OK HENRY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HE",
+"N",
+"RY"
+]
+},
+{
+"text": "ALEXANDER",
+"tokens": [
+"\u2581A",
+"LE",
+"X",
+"AN",
+"DER"
+]
+},
+{
+"text": "HEY ALEXANDER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"LE",
+"X",
+"AN",
+"DER"
+]
+},
+{
+"text": "OK ALEXANDER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"LE",
+"X",
+"AN",
+"DER"
+]
+},
+{
+"text": "SUGAR",
+"tokens": [
+"\u2581SU",
+"G",
+"AR"
+]
+},
+{
+"text": "HEY SUGAR",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581SU",
+"G",
+"AR"
+]
+},
+{
+"text": "OK SUGAR",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581SU",
+"G",
+"AR"
+]
+},
+{
+"text": "HONEY",
+"tokens": [
+"\u2581HO",
+"NE",
+"Y"
+]
+},
+{
+"text": "HEY HONEY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HO",
+"NE",
+"Y"
+]
+},
+{
+"text": "OK HONEY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HO",
+"NE",
+"Y"
+]
+},
+{
+"text": "DARLING",
+"tokens": [
+"\u2581DA",
+"R",
+"L",
+"ING"
+]
+},
+{
+"text": "HEY DARLING",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581DA",
+"R",
+"L",
+"ING"
+]
+},
+{
+"text": "OK DARLING",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581DA",
+"R",
+"L",
+"ING"
+]
+},
+{
+"text": "BUTTERCUP",
+"tokens": [
+"\u2581BUT",
+"TER",
+"C",
+"U",
+"P"
+]
+},
+{
+"text": "HEY BUTTERCUP",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581BUT",
+"TER",
+"C",
+"U",
+"P"
+]
+},
+{
+"text": "OK BUTTERCUP",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581BUT",
+"TER",
+"C",
+"U",
+"P"
+]
+},
+{
+"text": "CLEMENTINE",
+"tokens": [
+"\u2581C",
+"LE",
+"MENT",
+"IN",
+"E"
+]
+},
+{
+"text": "HEY CLEMENTINE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581C",
+"LE",
+"MENT",
+"IN",
+"E"
+]
+},
+{
+"text": "OK CLEMENTINE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581C",
+"LE",
+"MENT",
+"IN",
+"E"
+]
+},
+{
+"text": "LOUISIANA",
+"tokens": [
+"\u2581LO",
+"U",
+"IS",
+"IAN",
+"A"
+]
+},
+{
+"text": "HEY LOUISIANA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581LO",
+"U",
+"IS",
+"IAN",
+"A"
+]
+},
+{
+"text": "OK LOUISIANA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581LO",
+"U",
+"IS",
+"IAN",
+"A"
+]
+},
+{
+"text": "TENNESSEE",
+"tokens": [
+"\u2581T",
+"EN",
+"NESS",
+"E",
+"E"
+]
+},
+{
+"text": "HEY TENNESSEE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581T",
+"EN",
+"NESS",
+"E",
+"E"
+]
+},
+{
+"text": "OK TENNESSEE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581T",
+"EN",
+"NESS",
+"E",
+"E"
+]
+},
+{
+"text": "CAROLINA",
+"tokens": [
+"\u2581CA",
+"RO",
+"LI",
+"N",
+"A"
+]
+},
+{
+"text": "HEY CAROLINA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581CA",
+"RO",
+"LI",
+"N",
+"A"
+]
+},
+{
+"text": "OK CAROLINA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581CA",
+"RO",
+"LI",
+"N",
+"A"
+]
+},
+{
+"text": "ALABAMA",
+"tokens": [
+"\u2581A",
+"LA",
+"B",
+"A",
+"MA"
+]
+},
+{
+"text": "HEY ALABAMA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581A",
+"LA",
+"B",
+"A",
+"MA"
+]
+},
+{
+"text": "OK ALABAMA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581A",
+"LA",
+"B",
+"A",
+"MA"
+]
+},
+{
+"text": "BLOSSOM",
+"tokens": [
+"\u2581B",
+"LO",
+"S",
+"S",
+"OM"
+]
+},
+{
+"text": "HEY BLOSSOM",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581B",
+"LO",
+"S",
+"S",
+"OM"
+]
+},
+{
+"text": "OK BLOSSOM",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581B",
+"LO",
+"S",
+"S",
+"OM"
+]
+},
+{
+"text": "PRISCILLA",
+"tokens": [
+"\u2581P",
+"RI",
+"S",
+"CI",
+"LL",
+"A"
+]
+},
+{
+"text": "HEY PRISCILLA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581P",
+"RI",
+"S",
+"CI",
+"LL",
+"A"
+]
+},
+{
+"text": "OK PRISCILLA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581P",
+"RI",
+"S",
+"CI",
+"LL",
+"A"
+]
+},
+{
+"text": "BEAUREGARD",
+"tokens": [
+"\u2581BE",
+"A",
+"URE",
+"G",
+"ARD"
+]
+},
+{
+"text": "HEY BEAUREGARD",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581BE",
+"A",
+"URE",
+"G",
+"ARD"
+]
+},
+{
+"text": "OK BEAUREGARD",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581BE",
+"A",
+"URE",
+"G",
+"ARD"
+]
+},
+{
+"text": "DOLLY",
+"tokens": [
+"\u2581DO",
+"LL",
+"Y"
+]
+},
+{
+"text": "HEY DOLLY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581DO",
+"LL",
+"Y"
+]
+},
+{
+"text": "OK DOLLY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581DO",
+"LL",
+"Y"
+]
+},
+{
+"text": "REBA",
+"tokens": [
+"\u2581RE",
+"B",
+"A"
+]
+},
+{
+"text": "HEY REBA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581RE",
+"B",
+"A"
+]
+},
+{
+"text": "OK REBA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581RE",
+"B",
+"A"
+]
+},
+{
+"text": "LORETTA",
+"tokens": [
+"\u2581LO",
+"RE",
+"T",
+"TA"
+]
+},
+{
+"text": "HEY LORETTA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581LO",
+"RE",
+"T",
+"TA"
+]
+},
+{
+"text": "OK LORETTA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581LO",
+"RE",
+"T",
+"TA"
+]
+},
+{
+"text": "PATSY",
+"tokens": [
+"\u2581PA",
+"T",
+"S",
+"Y"
+]
+},
+{
+"text": "HEY PATSY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581PA",
+"T",
+"S",
+"Y"
+]
+},
+{
+"text": "OK PATSY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581PA",
+"T",
+"S",
+"Y"
+]
+},
+{
+"text": "SHANIA",
+"tokens": [
+"\u2581SHA",
+"N",
+"IA"
+]
+},
+{
+"text": "HEY SHANIA",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581SHA",
+"N",
+"IA"
+]
+},
+{
+"text": "OK SHANIA",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581SHA",
+"N",
+"IA"
+]
+},
+{
+"text": "WILLOW",
+"tokens": [
+"\u2581WILL",
+"OW"
+]
+},
+{
+"text": "HEY WILLOW",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581WILL",
+"OW"
+]
+},
+{
+"text": "OK WILLOW",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581WILL",
+"OW"
+]
+},
+{
+"text": "HAZEL",
+"tokens": [
+"\u2581HA",
+"Z",
+"EL"
+]
+},
+{
+"text": "HEY HAZEL",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581HA",
+"Z",
+"EL"
+]
+},
+{
+"text": "OK HAZEL",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581HA",
+"Z",
+"EL"
+]
+},
+{
+"text": "IVY",
+"tokens": [
+"\u2581I",
+"V",
+"Y"
+]
+},
+{
+"text": "HEY IVY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581I",
+"V",
+"Y"
+]
+},
+{
+"text": "OK IVY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581I",
+"V",
+"Y"
+]
+},
+{
+"text": "JUNIPER",
+"tokens": [
+"\u2581JU",
+"N",
+"I",
+"PER"
+]
+},
+{
+"text": "HEY JUNIPER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581JU",
+"N",
+"I",
+"PER"
+]
+},
+{
+"text": "OK JUNIPER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581JU",
+"N",
+"I",
+"PER"
+]
+},
+{
+"text": "QUINN",
+"tokens": [
+"\u2581QU",
+"IN",
+"N"
+]
+},
+{
+"text": "HEY QUINN",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581QU",
+"IN",
+"N"
+]
+},
+{
+"text": "OK QUINN",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581QU",
+"IN",
+"N"
+]
+},
+{
+"text": "XAVIER",
+"tokens": [
+"\u2581",
+"X",
+"A",
+"VI",
+"ER"
+]
+},
+{
+"text": "HEY XAVIER",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"X",
+"A",
+"VI",
+"ER"
+]
+},
+{
+"text": "OK XAVIER",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"X",
+"A",
+"VI",
+"ER"
+]
+},
+{
+"text": "YVONNE",
+"tokens": [
+"\u2581",
+"Y",
+"VO",
+"N",
+"NE"
+]
+},
+{
+"text": "HEY YVONNE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"Y",
+"VO",
+"N",
+"NE"
+]
+},
+{
+"text": "OK YVONNE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"Y",
+"VO",
+"N",
+"NE"
+]
+},
+{
+"text": "ZACHARY",
+"tokens": [
+"\u2581",
+"Z",
+"A",
+"CH",
+"AR",
+"Y"
+]
+},
+{
+"text": "HEY ZACHARY",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581",
+"Z",
+"A",
+"CH",
+"AR",
+"Y"
+]
+},
+{
+"text": "OK ZACHARY",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581",
+"Z",
+"A",
+"CH",
+"AR",
+"Y"
+]
+},
+{
+"text": "QUEENIE",
+"tokens": [
+"\u2581QU",
+"E",
+"EN",
+"I",
+"E"
+]
+},
+{
+"text": "HEY QUEENIE",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581QU",
+"E",
+"EN",
+"I",
+"E"
+]
+},
+{
+"text": "OK QUEENIE",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581QU",
+"E",
+"EN",
+"I",
+"E"
+]
+},
+{
+"text": "WREN",
+"tokens": [
+"\u2581W",
+"RE",
+"N"
+]
+},
+{
+"text": "HEY WREN",
+"tokens": [
+"\u2581HE",
+"Y",
+"\u2581W",
+"RE",
+"N"
+]
+},
+{
+"text": "OK WREN",
+"tokens": [
+"\u2581O",
+"K",
+"\u2581W",
+"RE",
+"N"
+]
+}
+]

@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- 32x32 pixel-art background chooser (framed landscape), drawn with nearest-neighbour so the pixels stay crisp -->
+<bitmap xmlns:android="http://schemas.android.com/apk/res/android" android:src="@drawable/ic_bg_picker_px"
+    android:filter="false" android:antialias="false" android:dither="false" />
