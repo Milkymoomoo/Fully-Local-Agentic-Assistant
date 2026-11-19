@@ -6,6 +6,11 @@
 <p align="center"><sub><a href="features/app-basics.md">App basics →</a></sub></p>
 <!-- /nav -->
 
+> [!WARNING]
+> **In development:** on-device, from-scratch image-to-3D-mesh generation (Pixal3D on the phone) is still in
+> development and **may not work**. Built-in and downloadable 3D models (via *Settings* / *Avatar Studio* install) work.
+> Current release: **0.1.5** (pre-release). See [Verification status](status.md).
+
 <p align="center"><img src="screenshots/phone_widget_home.png" width="280" alt="The assistant's widget on a real phone's home screen"><br><sub>Real device · the home-screen widget with a 3D avatar</sub></p>
 
 ## How to read these pages

@@ -6,6 +6,10 @@
 <p align="center"><sub><a href="widget.md">← Home-screen widget</a> &nbsp;·&nbsp; <a href="../README.md">Docs home</a> &nbsp;·&nbsp; <a href="models-and-downloads.md">Models and downloads →</a></sub></p>
 <!-- /nav -->
 
+> [!WARNING]
+> **In development:** on-device, from-scratch image-to-3D-mesh generation (Pixal3D on the phone) is still in
+> development and **may not work**. Built-in and downloadable 3D models (via *Settings* / *Avatar Studio* install) work.
+
 <p align="center"><img src="../images/renders/pixal3d_phone_vs_reference.png" width="720" alt="Input picture, phone-pipeline result and ComfyUI reference"><br><sub>Desktop run of the <b>phone pipeline</b> (same models and code path, x86-64 CPU, not a phone) · left: input picture · top: the app's result, three views · bottom: the full ComfyUI reference for comparison</sub></p>
 
 ## At a glance
@@ -126,11 +130,11 @@ Under step 3, **▸ Workflow & run settings (ComfyUI .json)** shows exactly what
 
 </details>
 
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/diagrams/installer_flow-dark.png"><img src="../images/diagrams/installer_flow.png" width="420" alt="Installer flow diagram"></picture><br><sub>Diagram · the one-button installer</sub></p>
+<p align="center"><img src="../images/diagrams/installer_flow.png" width="420" alt="Installer flow diagram"><br><sub>Diagram · the one-button installer</sub></p>
 
 ## What happens inside
 
-<p align="center"><picture><source media="(prefers-color-scheme: dark)" srcset="../images/diagrams/pixal3d_pipeline-dark.png"><img src="../images/diagrams/pixal3d_pipeline.png" width="720" alt="Pixal3D pipeline diagram"></picture><br><sub>Diagram · the on-phone Pixal3D pipeline</sub></p>
+<p align="center"><img src="../images/diagrams/pixal3d_pipeline.png" width="720" alt="Pixal3D pipeline diagram"><br><sub>Diagram · the on-phone Pixal3D pipeline</sub></p>
 
 In plain words:
 

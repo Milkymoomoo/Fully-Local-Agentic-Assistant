@@ -96,7 +96,7 @@
   if (firstVt) $("vt-hero").href = vtUrl(firstVt.sha256);
 
   // version history
-  const versions = Object.keys(idx.versions || {}).sort((a, b) => (idx.versions[b].first_seen || "").localeCompare(idx.versions[a].first_seen || ""));
+  const versions = Object.keys(idx.versions || {}).sort((a, b) => (isModels(a) - isModels(b)) || (idx.versions[b].first_seen || "").localeCompare(idx.versions[a].first_seen || ""));   // app versions first, newest first
   $("ver").innerHTML = versions.map(v => `<option value="${esc(v)}">${esc(vLabel(v))}</option>`).join("");
   function pick(v) {
     $("ver").value = v; const info = idx.versions[v] || {};
