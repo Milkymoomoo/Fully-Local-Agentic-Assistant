@@ -75,39 +75,80 @@ object ProfileStore {
      * First run: the two bundled default assistants. Bob From Accounting is the built-in profile; Boob Dragon is added
      * next to it with her own picture (keeping its painted background), a female voice and her own wake words.
      * Both get their bundled 3D models (assets/default_avatars, ~4 MB each: 70k triangles, 1024 px textures) imported
-     * in the background. Runs once; everything stays user-editable and deletable afterwards.
+     * in the background. The profiles are created once; each bundled picture / 3D model is a pending step that is only
+     * marked done when it worked, so a step that failed (a missing asset, a full disk, the app closed mid-import) is
+     * retried on the next start. A step is dropped when its assistant was deleted or already has a picture / 3D model,
+     * so nothing the user made or changed is overwritten. Everything stays user-editable and deletable afterwards.
      */
     fun ensureDefaults(ctx: Context) {
         val ac = ctx.applicationContext
         app.belle.assistant.avatar.Avatar3DFiles.upgradeDetailLevelsInBackground(ac)
-        if (g(ac).getBoolean("defaults_v2", false)) return
-        g(ac).edit().putBoolean("defaults_v2", true).commit().also { SettingsRev.bump() }
-        val boob = ids(ac).firstOrNull { name(ac, it).equals(BOOB_NAME, true) } ?: run {
-            val id = create(ac, BOOB_NAME)
-            val p = Prefs(ac, id)
-            p.wakePhrases = listOf("hey boob dragon", "okay boob dragon", "hey boob")
-            p.sleepPhrases = Prefs.defaultSleepPhrases(BOOB_NAME)
-            p.voiceDir = app.belle.assistant.models.ModelFiles.DEFAULT_FEMALE_VOICE
-            p.bgMode = "own"
-            runCatching {
-                val f = java.io.File(ac.filesDir, "avatar_boob_dragon.webp")
-                ac.assets.open("default_avatars/boob_dragon.webp").use { i -> f.outputStream().use { i.copyTo(it) } }
-                p.avatarFile = f.name
+        if (!g(ac).getBoolean("defaults_v2", false)) {
+            g(ac).edit().putBoolean("defaults_v2", true).putBoolean(REPAIR_V3, true).commit().also { SettingsRev.bump() }
+            val boob = ids(ac).firstOrNull { name(ac, it).equals(BOOB_NAME, true) } ?: run {
+                val id = create(ac, BOOB_NAME)
+                val p = Prefs(ac, id)
+                p.wakePhrases = listOf("hey boob dragon", "okay boob dragon", "hey boob")
+                p.sleepPhrases = Prefs.defaultSleepPhrases(BOOB_NAME)
+                p.voiceDir = app.belle.assistant.models.ModelFiles.DEFAULT_FEMALE_VOICE
+                p.bgMode = "own"
+                id
             }
-            id
+            setPending(ac, listOf("pic:$boob:boob_dragon.webp", "3d:$DEFAULT_ID:bob.glb", "3d:$boob:boob_dragon.glb"))
+        } else if (!g(ac).getBoolean(REPAIR_V3, false)) {
+            g(ac).edit().putBoolean(REPAIR_V3, true).commit()
+            // Windows / Linux builds before 0.1.6 didn't package the bundled assets, so their first run made the two
+            // assistants without Boob Dragon's picture or either 3D model: queue what's missing (phones always had them)
+            if (app.belle.assistant.core.Platform.desktop) setPending(ac, missingDefaults(ac))
         }
+        if (pending(ac).isEmpty()) return
+        for (step in pending(ac).filter { it.startsWith("pic:") }) {
+            val (_, id, asset) = step.split(":", limit = 3)
+            if (id !in ids(ac) || Prefs(ac, id).avatarFile.isNotEmpty()) { done(ac, step); continue }
+            runCatching {
+                val f = java.io.File(ac.filesDir, "avatar_" + asset)
+                val tmp = java.io.File(ac.filesDir, f.name + ".tmp")
+                ac.assets.open("default_avatars/$asset").use { i -> tmp.outputStream().use { i.copyTo(it) } }
+                require(tmp.renameTo(f) || (f.delete() && tmp.renameTo(f))) { "couldn't save ${f.name}" }
+                Prefs(ac, id).avatarFile = f.name
+                done(ac, step); SettingsRev.bump()
+            }.onFailure { android.util.Log.w("ProfileStore", "default picture $asset failed (retried next start)", it) }
+        }
+        val threeD = pending(ac).filter { it.startsWith("3d:") }
+        if (threeD.isEmpty()) return
         Thread({
             app.belle.assistant.avatar.Avatar3DFiles.builtIn = true
-            try { for ((id, asset) in listOf(DEFAULT_ID to "bob.glb", boob to "boob_dragon.glb")) {
-                if (id !in ids(ac) || app.belle.assistant.avatar.Avatar3DFiles.has(ac, id)) continue
+            try { for (step in threeD) {
+                val (_, id, asset) = step.split(":", limit = 3)
+                if (id !in ids(ac) || app.belle.assistant.avatar.Avatar3DFiles.has(ac, id)) { done(ac, step); continue }
                 runCatching {
                     val bytes = ac.assets.open("default_avatars/$asset").use { it.readBytes() }
                     app.belle.assistant.avatar.Avatar3DFiles.import(ac, id, mapOf(asset to bytes))
-                }.onFailure { android.util.Log.w("ProfileStore", "default 3D avatar $asset failed", it) }
+                    done(ac, step)
+                }.onFailure { android.util.Log.w("ProfileStore", "default 3D avatar $asset failed (retried next start)", it) }
             } } finally { app.belle.assistant.avatar.Avatar3DFiles.builtIn = false }
+            SettingsRev.bump()
             runCatching { app.belle.assistant.ui.AssistantWidget.updateAll(ac) }
         }, "belle-defaults").apply { priority = Thread.MIN_PRIORITY }.start()
     }
+
+    /** The bundled pictures / 3D models the two default assistants (if they still exist) don't have. */
+    fun missingDefaults(ctx: Context): List<String> {
+        val boob = ids(ctx).firstOrNull { name(ctx, it).equals(BOOB_NAME, true) }
+        return buildList {
+            if (DEFAULT_ID in ids(ctx) && !app.belle.assistant.avatar.Avatar3DFiles.has(ctx, DEFAULT_ID)) add("3d:$DEFAULT_ID:bob.glb")
+            if (boob != null) {
+                if (Prefs(ctx, boob).avatarFile.isEmpty()) add("pic:$boob:boob_dragon.webp")
+                if (!app.belle.assistant.avatar.Avatar3DFiles.has(ctx, boob)) add("3d:$boob:boob_dragon.glb")
+            }
+        }
+    }
+    private const val REPAIR_V3 = "defaults_repair_v3"
+    private const val PENDING = "defaults_pending"
+    /** Default-assistant steps still to do ("pic:<id>:<asset>" / "3d:<id>:<asset>"). */
+    fun pending(ctx: Context): List<String> = g(ctx).getString(PENDING, "")!!.split(",").filter { it.isNotBlank() }
+    @Synchronized private fun setPending(ctx: Context, v: List<String>) { g(ctx).edit().putString(PENDING, v.distinct().joinToString(",")).commit() }
+    @Synchronized private fun done(ctx: Context, step: String) = setPending(ctx, pending(ctx) - step)
     const val BOOB_NAME = "Boob Dragon"
 
     fun duplicate(ctx: Context, id: String) = create(ctx, name(ctx, id) + " 2", copyFrom = id)

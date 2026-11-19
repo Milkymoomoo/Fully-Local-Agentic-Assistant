@@ -119,7 +119,7 @@ backend's library variant), `ui/UiState.kt` (observable settings / state counter
 
 | What | Files | Invariants |
 |---|---|---|
-| Start, single copy, self-test | `Main.kt`, `ui/SingleInstance.kt`, `SelfTest.kt` | One copy at a time (a loopback port in `instance.port`; a second start shows the first). `--tray` starts hidden, `--settings` opens settings, `--version`, `--selftest <report>` loads every native part and exits 0/1 (CI runs it on the packaged program). |
+| Start, single copy, self-test | `Main.kt`, `ui/SingleInstance.kt`, `SelfTest.kt` | One copy at a time (a loopback port in `instance.port`; a second start shows the first). `--tray` starts hidden, `--settings` opens settings, `--version`, `--selftest <report>` loads every native part, checks every bundled asset (`BundledAssets.kt` against the build's `bundled-assets.txt`), starts the wake word from the bundled model and exits 0/1 (CI runs it on the packaged program). |
 | Widget, tray, windows | `ui/DesktopApp.kt`, `ui/WidgetWindow.kt`, `ui/WidgetMode.kt`, `ui/SettingsWindow.kt`, `ui/EditorWindow.kt`, `ui/Screens.kt`, `ui/FileDialogs.kt`, `ui/Notify.kt`, `ui/UiThread.kt` | The widget window is **always composed**, so hiding it to the tray never stops wake word, listening, voice or builds. Its place is clamped to the screens (`widgetPlace`). The settings window hosts the phone's Home / Conversation / Settings screens. Notifications are tray toasts; the tray tooltip is the ongoing-progress notification. |
 | Desktop-only settings | `DesktopPrefs.kt`, `ui/DesktopPages.kt` | Global (not per assistant), in `belle_desktop.json`; every key is in [windows](docs/features/windows.md). Extra pages are added through `PlatformPages` in the shared SettingsScreen. |
 | Acceleration | `accel/Backend.kt`, `accel/Hardware.kt`, `Natives.kt`, `RuntimePacks.kt` | CPU always works (bundled). GPU runtimes are **downloaded on demand** from their publishers (NuGet, NVIDIA, FFmpeg builds) with pinned size + SHA-256, resume and per-part retry. Auto never picks an untested path; a failing provider falls back to the CPU and says so in the build log. Speech always uses the bundled CPU onnxruntime; the 3D runner gets the GPU one by full path (`BELLE_ORT_DLL`). |
@@ -133,6 +133,7 @@ on Skia / AWT / Java Sound / LWJGL:
 - `android/app/`: ActivityManager, AlertDialog · `android/app/role/`: RoleManager · `android/appwidget/`: AppWidgetManager (one desktop widget, id 1)
 - `android/content/`: ComponentName, Context, DialogInterface, Intent, SharedPreferences
 - `android/content/pm/`: ApplicationInfo, PackageManager · `android/content/res/`: AssetFileDescriptor, AssetManager, Resources
+- Bundled assets: `desktop/build.gradle.kts` `syncAppAssets` copies ALL of `app/src/main/assets` into `desktop/resources/common/assets` (→ `<install>/app/resources/assets`; gitignored) and `genAssetList` writes `bundled-assets.txt`; `DesktopContext.assets` reads it (dev runs: the source folder). A new phone asset needs no desktop change. `ProfileStore.ensureDefaults` keeps each default picture / 3D import as a pending step until it worked (retried every start). `Context.getSystemService` returns any desktop stand-in with a no-argument constructor.
 - `android/database/`: Cursor, ListCursor
 - `android/graphics/`: Bitmap, BitmapFactory, Canvas, Color, ImageDecoder, Paint, Path, RectF (all on Skia; Typeface falls back through common system fonts)
 - `android/graphics/drawable/`: Drawable
@@ -323,7 +324,7 @@ python3 tools/security/test_security.py # security tooling tests
 See [docs/status.md](docs/status.md) for the honest table. In short: the app is used daily on Android, and the 3D
 widget is verified on a real phone. Photo → 3D is verified end to end on a desktop CPU, but a phone run has not yet
 been timed to the end. Its resume logic is verified by unit tests (kill after every step, truncated checkpoints).
-The Windows program is in progress: it runs from source with the widget, tray, settings, chat and voice on the CPU, and CI builds and self-tests the installer; GPU (CUDA) and photo → 3D on a real PC have not been run yet. See [windows](docs/features/windows.md) for the tested / untested table.
+The Windows program is in progress: CI (windows-latest) builds the CPU, CUDA 13 and Vulkan natives, passes the desktop tests, builds the MSI, setup program and portable zip, and `--selftest` passes on the portable folder and after a silent MSI install (first green run 44598880248). Photo → 3D on the CPU passes end to end in the desktop build on Linux. Not yet run on a real Windows PC: the UI on screen, the 3D avatar, CUDA, and photo → 3D on Windows. No public release yet. See [windows](docs/features/windows.md) for the tested / untested table.
 
 ## 9. Explaining choices to users
 

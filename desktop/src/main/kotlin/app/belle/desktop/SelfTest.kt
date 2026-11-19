@@ -65,6 +65,22 @@ object SelfTest {
             val px = IntArray(b.width * b.height); b.getPixels(px, 0, b.width, 0, 0, b.width, b.height)
             val n = px.count { (it ushr 24) > 40 }; require(n > 200) { "only $n visible pixels" }; "$n pixels"
         }
+        check("Bundled assets") { BundledAssets.verify(DesktopContext.assets) }
+        check("bundled pictures (drawables)") {
+            app.belle.assistant.R.drawable.all.forEach { (id, path) -> requireNotNull(SelfTest::class.java.getResource("/$path")) { "missing $path" }; if (!path.endsWith(".xml")) requireNotNull(android.graphics.BitmapFactory.decodeResource(DesktopContext.resources, id)) { "can't decode $path" } }
+            "${app.belle.assistant.R.drawable.all.size} drawables"
+        }
+        check("Photo → 3D model list") { val m = app.belle.assistant.threed.Pixal3DInstall.manifest(DesktopContext); require(m.files.isNotEmpty()) { "no files" }; "${m.version}: ${m.files.size} files" }
+        // the start-up path that failed on 0.1.5 ("Speech models failed to load"): bundled wake-word model → sherpa-onnx spotter
+        check("wake word (bundled model)") {
+            app.belle.assistant.models.ModelFiles.ensureBundled(DesktopContext)
+            val w = app.belle.assistant.speech.WakeWordEngine(DesktopContext, app.belle.assistant.Prefs(DesktopContext))
+            try { w.accept(FloatArray(16000)); "listening for ${w.phrases.size} phrases" } finally { w.release() }
+        }
+        check("background cut-out model (bundled)") {
+            val f = File.createTempFile("selftest-u2netp", ".onnx")
+            try { DesktopContext.assets.open("models/u2netp.onnx").use { i -> f.outputStream().use { i.copyTo(it) } }; Ort.Session(f.path).close(); "opened (${f.length() / 1000} KB)" } finally { f.delete() }
+        }
         check("HTTPS (downloads)") {
             val suites = javax.net.ssl.SSLContext.getDefault().supportedSSLParameters.cipherSuites
             require(suites.any { it.contains("ECDHE") }) { "no ECDHE cipher suites (jdk.crypto.ec missing?)" }; "${suites.size} cipher suites"
@@ -73,6 +89,7 @@ object SelfTest {
             listOf(Paths.config, Paths.data).forEach { d -> d.mkdirs(); val t = File(d, ".selftest"); t.writeText("ok"); require(t.delete()) { "can't write $d" } }
             "config ${Paths.config}, data ${Paths.data}"
         }
+        runCatching { app.belle.assistant.ProfileStore.pending(DesktopContext) }.getOrNull()?.takeIf { it.isNotEmpty() }?.let { lines += "default assistants: still to import $it (retried at the next start)" }
         lines += if (failed == 0) "RESULT: PASS" else "RESULT: FAIL ($failed)"
         runCatching { report.absoluteFile.parentFile?.mkdirs(); report.writeText(lines.joinToString("\n") + "\n") }
         lines.forEach(::println)

@@ -107,6 +107,32 @@ jobs:
           Copy-Item licenses $l -Recurse
           Copy-Item third_party\llama.cpp\LICENSE "$l\licenses\llama.cpp-LICENSE.txt"
           Get-ChildItem desktop\resources -Recurse -File | Format-Table FullName, Length
+      # the phone app's bundled models (not in git; scripts/fetch_models.sh does the same for the APK): every file of
+      # app/src/main/assets goes into the program, and its --selftest fails if one is missing
+      - name: Bundled phone assets (wake-word and cut-out models, checksummed)
+        shell: pwsh
+        run: |
+          $ProgressPreference = "SilentlyContinue"
+          $a = "app\src\main\assets\models"; New-Item -ItemType Directory -Force "$a\kws" | Out-Null
+          $k = "sherpa-onnx-kws-zipformer-gigaspeech-3.3M-2024-01-01"
+          Invoke-WebRequest "https://github.com/k2-fsa/sherpa-onnx/releases/download/kws-models/$k.tar.bz2" -OutFile "$env:RUNNER_TEMP\kws.tar.bz2"
+          tar -xjf "$env:RUNNER_TEMP\kws.tar.bz2" -C $env:RUNNER_TEMP
+          $s = "$env:RUNNER_TEMP\$k"
+          Copy-Item "$s\encoder-epoch-12-avg-2-chunk-16-left-64.int8.onnx" "$a\kws\encoder.int8.onnx"
+          Copy-Item "$s\decoder-epoch-12-avg-2-chunk-16-left-64.onnx" "$a\kws\decoder.onnx"
+          Copy-Item "$s\joiner-epoch-12-avg-2-chunk-16-left-64.int8.onnx" "$a\kws\joiner.int8.onnx"
+          Copy-Item "$s\tokens.txt" "$a\kws\tokens.txt"
+          Copy-Item app\src\test\resources\bpe.vocab "$a\kws\bpe.vocab"
+          Invoke-WebRequest "https://github.com/danielgatis/rembg/releases/download/v0.0.0/u2netp.onnx" -OutFile "$a\u2netp.onnx"
+          $want = @{
+            "kws\encoder.int8.onnx" = "1e721676515bcd42a186979733981213c66c80db680e1cc582dfedf3be76e678"
+            "kws\decoder.onnx" = "f61ebd3eed3773a44d088d53dfae92dbb6aec4839f4dcaee2d402414741663a3"
+            "kws\joiner.int8.onnx" = "eae9da0c7e1e6c6a3f4cc42d167899c388f6c6701b94cb96320e4f55df79624c"
+            "kws\tokens.txt" = "fd2ded4050a55d2b1578870ba8697d02371980217806b7558bd0a5cc60f3ba53"
+            "u2netp.onnx" = "309c8469258dda742793dce0ebea8e6dd393174f89934733ecc8b14c76f4ddd8"
+          }
+          foreach ($f in $want.Keys) { if ((Get-FileHash "$a\$f").Hash.ToLower() -ne $want[$f]) { throw "checksum mismatch: $f" } }
+          Get-ChildItem app\src\main\assets -Recurse -File | Format-Table FullName, Length
       - name: Test models (cached)
         id: models
         uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
@@ -126,7 +152,7 @@ jobs:
           Invoke-WebRequest "https://huggingface.co/Qwen/Qwen2.5-0.5B-Instruct-GGUF/resolve/main/qwen2.5-0.5b-instruct-q4_k_m.gguf" -OutFile "$m\chat.gguf"
           tar -xjf "$m\stt.tar.bz2" -C $m; tar -xjf "$m\voice.tar.bz2" -C $m; Remove-Item "$m\*.tar.bz2"
           Get-FileHash "$m\chat.gguf", "$m\silero_vad.onnx" | Format-Table Hash, Path
-      - name: Desktop tests (speech round trip, chat, name art)
+      - name: Desktop tests (bundled assets, default-avatar repair, speech round trip, chat, name art)
         shell: pwsh
         env:
           BELLE_NATIVES: ${{ github.workspace }}\desktop\resources\windows-x64\natives

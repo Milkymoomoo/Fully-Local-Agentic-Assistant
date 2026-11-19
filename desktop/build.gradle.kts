@@ -124,6 +124,31 @@ val syncDrawables by tasks.registering(Sync::class) {
 sourceSets["main"].resources.srcDir(layout.buildDirectory.dir("generated/res"))
 tasks.named("processResources") { dependsOn(syncDrawables) }
 
+// EVERY file of the phone app's assets/ folder (default avatars, wake-word model, cut-out model, Photo → 3D model list,
+// voice samples) goes into the program: resources/common/assets ends up in <install>/app/resources/assets for the MSI,
+// the setup program, the portable folder and dev runs; DesktopContext.assets reads it through the AssetManager shim.
+// The list of what must be there (path + size) rides on the classpath, so --selftest and BundledAssetsTest can prove it.
+val appAssets = rootProject.file("app/src/main/assets")
+val syncAppAssets by tasks.registering(Sync::class) {
+    from(appAssets)
+    into(project.layout.projectDirectory.dir("resources/common/assets"))
+}
+val genAssetList by tasks.registering {
+    val out = layout.buildDirectory.file("generated/assetlist/bundled-assets.txt")
+    inputs.dir(appAssets); outputs.file(out)
+    doLast {
+        val lines = appAssets.walkTopDown().filter { it.isFile }.map { it.relativeTo(appAssets).invariantSeparatorsPath + "\t" + it.length() }.sorted().toList()
+        // the models aren't in git (scripts/fetch_models.sh / the CI step fetch them): never build a program without them
+        val required = listOf("models/kws/encoder.int8.onnx", "models/kws/decoder.onnx", "models/kws/joiner.int8.onnx", "models/kws/tokens.txt",
+            "models/kws/bpe.vocab", "models/u2netp.onnx", "default_avatars/bob.glb", "default_avatars/boob_dragon.glb", "default_avatars/boob_dragon.webp", "pixal3d_models.json")
+        val missing = required.filter { appAssets.resolve(it).length() == 0L }
+        check(missing.isEmpty()) { "app/src/main/assets is missing $missing: run scripts/fetch_models.sh first" }
+        out.get().asFile.apply { parentFile.mkdirs(); writeText(lines.joinToString("\n") + "\n") }
+    }
+}
+sourceSets["main"].resources.srcDir(files(layout.buildDirectory.dir("generated/assetlist")).builtBy(genAssetList))
+tasks.matching { it.name.startsWith("prepareAppResources") || it.name == "run" || it.name == "test" }.configureEach { dependsOn(syncAppAssets) }
+
 compose.desktop {
     application {
         mainClass = "app.belle.desktop.MainKt"

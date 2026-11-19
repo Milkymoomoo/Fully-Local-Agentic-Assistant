@@ -20,9 +20,14 @@ abstract class Context {
     open fun <T> getSystemService(c: Class<T>): T = when (c) {
         android.app.ActivityManager::class.java -> c.cast(android.app.ActivityManager())
         android.media.AudioManager::class.java -> c.cast(audioManager)
-        else -> throw UnsupportedOperationException("no ${c.name} on the desktop")
+        // every other system service the shared screens ask for (PowerManager, RoleManager, AlarmManager, ...) is a
+        // desktop stand-in class with a no-argument constructor; one shared instance each, never a crash
+        else -> c.cast(services.computeIfAbsent(c) { runCatching { it.getDeclaredConstructor().newInstance() }.getOrElse { e -> throw UnsupportedOperationException("no ${c.name} on the desktop", e) } })
     }
-    companion object { const val MODE_PRIVATE = 0; private val appInfo = android.content.pm.ApplicationInfo(); private val audioManager = android.media.AudioManager() }
+    companion object {
+        const val MODE_PRIVATE = 0; private val appInfo = android.content.pm.ApplicationInfo(); private val audioManager = android.media.AudioManager()
+        private val services = java.util.concurrent.ConcurrentHashMap<Class<*>, Any>()
+    }
 }
 
 /** Desktop stand-in: every "content" Uri on the desktop is a plain file (from a file chooser or drag and drop). */

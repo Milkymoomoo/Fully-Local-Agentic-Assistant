@@ -10,6 +10,13 @@
 > program has been run end to end on a real PC. Until then you can build it from source (below), or take the
 > **test build** from the latest *Windows program* run under the repository's **Actions** tab. Each run lists the
 > commit it was built from, a `SHA256SUMS.txt` and the program's own self-test reports.
+>
+> **What CI has verified (run 44598880248, Nov 19, 2026):** the CPU, CUDA 13 and Vulkan native builds compile with MSVC;
+> the desktop tests pass on windows-latest (speech round trip, chat answers, name art; the 3D render and photo → 3D
+> tests need a GPU or long run and are skipped there); the MSI, setup program and portable zip are built; and
+> `--selftest` passes 8/8 from the portable folder and after a silent per-user MSI install
+> (to `%LOCALAPPDATA%\MilkyMoosAssistant`). Not yet run on a real Windows PC: the window and widget on screen, the
+> 3D avatar, CUDA, and photo → 3D.
 
 ## At a glance
 
@@ -96,8 +103,19 @@ keeps these folders. Delete them yourself if you want everything gone.
 ## Self-test
 
 `MilkyMoosAssistant.exe --selftest report.txt` loads every native part (ONNX Runtime and the 3D runner, llama.cpp,
-the sherpa-onnx speech engine, Skia drawing), checks HTTPS and the data folders, writes `PASS` / `FAIL` lines to the
-report and exits. No window opens and nothing is downloaded. CI runs it on every build.
+the sherpa-onnx speech engine, Skia drawing), checks that every file the phone app bundles is in the program
+(**Bundled assets**: the two default avatars' 3D models and picture, the wake-word model, the background cut-out
+model, the Photo → 3D model list and the voice sample, each opened and size-checked), starts the wake word from the
+bundled model, opens the cut-out model, checks HTTPS and the data folders, writes `PASS` / `FAIL` lines to the report
+and exits. No window opens and nothing is downloaded. CI runs it on every build, so a build that is missing a bundled
+file fails.
+
+The bundled files come straight from the phone app's `app/src/main/assets` folder: the build copies all of it into
+the program (`app\resources\assets` in the install folder) and writes the list the self-test and
+`BundledAssetsTest` check against. Builds before 0.1.6 missed this copy, which left Boob Dragon without her picture,
+both default assistants without 3D models and the wake word unable to start. 0.1.6 and later repair such an install
+on their first start: the missing pictures and 3D models are added to the two default assistants (only if they still
+exist and don't already have one), and nothing you made yourself is touched.
 
 `MilkyMoosAssistant.exe --selftest report.txt --gpu` does the same with the backends chosen under **This PC**, after
 their downloads. It checks that the GPU ONNX Runtime has its provider and opens the smallest installed 3D model on it
@@ -119,9 +137,9 @@ install.
 
 ## Roadmap
 
-1. ◐ Widget, tray, settings, chat and voice on the CPU (runs from source; the CI installer build is being brought up)
-2. ☐ Photo → 3D on the CPU on Windows, end to end
+1. ◐ Widget, tray, settings, chat and voice on the CPU (CI builds the installer and self-tests it; on-screen check on a real PC pending)
+2. ◐ Photo → 3D on the CPU: passes end to end in the desktop build on Linux (stopped mid-build and resumed from checkpoints); Windows run pending
 3. ☐ Real-PC test: CUDA for chat and Photo → 3D on an RTX card
-4. ☐ ComfyUI workflow import (auto-fit to the backend and hardware, with overrides and reset)
+4. ◐ ComfyUI workflow import: the auto-fit now plans per backend (GPU speed-ups, timings only reused from the same backend); desktop UI check pending
 5. ☐ First public release (installer, checksums, VirusTotal scan), then the download button in the README
 6. ☐ AMD and Intel testers wanted for DirectML, OpenVINO and Vulkan
