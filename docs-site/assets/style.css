@@ -52,3 +52,5 @@ select{font:inherit;padding:6px 10px;border-radius:8px;border:1px solid var(--li
 .tabs button.on{background:var(--accent);border-color:var(--accent);color:#fff}
 .verify pre{margin:6px 0}
 @media (max-width:860px){.wrap{grid-template-columns:1fr}aside{position:static;max-height:none}header nav{display:none}}
+
+.md blockquote.alert{color:var(--fg)}.md blockquote.alert-warning,.md blockquote.alert-caution{border-left-color:var(--warn);background:color-mix(in srgb,var(--warn) 12%,var(--bg2))}.md blockquote.alert-note,.md blockquote.alert-tip{border-left-color:var(--accent)}.md .alert-title{color:var(--warn)}
