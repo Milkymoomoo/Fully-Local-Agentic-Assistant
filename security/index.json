@@ -3,6 +3,103 @@
  "repo": "Milkymoomoo/Fully-Local-Agentic-Assistant",
  "entries": [
   {
+   "version": "0.1.5",
+   "commit": "63092ed8d80dbec4a572c41b70f1bffbec8d64e3",
+   "scan": "scorecard",
+   "asset": "source code",
+   "sha256": "",
+   "status": "warn",
+   "stats": {
+    "score": 4.1,
+    "checks": {
+     "CI-Tests": -1,
+     "Maintained": 0,
+     "Packaging": -1,
+     "Security-Policy": 10,
+     "Token-Permissions": 0,
+     "Code-Review": 0,
+     "Dangerous-Workflow": 10,
+     "SAST": 10,
+     "Binary-Artifacts": 7,
+     "License": 10,
+     "Pinned-Dependencies": 10,
+     "CII-Best-Practices": 0,
+     "Dependency-Update-Tool": 0,
+     "Fuzzing": 0,
+     "Signed-Releases": 0,
+     "Branch-Protection": 0,
+     "Contributors": 0,
+     "Vulnerabilities": 10
+    }
+   },
+   "summary": "OpenSSF Scorecard 4.1/10",
+   "date": "2026-11-19T17:25:35Z",
+   "analysis_date": "2026-11-19T17:25:35Z",
+   "report_url": "https://scorecard.dev/viewer/?uri=github.com/Milkymoomoo/Fully-Local-Agentic-Assistant",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "note": "",
+   "file": "history/0.1.5/scorecard-2026-11-19T172535Z.json"
+  },
+  {
+   "version": "0.1.5",
+   "commit": "63092ed8d80dbec4a572c41b70f1bffbec8d64e3",
+   "scan": "osv",
+   "asset": "source code",
+   "sha256": "",
+   "status": "pass",
+   "stats": {
+    "vulnerabilities": 0,
+    "high_or_critical": 0,
+    "affected_packages": 0
+   },
+   "summary": "0 known vulnerabilities in 0 packages (0 high/critical)",
+   "date": "2026-11-19T17:25:35Z",
+   "analysis_date": "2026-11-19T17:25:35Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "note": "",
+   "file": "history/0.1.5/osv-2026-11-19T172535Z.json"
+  },
+  {
+   "version": "0.1.5",
+   "commit": "63092ed8d80dbec4a572c41b70f1bffbec8d64e3",
+   "scan": "gitleaks",
+   "asset": "source code",
+   "sha256": "",
+   "status": "pass",
+   "stats": {
+    "findings": 0,
+    "rules": 0
+   },
+   "summary": "no secrets found",
+   "date": "2026-11-19T17:25:35Z",
+   "analysis_date": "2026-11-19T17:25:35Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "note": "",
+   "file": "history/0.1.5/gitleaks-2026-11-19T172535Z.json"
+  },
+  {
+   "version": "0.1.5",
+   "commit": "63092ed8d80dbec4a572c41b70f1bffbec8d64e3",
+   "scan": "codeql",
+   "asset": "source code",
+   "sha256": "",
+   "status": "warn",
+   "stats": {
+    "error": 0,
+    "warning": 28,
+    "note": 0
+   },
+   "summary": "0 errors, 28 warnings, 0 notes (java, cpp)",
+   "date": "2026-11-19T17:25:35Z",
+   "analysis_date": "2026-11-19T17:25:35Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/44570736812",
+   "note": "",
+   "file": "history/0.1.5/codeql-2026-11-19T172535Z.json"
+  },
+  {
    "version": "models-3d-v2",
    "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
    "scan": "virustotal",
@@ -503,7 +600,7 @@
    "commit": "1953107955c776317e4ca6f4210e5e8ba282fa3c",
    "first_seen": "2026-11-19T16:49:52Z",
    "release_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/releases/tag/v0.1.5",
-   "last_scan": "2026-11-19T16:50:04Z"
+   "last_scan": "2026-11-19T17:25:35Z"
   },
   "models-3d-v2": {
    "commit": "f6a9b2ab87aeffbbb50c0bd2d4ec05d86afcdfa8",
@@ -568,5 +665,5 @@
    "since": "2026-11-19T17:25:17Z"
   }
  ],
- "updated": "2026-11-19T17:25:17Z"
+ "updated": "2026-11-19T17:25:35Z"
 }
