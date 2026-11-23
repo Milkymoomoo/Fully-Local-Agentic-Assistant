@@ -1,0 +1,25 @@
+{
+ "scan": "codeql",
+ "version": "0.1.6",
+ "commit": "74507f7e73b2a2ad38a8c8d8dace4c5e716f0330",
+ "date": "2026-11-23T16:07:48Z",
+ "run_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/45212691383",
+ "entries": [
+  {
+   "asset": "source code",
+   "sha256": "",
+   "status": "warn",
+   "stats": {
+    "error": 0,
+    "warning": 13,
+    "note": 0
+   },
+   "summary": "0 errors, 13 warnings, 0 notes (cpp)",
+   "analysis_date": "2026-11-23T16:07:48Z",
+   "report_url": "https://github.com/Milkymoomoo/Fully-Local-Agentic-Assistant/actions/runs/45212691383",
+   "note": "",
+   "version": "0.1.6",
+   "commit": "74507f7e73b2a2ad38a8c8d8dace4c5e716f0330"
+  }
+ ]
+}
